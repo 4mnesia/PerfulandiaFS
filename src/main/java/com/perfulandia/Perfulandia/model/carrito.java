@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 import com.perfulandia.Perfulandia.model.producto;
+
 @Entity
 @Table(name = "producto")
 @Data
@@ -16,10 +17,9 @@ public class carrito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private producto producto;
-    private Integer cantidad;
+    @Column(nullable = false)
+    private Integer usuarioId;
 
-
-
-
+    @Column(nullable = false)
+    private boolean estado;
 }
