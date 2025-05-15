@@ -1,5 +1,5 @@
 package com.perfulandia.Perfulandia.model;
 
-public class inventario {
+public class usuario {
 
 }
