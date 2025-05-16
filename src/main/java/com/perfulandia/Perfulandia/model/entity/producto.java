@@ -1,7 +1,6 @@
-package com.perfulandia.Perfulandia.model;
+package com.perfulandia.Perfulandia.model.entity;
 
-import java.time.LocalDateTime;
-
+import java.util.Date;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,8 +37,8 @@ public class producto {
     @Column(nullable = false)
     private Integer stock;
 
-    @Column(name= "fecha_creacion", nullable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    @Column(nullable = false)
+    private Date fechaCreacion;
 
 }
 

@@ -1,0 +1,43 @@
+package com.perfulandia.Perfulandia.model.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.List;
+
+@Entity
+@Table(name = "usuario")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+
+public class usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String nombre;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+    
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private String direccion;
+
+    @Column(nullable = false)
+    private String telefono;
+
+    @Column(nullable = false)
+    private rolUsuario rol;
+
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private carrito carrito;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<orden> ordenes;
+
+}
