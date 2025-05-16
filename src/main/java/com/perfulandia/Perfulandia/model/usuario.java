@@ -1,10 +1,8 @@
 package com.perfulandia.Perfulandia.model;
-import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 
 @Entity
 @Table(name = "usuario")
@@ -16,18 +14,15 @@ public class usuario {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+    private Integer id;
+
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String contraseña;
-
-    @Column(nullable = false)
-    private String rol;
 
 }

@@ -4,13 +4,9 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.*;
 import java.sql.Date;
-import java.time.LocalDate;
+
 
 @Table(name = "orden")
 @Data
@@ -30,6 +26,6 @@ public class orden {
     private Date fecha;
 
     @Column(nullable = false)
-    private double total;
+    private Integer total;
 
 }

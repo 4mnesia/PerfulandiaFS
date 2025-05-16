@@ -3,30 +3,30 @@ package com.perfulandia.Perfulandia.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "producto")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 
-public class producto {
-    @Id 
+@Table(name = "carrito_detalle")
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
+
+
+public class carritoDetalle {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false)
-    private String nombre;
+    private Integer carritoId;
 
     @Column(nullable = false)
-    private String descripcion;
-    
+    private Integer productoId;
+
+    @Column(nullable = false)
+    private Integer cantidad;
+
     @Column(nullable = false)
     private Integer precio;
-
-    @Column(nullable = false)
-    private Integer stock;
-
-    @Column(nullable = false)
-    private String marca;
 
 }

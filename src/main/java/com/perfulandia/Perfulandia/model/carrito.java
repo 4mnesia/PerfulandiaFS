@@ -2,8 +2,7 @@ package com.perfulandia.Perfulandia.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.*;
-import com.perfulandia.Perfulandia.model.producto;
+
 
 @Entity
 @Table(name = "producto")
@@ -22,4 +21,5 @@ public class carrito {
 
     @Column(nullable = false)
     private boolean estado;
+
 }
