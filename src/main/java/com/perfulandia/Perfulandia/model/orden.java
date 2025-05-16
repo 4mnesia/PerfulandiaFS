@@ -1,14 +1,12 @@
 package com.perfulandia.Perfulandia.model;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-
-
 import jakarta.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 
 @Table(name = "orden")
+@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +15,7 @@ public class orden {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Integer id;
 
     @Column(nullable = false)
     private Integer usuarioId;

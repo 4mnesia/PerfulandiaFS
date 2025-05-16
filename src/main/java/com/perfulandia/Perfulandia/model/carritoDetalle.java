@@ -3,9 +3,8 @@ package com.perfulandia.Perfulandia.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-
-@Table(name = "carrito_detalle")
 @Entity
+@Table(name = "carrito_detalle")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

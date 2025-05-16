@@ -5,7 +5,7 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "producto")
+@Table(name = "carrito")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
