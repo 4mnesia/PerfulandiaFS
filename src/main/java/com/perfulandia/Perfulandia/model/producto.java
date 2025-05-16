@@ -1,19 +1,22 @@
 package com.perfulandia.Perfulandia.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "producto")
+@Table(name = "productos")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 
 public class producto {
-    @Id 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+    private Long id;
+    
     @Column(nullable = false)
     private String nombre;
 
@@ -21,12 +24,26 @@ public class producto {
     private String descripcion;
     
     @Column(nullable = false)
+    private String categoria;
+
+    @Column(nullable = false)
+    private String marca;
+
+    @Column(nullable = false)
+    private String modelo;
+
+    @Column(nullable = false)
     private Integer precio;
 
     @Column(nullable = false)
     private Integer stock;
 
-    @Column(nullable = false)
-    private String marca;
+    @Column(name= "fecha_creacion", nullable = false)
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
 
 }
+
+
+
+
+
