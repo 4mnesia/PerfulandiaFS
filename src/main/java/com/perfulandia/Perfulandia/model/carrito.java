@@ -1,4 +1,4 @@
-package com.perfulandia.Perfulandia.model.entity;
+package com.perfulandia.Perfulandia.model;
 
 import jakarta.persistence.*;
 import lombok.*;

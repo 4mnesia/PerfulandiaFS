@@ -1,23 +1,24 @@
-package com.perfulandia.Perfulandia.model.entity;
+
+package com.perfulandia.Perfulandia.model;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "detalle_orden")
+@Table(name = "item_carrito")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 
-public class detalleOrden {
+public class itemCarrito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "orden_id", nullable = false)
-    private orden orden;
+    @JoinColumn(name = "carrito_id", nullable = false)
+    private carrito carrito;
 
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
@@ -25,8 +26,5 @@ public class detalleOrden {
 
     @Column(nullable = false)
     private Integer cantidad;
-
-    @Column(nullable = false, precision = 10, scale = 2)
-    private Integer precioUnitario;
 
 }

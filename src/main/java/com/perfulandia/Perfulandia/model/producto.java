@@ -1,4 +1,4 @@
-package com.perfulandia.Perfulandia.model.entity;
+package com.perfulandia.Perfulandia.model;
 
 import java.util.Date;
 import jakarta.persistence.*;

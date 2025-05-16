@@ -1,4 +1,4 @@
-package com.perfulandia.Perfulandia.model.entity;
+package com.perfulandia.Perfulandia.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,5 +35,8 @@ public class orden {
     
     @Column(nullable = false)
     private String direccionEnvio;
+
+    @Column(nullable = false)
+    private Integer total;
     
 }
