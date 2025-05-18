@@ -8,15 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.perfulandia.Perfulandia.model.itemCarrito;
 
 import jakarta.transaction.Transactional;
 
+@Repository
 public interface itemCarritoRepository extends JpaRepository<itemCarrito, Long> {
-    // Crear
-    itemCarrito save(itemCarrito itemCarrito);
-
     // Leer
     Optional<itemCarrito> findById(Long id);
 
@@ -34,6 +33,7 @@ public interface itemCarritoRepository extends JpaRepository<itemCarrito, Long> 
                             @Param("cantidad") Integer cantidad);
     //eliminar
     void deleteById(Long id);//Heredado
+    
     
     @Transactional
     @Modifying

@@ -7,14 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.perfulandia.Perfulandia.model.detalleOrden;
 
 import jakarta.transaction.Transactional;
 
+@Repository
 public interface detalleOrdenRepository extends JpaRepository<detalleOrden, Long> {
-    // Crear
-    detalleOrden save(detalleOrden detalleOrden);
 
     // Leer
     Optional<detalleOrden> findById(Long id);
@@ -41,5 +41,16 @@ public interface detalleOrdenRepository extends JpaRepository<detalleOrden, Long
     @Modifying
     @Query("DELETE FROM detalleOrden d WHERE d.orden.id = :ordenId")
     void deleteByOrdenId(@Param("ordenId") Long ordenId);
+
+    //calular todo detalle
+    @Query("SELECT SUM(d.cantidad * d.precioUnitario) FROM detalleOrden d WHERE d.orden.id = :ordenId")
+    Integer calcularTotal(@Param("ordenId") Long ordenId);
+    
+    //vaciar detalle
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM detalleOrden d WHERE d.orden.id = :ordenId")
+    void vaciarDetalle(@Param("ordenId") Long ordenId);
+
 
 }

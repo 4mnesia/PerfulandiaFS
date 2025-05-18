@@ -7,16 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.perfulandia.Perfulandia.model.producto;
 
 import jakarta.transaction.Transactional;
 
-
+@Repository
 public interface productoRepository extends JpaRepository<producto, Long> {
-
-    //crear 
-    producto save(producto producto);
 
     //leer
     @Query("select p from producto p where p.nombre like %:nombre%")

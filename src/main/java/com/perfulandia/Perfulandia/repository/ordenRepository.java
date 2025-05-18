@@ -7,15 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.perfulandia.Perfulandia.model.orden;
 
 import jakarta.transaction.Transactional;
 
+@Repository
 public interface ordenRepository extends JpaRepository<orden, Long> {
-    // Crear
-    orden save(orden orden);
-
     // Leer
     Optional<orden> findById(Long id);
     @Query("SELECT o FROM orden o WHERE o.usuario.id = :usuarioId ORDER BY o.fecha_creacion DESC")
@@ -23,6 +22,11 @@ public interface ordenRepository extends JpaRepository<orden, Long> {
 
     @Query("SELECT o FROM Orden o where o.estado = :estado")
     List<orden> findByEstado(String estado);
+
+    //leer todo
+    @Query("SELECT o FROM orden o ORDER BY o.fecha_creacion DESC")
+    List<orden> findAllOrdenes();
+    
 
     //actualizar
     @Transactional
