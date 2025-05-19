@@ -14,35 +14,24 @@ import com.perfulandia.Perfulandia.repository.itemCarritoRepository;
 public class itemCarritoService {
     @Autowired
     private itemCarritoRepository itemCarritoRepository;
-
-    /**
-     * Guarda un nuevo itemCarrito o actualiza uno existente
-     * 
-     * @param itemCarrito ItemCarrito a guardar
-     * @return ItemCarrito guardado con su ID asignado
-     */
-    public List<itemCarrito> getAllItems() {
-        return itemCarritoRepository.findAll();
-    }
-
-    /**
-     * Busca un itemCarrito por su ID
-     * 
-     * @param id ID del itemCarrito a buscar
-     * @return ItemCarrito encontrado o null si no existe
-     */
+    // leer itemCarrito por id
     public itemCarrito getItemCarritoById(Long id) {
         return itemCarritoRepository.findById(id).orElse(null);
-
-    //para guardar un itemCarrito
+    }
+    // leer todos los itemCarrito
+    public List<itemCarrito> getAllItemCarritos() {
+        return itemCarritoRepository.findAll();
+    }
+    // guardar un itemCarrito
     public itemCarrito saveItemCarrito(itemCarrito itemCarrito) {
         return itemCarritoRepository.save(itemCarrito);
-
-    //
+    }
+    // eliminar un itemCarrito
+    public void deleteItemCarrito(Long id) {
+        itemCarritoRepository.deleteById(id);
+    }
+    // actualizar un itemCarrito
+    public itemCarrito updateItemCarrito(itemCarrito itemCarrito) {
+        return itemCarritoRepository.save(itemCarrito);
     }
 }
-/*
- * public detalleOrden getDetalleOrdenById(Long id) {
- * return detalleOrdenRepository.findById(id).orElse(null);
- * }
- */
