@@ -13,12 +13,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequestMapping("/api/perfulandia")
 public class productoController {
-    
-    @Autowired
-    private productoService service;
 
-   @Getmapping("/producto")
-   publi
-
-    //
 }

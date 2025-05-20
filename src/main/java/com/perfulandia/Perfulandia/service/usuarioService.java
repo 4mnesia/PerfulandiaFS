@@ -35,6 +35,10 @@ public class usuarioService {
     public void deleteUsuario(Long id) {
         usuarioRepository.deleteById(id);
     }
+    //eliminar todos los usuarios
+    public void deleteAllUsuarios() {
+        usuarioRepository.deleteAll();
+    }
 
     // actualizar un usuario
     public usuario updateUsuario(usuario usuario) {

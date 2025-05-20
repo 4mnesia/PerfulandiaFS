@@ -23,10 +23,7 @@ public class carrito {
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL)
     private List<itemCarrito> Item;
 
-<<<<<<< HEAD
     @Column(nullable = false)
     private boolean estado;
-    
-=======
->>>>>>> 727d080d268454922c4720bba29a9c64347ec713
+
 }

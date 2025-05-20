@@ -2,6 +2,7 @@ package com.perfulandia.Perfulandia.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -35,9 +36,11 @@ public class usuario {
     private rolUsuario rol;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnore
     private carrito carrito;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<orden> ordenes;
 
 }
