@@ -1,35 +1,42 @@
 package com.perfulandia.Perfulandia.model;
 
+import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.Id;
+import java.util.List;
+import java.util.Date;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-
-import java.sql.Date;
-import java.time.LocalDate;
-
-@Table(name = "orden")
+@Entity
+@Table(name = "ordenes")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 
 public class orden {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private usuario usuario;
+
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
+    private List<detalleOrden> detalles;
+    
+    @Column(nullable = false)
+    private String estado;
+    
+    @Column(nullable = false)
+    private Date fechaCreacion;
+    
+    @Column(nullable = false)
+    private Date fechaActualizacion;
+    
+    @Column(nullable = false)
+    private String direccionEnvio;
 
     @Column(nullable = false)
-    private Integer usuarioId;
-
-    @Column(nullable = false)
-    private Date fecha;
-
-    @Column(nullable = false)
-    private double total;
-
+    private Integer total;
+    
 }
