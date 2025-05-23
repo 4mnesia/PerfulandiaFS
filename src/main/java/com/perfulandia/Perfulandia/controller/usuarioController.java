@@ -19,18 +19,21 @@ public class usuarioController {
 
     @Autowired
     private usuarioService usuarioService;
-    //LISTAR POR ID
+
+    
+    // LISTAR POR ID
     @GetMapping("/users/{id}")
     public usuario getUsuarioById(@PathVariable Long id) {
         return usuarioService.getUsuarioById(id);
     }
-    //LISTAR TODO
+
+    // LISTAR TODO
     @GetMapping("/users")
     public List<usuario> getAllUsuarios() {
         return usuarioService.getAllUsuarios();
     }
 
-    //CREAR USUARIO
+    // CREAR USUARIO
     @PostMapping("/users")
     public ResponseEntity<usuario> createUsuario(@RequestBody usuario usuario) {
         try {
@@ -41,20 +44,20 @@ public class usuarioController {
         }
     }
 
-    //CREAR VARIOS USUARIOS
-    @PostMapping("/users/+users")
+    // CREAR VARIOS USUARIOS
+    @PostMapping("users/batch")
     public ResponseEntity<List<usuario>> createUsuarios(@RequestBody List<usuario> usuarios) {
         try {
             List<usuario> nuevosUsuarios = usuarios.stream()
-                .map(usuarioService::saveUsuario)
-                .toList();
+                    .map(usuarioService::saveUsuario)
+                    .toList();
             return ResponseEntity.ok(nuevosUsuarios);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    //ELIMINAR TODO
+    // ELIMINAR TODO
     @DeleteMapping("/users")
     public ResponseEntity<Void> deleteAllUsuarios() {
         try {
@@ -64,7 +67,8 @@ public class usuarioController {
             return ResponseEntity.badRequest().build();
         }
     }
-    //ELIMINAR POR ID
+
+    // ELIMINAR POR ID
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         try {
@@ -74,7 +78,8 @@ public class usuarioController {
             return ResponseEntity.notFound().build();
         }
     }
-    //actualizar
+
+    // actualizar
     @PutMapping("/users/{id}")
     public ResponseEntity<usuario> updateUsuario(@PathVariable Long id, @RequestBody usuario usuario) {
         try {
@@ -94,5 +99,8 @@ public class usuarioController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+
+    
     }
+            
 }
