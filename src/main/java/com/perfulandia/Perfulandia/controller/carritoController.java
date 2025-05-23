@@ -24,13 +24,13 @@ public class carritoController {
 
     // carritos por id
     @GetMapping("/carrito/{id}")
-    public carrito getCarritoById(Long id) {
+    public carrito getCarritoById(@PathVariable Long id) {
         return carritoService.getCarritoById(id);
     }
 
     // crear carrito
     @PostMapping("/carrito")
-    public carrito createCarrito(carrito nuevoCarrito) {
+    public carrito createCarrito(@RequestBody carrito nuevoCarrito) {
         return carritoService.saveCarrito(nuevoCarrito);
     }
 
@@ -44,7 +44,7 @@ public class carritoController {
 
     // Ejemplo de un método para eliminar un carrito por su ID
     @DeleteMapping("/carrito/{id}")
-    public void deleteCarrito(Long id) {
+    public void deleteCarrito(@PathVariable Long id) {
         carritoService.deleteCarrito(id);
     }
 

@@ -24,7 +24,7 @@ public class ordenController {
     }
     //listar por id
     @GetMapping("/orden/{id}")
-    public orden getOrdenById(@RequestParam Long id) {
+    public orden getOrdenById(@PathVariable Long id) {
         return ordenService.getOrdenById(id);
     }
     //crear orden

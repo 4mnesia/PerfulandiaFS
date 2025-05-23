@@ -23,7 +23,7 @@ public class detalleOrdenController {
 
     // listar por id
     @GetMapping("/detalleOrden/{id}")
-    public detalleOrden getDetalleOrdenById(@RequestParam Long id) {
+    public detalleOrden getDetalleOrdenById(@PathVariable Long id) {
         return detalleOrdenService.getDetalleOrdenById(id);
     }
 

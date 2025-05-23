@@ -3,6 +3,10 @@ package com.perfulandia.Perfulandia.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -12,6 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
 public class orden {
     @Id
@@ -27,6 +32,7 @@ public class orden {
     private carrito carrito;
 
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<detalleOrden> detalles;
     
     @Enumerated(EnumType.STRING)

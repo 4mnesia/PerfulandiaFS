@@ -2,6 +2,9 @@ package com.perfulandia.Perfulandia.model;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +22,8 @@ public class detalleOrden {
 
     @ManyToOne
     @JoinColumn(name = "orden_id", nullable = false)
+    @JsonBackReference
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private orden orden;
 
     @ManyToOne

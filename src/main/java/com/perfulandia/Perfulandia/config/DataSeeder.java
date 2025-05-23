@@ -22,7 +22,17 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        
+        detalleOrdenRepo.deleteAll();
+        ordenRepo.deleteAll();
+        itemCarritoRepo.deleteAll();
+        carritoRepo.deleteAll();
+        productoRepo.deleteAll();
+        usuarioRepo.deleteAll();
+
+
         // USUARIOS
+
 
         usuario user1 = usuario.builder()
             .nombre("Usuario1")
@@ -362,92 +372,120 @@ public class DataSeeder implements CommandLineRunner {
             .usuario(user1)
             .estado(false)
             .build();
-        carritoRepo.save(cart1);
-    
+            carritoRepo.save(cart1);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart1).producto(prod3).cantidad(2).build());
+        
+
         carrito cart2 = carrito.builder()
             .usuario(user2)
             .estado(true)
             .build();
-        carritoRepo.save(cart2);
-    
+            carritoRepo.save(cart2);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart2).producto(prod2).cantidad(5).build());
+        
+
         carrito cart3 = carrito.builder()
             .usuario(user3)
             .estado(false)
             .build();
-        carritoRepo.save(cart3);
-    
+            carritoRepo.save(cart3);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart3).producto(prod1).cantidad(1).build());
+        
+
         carrito cart4 = carrito.builder()
             .usuario(user4)
             .estado(true)
             .build();
-        carritoRepo.save(cart4);
-    
+            carritoRepo.save(cart4);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart4).producto(prod4).cantidad(3).build());
+        
+
         carrito cart5 = carrito.builder()
             .usuario(user5)
             .estado(true)
             .build();
-        carritoRepo.save(cart5);
-    
+            carritoRepo.save(cart5);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart5).producto(prod5).cantidad(2).build());
+        
+
         carrito cart6 = carrito.builder()
             .usuario(user6)
             .estado(true)
             .build();
-        carritoRepo.save(cart6);
-    
+            carritoRepo.save(cart6);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart6).producto(prod6).cantidad(4).build());
+        
+
         carrito cart7 = carrito.builder()
             .usuario(user7)
             .estado(false)
             .build();
-        carritoRepo.save(cart7);
-    
+            carritoRepo.save(cart7);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart7).producto(prod7).cantidad(2).build());
+        
+
         carrito cart8 = carrito.builder()
             .usuario(user8)
             .estado(true)
             .build();
-        carritoRepo.save(cart8);
-    
+            carritoRepo.save(cart8);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart8).producto(prod8).cantidad(3).build());
+        
+
         carrito cart9 = carrito.builder()
             .usuario(user9)
             .estado(true)
             .build();
-        carritoRepo.save(cart9);
-    
+            carritoRepo.save(cart9);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart9).producto(prod9).cantidad(3).build());
+        
+
         carrito cart10 = carrito.builder()
             .usuario(user10)
             .estado(false)
             .build();
-        carritoRepo.save(cart10);
-    
+            carritoRepo.save(cart10);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart10).producto(prod10).cantidad(4).build());
+        
+
         carrito cart11 = carrito.builder()
             .usuario(user11)
             .estado(true)
             .build();
-        carritoRepo.save(cart11);
-    
+            carritoRepo.save(cart11);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart11).producto(prod11).cantidad(5).build());
+        
+
         carrito cart12 = carrito.builder()
             .usuario(user12)
             .estado(false)
             .build();
-        carritoRepo.save(cart12);
-    
+            carritoRepo.save(cart12);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart12).producto(prod12).cantidad(2).build());
+        
+
         carrito cart13 = carrito.builder()
             .usuario(user13)
             .estado(true)
             .build();
-        carritoRepo.save(cart13);
-    
+            carritoRepo.save(cart13);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart13).producto(prod13).cantidad(4).build());
+        
+
         carrito cart14 = carrito.builder()
             .usuario(user14)
             .estado(true)
             .build();
-        carritoRepo.save(cart14);
-    
+            carritoRepo.save(cart14);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart14).producto(prod14).cantidad(3).build());
+        
+
         carrito cart15 = carrito.builder()
             .usuario(user15)
             .estado(true)
             .build();
-        carritoRepo.save(cart15);
-    
+            carritoRepo.save(cart15);
+            itemCarritoRepo.save(itemCarrito.builder().carrito(cart15).producto(prod15).cantidad(5).build());
 // ITEMS
 
         itemCarrito item1 = itemCarrito.builder()
@@ -456,7 +494,7 @@ public class DataSeeder implements CommandLineRunner {
             .cantidad(1)
             .build();
         itemCarritoRepo.save(item1);
-    
+        
         itemCarrito item2 = itemCarrito.builder()
             .carrito(cart2)
             .producto(prod2)
