@@ -16,8 +16,10 @@ public class itemCarrito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "carrito_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private carrito carrito;
 
     @ManyToOne

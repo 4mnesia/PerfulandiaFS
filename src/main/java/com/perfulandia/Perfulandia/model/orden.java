@@ -3,6 +3,7 @@ package com.perfulandia.Perfulandia.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -28,8 +29,8 @@ public class orden {
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
     private List<detalleOrden> detalles;
     
-    @Column(nullable = false)
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    private estadoOrden estado;
     
     @Column(nullable = false)
     private Date fechaCreacion;
@@ -37,12 +38,21 @@ public class orden {
     @Column(nullable = false)
     private Date fechaActualizacion;
     
+    @PrePersist
+    protected void onCreate() {
+    fechaCreacion = new Date();
+    fechaActualizacion = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+    fechaActualizacion = new Date();    
+    }
+    
     @Column(nullable = false)
     private String direccionEnvio;
 
     @Column(nullable = false)
-    private Integer total;
-
-
+    private BigDecimal total;
     
 }

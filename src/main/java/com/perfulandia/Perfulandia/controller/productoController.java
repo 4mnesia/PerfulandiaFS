@@ -44,7 +44,7 @@ public class productoController {
         return productoService.saveProducto(nuevoProducto);
     }
     // Ejemplo de un método para crear varios productos
-    @PostMapping("/productos/+productos")
+    @PostMapping("/productos/batch")
     public List<producto> createProductos(@RequestBody List<producto> nuevosProductos) {
         return nuevosProductos.stream()
                 .map(productoService::saveProducto)

@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.perfulandia.Perfulandia.model.itemCarrito;
 import com.perfulandia.Perfulandia.repository.itemCarritoRepository;
 
-@Service
+import lombok.RequiredArgsConstructor;
 
+@Service
+@RequiredArgsConstructor
 public class itemCarritoService {
     @Autowired
     private itemCarritoRepository itemCarritoRepository;
@@ -33,5 +35,9 @@ public class itemCarritoService {
     // actualizar un itemCarrito
     public itemCarrito updateItemCarrito(itemCarrito itemCarrito) {
         return itemCarritoRepository.save(itemCarrito);
+    }
+    // eliminar todos los itemCarrito
+    public void deleteAllItemCarritos() {
+        itemCarritoRepository.deleteAll();
     }
 }

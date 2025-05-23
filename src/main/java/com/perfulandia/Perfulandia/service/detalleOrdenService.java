@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import com.perfulandia.Perfulandia.model.detalleOrden;
 import com.perfulandia.Perfulandia.repository.detalleOrdenRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class detalleOrdenService {
     @Autowired
     private detalleOrdenRepository detalleOrdenRepository;
-
    //leer detalles por id
     public detalleOrden getDetalleOrdenById(Long id) {
         return detalleOrdenRepository.findById(id).orElse(null);
@@ -21,7 +23,6 @@ public class detalleOrdenService {
     public List<detalleOrden> getAllDetalles() {
         return detalleOrdenRepository.findAll();
     }
-
     //guardar un detalle
     public detalleOrden saveDetalleOrden(detalleOrden detalleOrden) {
         return detalleOrdenRepository.save(detalleOrden);
@@ -33,5 +34,9 @@ public class detalleOrdenService {
     //actualizar un detalle
     public detalleOrden updateDetalleOrden(detalleOrden detalleOrden) {
         return detalleOrdenRepository.save(detalleOrden);
+    }
+    //eliminar todos los detalles
+    public void deleteAllDetalles() {
+        detalleOrdenRepository.deleteAll();
     }
 }

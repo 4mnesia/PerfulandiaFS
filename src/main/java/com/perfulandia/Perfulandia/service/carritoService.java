@@ -8,38 +8,49 @@ import org.springframework.stereotype.Service;
 import com.perfulandia.Perfulandia.model.carrito;
 import com.perfulandia.Perfulandia.repository.carritoRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class carritoService {
     @Autowired
     private carritoRepository carritoRepository;
-    
-    //leer carrito por id
+
+    // leer carrito por id
     public carrito getCarritoById(Long id) {
         return carritoRepository.findById(id).orElse(null);
     }
-    //leer el carrito por id de usuario
+
+    // leer el carrito por id de usuario
     public carrito getCarritoByUsuarioId(Long id) {
         return carritoRepository.findById(id).orElse(null);
-    } 
+    }
 
-    //leer todos los carritos
+    // leer todos los carritos
     public List<carrito> getAllCarritos() {
         return carritoRepository.findAll();
     }
-    //guardar un carrito
+
+    // guardar un carrito
     public carrito saveCarrito(carrito carrito) {
         return carritoRepository.save(carrito);
     }
-    //eliminar un carrito
+
+    // eliminar un carrito
     public void deleteCarrito(Long id) {
         carritoRepository.deleteById(id);
     }
-    //actualizar un carrito
+
+    // actualizar un carrito
     public carrito updateCarrito(carrito carrito) {
+        if (carritoRepository.findById(carrito.getId()).isEmpty()) {
+            return null;
+        }
         return carritoRepository.save(carrito);
     }
-    //elimianr todos losc arritos
-    public void deleteAllCarritos(){
+
+    // elimianr todos losc arritos
+    public void deleteAllCarritos() {
         carritoRepository.deleteAll();
     }
 

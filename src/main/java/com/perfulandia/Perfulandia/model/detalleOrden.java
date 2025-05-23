@@ -1,5 +1,7 @@
 package com.perfulandia.Perfulandia.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +29,6 @@ public class detalleOrden {
     private Integer cantidad;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private Integer precioUnitario;
+    private BigDecimal precioUnitario;
 
 }

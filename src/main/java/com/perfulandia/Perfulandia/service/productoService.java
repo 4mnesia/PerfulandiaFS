@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import com.perfulandia.Perfulandia.model.producto;
 import com.perfulandia.Perfulandia.repository.productoRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class productoService {
     @Autowired
     private productoRepository productoRepository;
-
     // leer producto por id
     public producto getProductoById(Long id) {
         return productoRepository.findById(id).orElse(null);
