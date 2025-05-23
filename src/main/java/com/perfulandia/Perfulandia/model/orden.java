@@ -21,6 +21,10 @@ public class orden {
     @JoinColumn(name = "usuario_id", nullable = false)
     private usuario usuario;
 
+    @ManyToOne
+    @JoinColumn(name = "carrito_id", nullable = false)
+    private carrito carrito;
+
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
     private List<detalleOrden> detalles;
     
@@ -38,5 +42,7 @@ public class orden {
 
     @Column(nullable = false)
     private Integer total;
+
+
     
 }

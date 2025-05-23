@@ -38,5 +38,9 @@ public class carritoService {
     public carrito updateCarrito(carrito carrito) {
         return carritoRepository.save(carrito);
     }
+    //elimianr todos losc arritos
+    public void deleteAllCarritos(){
+        carritoRepository.deleteAll();
+    }
 
 }

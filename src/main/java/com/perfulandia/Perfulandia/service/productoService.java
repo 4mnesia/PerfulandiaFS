@@ -31,5 +31,9 @@ public class productoService {
     public producto updateProducto(producto producto) {
         return productoRepository.save(producto);
     }
+    // eliminar todos los productos
+    public void deleteAllProductos() {
+        productoRepository.deleteAll();
+    }
 
 }

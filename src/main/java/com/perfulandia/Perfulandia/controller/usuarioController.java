@@ -4,21 +4,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 import com.perfulandia.Perfulandia.model.usuario;
 
 import com.perfulandia.Perfulandia.service.usuarioService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/perfulandia")
 // Ejemplo de uso de @Query en un repositorio, no en el controlador.
 // Aquí solo puedes usarlo como comentario o referencia.
 public class usuarioController {
