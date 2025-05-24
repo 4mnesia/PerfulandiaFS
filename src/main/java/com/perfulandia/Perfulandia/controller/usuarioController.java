@@ -1,15 +1,17 @@
 package com.perfulandia.Perfulandia.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-
-import com.perfulandia.Perfulandia.model.usuario;
 
 import com.perfulandia.Perfulandia.service.usuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.perfulandia.Perfulandia.model.usuario;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import java.util.List;
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/perfulandia")

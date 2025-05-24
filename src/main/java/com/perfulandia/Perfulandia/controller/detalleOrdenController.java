@@ -2,7 +2,6 @@ package com.perfulandia.Perfulandia.controller;
 
 import com.perfulandia.Perfulandia.service.detalleOrdenService;
 import com.perfulandia.Perfulandia.model.detalleOrden;
-
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

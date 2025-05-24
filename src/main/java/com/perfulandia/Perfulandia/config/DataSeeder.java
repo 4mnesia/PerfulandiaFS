@@ -6,7 +6,6 @@ import com.perfulandia.Perfulandia.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -30,9 +29,7 @@ public class DataSeeder implements CommandLineRunner {
         productoRepo.deleteAll();
         usuarioRepo.deleteAll();
 
-
         // USUARIOS
-
 
         usuario user1 = usuario.builder()
             .nombre("Usuario1")
