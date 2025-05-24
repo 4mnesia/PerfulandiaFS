@@ -19,6 +19,18 @@ public class ordenService {
     public orden getOrdenById(Long id) {
         return ordenRepository.findById(id).orElse(null);
     }
+    // leer orden por id de usuario 
+    public List<orden> getOrdenByUsuarioId(Long usuarioId) {
+        return ordenRepository.findByUsuarioId(usuarioId)
+                .map(List::of)
+                .orElse(List.of());
+    }
+    //leer por id de carrito
+    public List<orden> getOrdenByCarritoId(Long carritoId) {
+        return ordenRepository.findByCarritoId(carritoId)
+                .map(List::of)
+                .orElse(List.of());
+    }
     // leer todos los ordenes
     public List<orden> getAllOrdenes() {
         return ordenRepository.findAll();

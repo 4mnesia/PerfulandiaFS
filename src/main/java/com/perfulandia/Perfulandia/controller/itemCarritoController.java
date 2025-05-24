@@ -23,7 +23,7 @@ public class itemCarritoController {
 
     // listar por id
     @GetMapping("/itemCarrito/{id}")
-    public itemCarrito getItemCarritoById(@RequestParam Long id) {
+    public itemCarrito getItemCarritoById(@PathVariable Long id) {
         return itemCarritoService.getItemCarritoById(id);
     }
 

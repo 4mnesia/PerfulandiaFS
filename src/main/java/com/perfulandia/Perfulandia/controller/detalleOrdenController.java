@@ -19,7 +19,11 @@ public class detalleOrdenController {
     public List<detalleOrden> getAllDetalleOrden() {
         return detalleOrdenService.getAllDetalles();
     }
-
+    // listar por id de producto
+    @GetMapping("/detalleOrden/producto/{productoId}")
+    public List<detalleOrden> getDetallesByProductoId(@PathVariable Long productoId) {
+        return detalleOrdenService.getDetallesByProductoId(productoId);
+    }
     // listar por id
     @GetMapping("/detalleOrden/{id}")
     public detalleOrden getDetalleOrdenById(@PathVariable Long id) {
@@ -42,7 +46,7 @@ public class detalleOrdenController {
 
     // eliminar detalleOrden por id
     @DeleteMapping("/detalleOrden/{id}")
-    public void deleteDetalleOrden(@RequestParam Long id) {
+    public void deleteDetalleOrden(@PathVariable Long id) {
         detalleOrdenService.deleteDetalleOrden(id);
     }
 

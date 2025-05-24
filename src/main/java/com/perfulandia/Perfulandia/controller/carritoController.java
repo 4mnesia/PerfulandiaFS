@@ -24,6 +24,11 @@ public class carritoController {
     public carrito getCarritoById(@PathVariable Long id) {
         return carritoService.getCarritoById(id);
     }
+    // carrito por id de usuario
+    @GetMapping("/carrito/usuario/{usuarioId}")
+    public carrito getCarritoByUsuario(@PathVariable Long usuarioId) {
+        return carritoService.getCarritoByUsuario(usuarioId);
+    }
 
     // crear carrito
     @PostMapping("/carrito")

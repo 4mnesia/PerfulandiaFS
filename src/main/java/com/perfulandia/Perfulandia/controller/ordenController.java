@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/perfulandia")
 public class ordenController {
-    @Autowired
+        @Autowired
     private ordenService ordenService;
 
     //listar todo
@@ -24,10 +24,25 @@ public class ordenController {
     public orden getOrdenById(@PathVariable Long id) {
         return ordenService.getOrdenById(id);
     }
+    //listar por id de usuario
+    @GetMapping("/orden/usuario/{usuarioId}")
+    public List<orden> getOrdenByUsuarioId(@PathVariable Long usuarioId) {
+        return ordenService.getOrdenByUsuarioId(usuarioId);
+    }
+    //listar por id de carrito
+    @GetMapping("/orden/carrito/{carritoId}")
+    public List<orden> getOrdenByCarritoId(@PathVariable Long carritoId) {
+        return ordenService.getOrdenByCarritoId(carritoId);
+    }
     //crear orden
     @PostMapping("/orden")
-    public orden createOrden(@RequestBody orden nuevaOrden) {
-        return ordenService.saveOrden(nuevaOrden);
+    public ResponseEntity<orden> createOrden(@RequestBody orden nuevaOrden) {
+        try {
+            orden creada = ordenService.saveOrden(nuevaOrden);
+            return ResponseEntity.ok(creada);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
     //crear varios ordenes
     @PostMapping("/orden/batch")
@@ -38,7 +53,7 @@ public class ordenController {
     }
     //eliminar orden por id
     @DeleteMapping("/orden/{id}")
-    public void deleteOrden(@RequestParam Long id) {
+    public void deleteOrden(@PathVariable Long id) {
         ordenService.deleteOrden(id);
     }
     //eliminar todos los ordenes

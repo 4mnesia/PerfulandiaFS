@@ -1,6 +1,9 @@
 package com.perfulandia.Perfulandia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import com.perfulandia.Perfulandia.service.productoService;
 import com.perfulandia.Perfulandia.model.producto;
 import org.springframework.web.bind.annotation.*;
@@ -44,8 +47,13 @@ public class productoController {
     }
     //borrar todos los productos
     @DeleteMapping("/productos")
-    public void deleteAllProductos() {
-        productoService.deleteAllProductos();
+    public ResponseEntity<String> deleteAllProductos() {
+        try {
+            productoService.deleteAllProductos();
+            return ResponseEntity.ok("All products deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting products");
+        }
     }
     //actualizar un producto
     @PutMapping("/productos/{id}")
