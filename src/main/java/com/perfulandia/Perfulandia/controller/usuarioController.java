@@ -1,17 +1,15 @@
 package com.perfulandia.Perfulandia.controller;
 
-
 import com.perfulandia.Perfulandia.service.usuarioService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import com.perfulandia.Perfulandia.model.usuario;
+import com.perfulandia.Perfulandia.model.Usuario;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
-
-
-
-
-
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/perfulandia")
@@ -22,24 +20,23 @@ public class usuarioController {
     @Autowired
     private usuarioService usuarioService;
 
-    
     // LISTAR POR ID
     @GetMapping("/users/{id}")
-    public usuario getUsuarioById(@PathVariable Long id) {
+    public Usuario getUsuarioById(@PathVariable Long id) {
         return usuarioService.getUsuarioById(id);
     }
 
-    // LISTAR TODO
+    // LISTAR *
     @GetMapping("/users")
-    public List<usuario> getAllUsuarios() {
+    public List<Usuario> getAllUsuarios() {
         return usuarioService.getAllUsuarios();
     }
 
     // CREAR USUARIO
     @PostMapping("/users")
-    public ResponseEntity<usuario> createUsuario(@RequestBody usuario usuario) {
+    public ResponseEntity<Usuario> saveUsuario(@Valid @RequestBody Usuario usuario) {
         try {
-            usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
+            Usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
             return ResponseEntity.ok(nuevoUsuario);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -47,19 +44,19 @@ public class usuarioController {
     }
 
     // CREAR VARIOS USUARIOS
-    @PostMapping("users/batch")
-    public ResponseEntity<List<usuario>> createUsuarios(@RequestBody List<usuario> usuarios) {
+    @PostMapping("/users/batch")
+    public ResponseEntity<List<Usuario>> saveUsuarios(@Valid @RequestBody List<Usuario> usuarios) {
         try {
-            List<usuario> nuevosUsuarios = usuarios.stream()
+            List<Usuario> nuevosUsuarios = usuarios.stream()
                     .map(usuarioService::saveUsuario)
-                    .toList();
+                    .collect(Collectors.toList());
             return ResponseEntity.ok(nuevosUsuarios);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    // ELIMINAR TODO
+    // ELIMINAR *
     @DeleteMapping("/users")
     public ResponseEntity<Void> deleteAllUsuarios() {
         try {
@@ -83,26 +80,25 @@ public class usuarioController {
 
     // actualizar
     @PutMapping("/users/{id}")
-    public ResponseEntity<usuario> updateUsuario(@PathVariable Long id, @RequestBody usuario usuario) {
+    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         try {
-            usuario usuarioExistente = usuarioService.getUsuarioById(id);
+            Usuario usuarioExistente = usuarioService.getUsuarioById(id);
             if (usuarioExistente == null) {
                 return ResponseEntity.notFound().build();
             }
             // Actualiza los campos necesarios
             usuarioExistente.setNombre(usuario.getNombre());
             usuarioExistente.setEmail(usuario.getEmail());
-            usuarioExistente.setPassword(usuario.getPassword());
+            usuarioExistente.setContraseña(usuario.getContraseña());
             usuarioExistente.setDireccion(usuario.getDireccion());
             usuarioExistente.setTelefono(usuario.getTelefono());
             usuarioExistente.setRol(usuario.getRol());
-            usuario usuarioActualizado = usuarioService.saveUsuario(usuarioExistente);
+            Usuario usuarioActualizado = usuarioService.saveUsuario(usuarioExistente);
             return ResponseEntity.ok(usuarioActualizado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
 
-    
     }
-            
+
 }

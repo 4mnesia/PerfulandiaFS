@@ -25,7 +25,7 @@ public class orden {
     
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private usuario usuario;
+    private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "carrito_id", nullable = false)

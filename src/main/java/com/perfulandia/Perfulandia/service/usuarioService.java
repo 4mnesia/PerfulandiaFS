@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.perfulandia.Perfulandia.model.usuario;
+import com.perfulandia.Perfulandia.model.Usuario;
 import com.perfulandia.Perfulandia.repository.usuarioRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -16,15 +16,15 @@ public class usuarioService {
     @Autowired
     private usuarioRepository usuarioRepository;
     // leer usuario por id
-    public usuario getUsuarioById(Long id) {
+    public Usuario getUsuarioById(Long id) {
         return usuarioRepository.findById(id).orElse(null);
     }
     // leer todos los usuarios
-    public List<usuario> getAllUsuarios() {
+    public List<Usuario> getAllUsuarios() {
         return usuarioRepository.findAll();
     }
     // guardar un usuario
-    public usuario saveUsuario(usuario usuario) {
+    public Usuario saveUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
     // eliminar un usuario
@@ -36,7 +36,7 @@ public class usuarioService {
         usuarioRepository.deleteAll();
     }
     // actualizar un usuario
-    public usuario updateUsuario(usuario usuario) {
+    public Usuario updateUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 

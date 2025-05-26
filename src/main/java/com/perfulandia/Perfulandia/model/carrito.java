@@ -25,7 +25,7 @@ public class carrito {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     
-    private usuario usuario;
+    private Usuario usuario;
 
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

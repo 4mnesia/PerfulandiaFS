@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,6 +17,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -34,29 +38,30 @@ import lombok.ToString;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Builder
 
-public class usuario {
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "nombre",nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(name = "email",nullable = false)
     private String email;
     
-    @Column(nullable = false)
-    @JsonIgnore
-    private String password;
+    @Column(name = "contraseña",nullable = false)
+    @Size(min = 6, message = "La contraseña debe tener al menos 8 caracteres")
+    private String contraseña;
 
-    @Column(nullable = false)
+    @Column(name = "direccion",nullable = false)
     private String direccion;
 
-    @Column(nullable = false)
+    @Column(name = "telefono",nullable = false)
     private String telefono;
 
-    @Column(nullable = false)
-    private rolUsuario rol;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "rol", nullable = false)
+    private RolUsuario rol;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore

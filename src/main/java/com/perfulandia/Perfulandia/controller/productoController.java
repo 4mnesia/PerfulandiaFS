@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.perfulandia.Perfulandia.service.productoService;
-import com.perfulandia.Perfulandia.model.producto;
+import com.perfulandia.Perfulandia.model.Producto;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -19,22 +19,22 @@ public class productoController {
 
     // Ejemplo de un método para obtener todos los productos
     @GetMapping("/productos")
-    public List<producto> getAllProductos() {
+    public List<Producto> getAllProductos() {
         return productoService.getAllProductos();
     }
     // Ejemplo de un método para obtener un producto por su ID y si no existe devolver un null
     @GetMapping("/productos/{id}")
-    public producto getProductoById(@PathVariable Long id) {
+    public Producto getProductoById(@PathVariable Long id) {
         return productoService.getProductoById(id);
     }
     // Ejemplo de un método para crear un nuevo producto
     @PostMapping("/productos")
-    public producto createProducto(@RequestBody producto nuevoProducto) {
+    public Producto createProducto(@RequestBody Producto nuevoProducto) {
         return productoService.saveProducto(nuevoProducto);
     }
     // Ejemplo de un método para crear varios productos
     @PostMapping("/productos/batch")
-    public List<producto> createProductos(@RequestBody List<producto> nuevosProductos) {
+    public List<Producto> createProductos(@RequestBody List<Producto> nuevosProductos) {
         return nuevosProductos.stream()
                 .map(productoService::saveProducto)
                 .toList();
@@ -57,8 +57,8 @@ public class productoController {
     }
     //actualizar un producto
     @PutMapping("/productos/{id}")
-    public producto updateProducto(@PathVariable Long id, @RequestBody producto productoActualizado) {
-        producto productoExistente = productoService.getProductoById(id);
+    public Producto updateProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
+        Producto productoExistente = productoService.getProductoById(id);
         if (productoExistente != null) {
             productoExistente.setNombre(productoActualizado.getNombre());
             productoExistente.setPrecio(productoActualizado.getPrecio());

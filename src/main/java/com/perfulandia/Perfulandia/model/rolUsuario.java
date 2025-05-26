@@ -1,6 +1,6 @@
 package com.perfulandia.Perfulandia.model;
 
-public enum rolUsuario {
+public enum RolUsuario {
     CLIENTE,
     ADMINISTRADOR
 }

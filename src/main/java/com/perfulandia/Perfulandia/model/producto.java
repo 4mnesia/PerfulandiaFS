@@ -16,7 +16,7 @@ import lombok.*;
 @Builder
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
-public class producto {
+public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

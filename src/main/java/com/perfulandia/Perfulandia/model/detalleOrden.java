@@ -28,7 +28,7 @@ public class detalleOrden {
 
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
-    private producto producto;
+    private Producto producto;
 
     @Column(nullable = false)
     private Integer cantidad;
