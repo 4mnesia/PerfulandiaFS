@@ -1,6 +1,7 @@
 package com.perfulandia.Perfulandia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -42,9 +43,15 @@ public class productoController {
     
     // Ejemplo de un método para eliminar un producto por su ID
     @DeleteMapping("/productos/{id}")
-    public void deleteProducto(@PathVariable Long id) {
+    public ResponseEntity<?> deleteProducto(@PathVariable Long id) {
+    try {
         productoService.deleteProducto(id);
+        return ResponseEntity.ok().build();
+    } catch (DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest()
+                .body("No se puede eliminar el producto porque está en carritos de compra");
     }
+}
     //borrar todos los productos
     @DeleteMapping("/productos")
     public ResponseEntity<String> deleteAllProductos() {

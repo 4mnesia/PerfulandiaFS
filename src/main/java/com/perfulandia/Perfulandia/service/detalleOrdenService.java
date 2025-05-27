@@ -1,6 +1,7 @@
 package com.perfulandia.Perfulandia.service;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,21 @@ public class detalleOrdenService {
     public void deleteAllDetalles() {
         detalleOrdenRepository.deleteAll();
     }
+    
+    
+    //subtotal de un detalle
+    
 
+    public BigDecimal calcularSubtotal(detalleOrden detalleOrden) {
+        if (detalleOrden.getCantidad() == null || detalleOrden.getPrecioUnitario() == null) {
+            return BigDecimal.ZERO;
+        }
+        return detalleOrden.getPrecioUnitario().multiply(BigDecimal.valueOf(detalleOrden.getCantidad()));
+    }
+    // calcular total de un detalle
+    public BigDecimal calcularTotal(List<detalleOrden> detalles) {
+        return detalles.stream()
+                .map(this::calcularSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

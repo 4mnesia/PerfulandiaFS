@@ -10,4 +10,5 @@ public interface ordenRepository extends JpaRepository<orden, Long> {
 
     Optional<orden> findByUsuarioId(Long usuarioId);
     Optional<orden> findByCarritoId(Long carritoId);
+
 }

@@ -244,11 +244,11 @@ usuarioRepo.save(user3);
         orden orden1 = orden.builder()
             .usuario(user1)
             .carrito(cart1)
-            .estado(estadoOrden.PROCESANDO)
+            .estado(estadoOrden.PENDIENTE)
             .fechaCreacion(new Date())
             .fechaActualizacion(new Date())
             .direccionEnvio(user1.getDireccion())
-            .total(prod1.getPrecio())
+
             .build();
         ordenRepo.save(orden1);
     
@@ -259,7 +259,6 @@ usuarioRepo.save(user3);
             .fechaCreacion(new Date())
             .fechaActualizacion(new Date())
             .direccionEnvio(user2.getDireccion())
-            .total(prod2.getPrecio())
             .build();
         ordenRepo.save(orden2);
     
@@ -272,6 +271,7 @@ usuarioRepo.save(user3);
             .producto(prod1)
             .cantidad(1)
             .precioUnitario(prod1.getPrecio())
+            .total(prod1.getPrecio().multiply(BigDecimal.valueOf(1)))
             .build();
         detalleOrdenRepo.save(d1);
     
@@ -280,6 +280,7 @@ usuarioRepo.save(user3);
             .producto(prod2)
             .cantidad(1)
             .precioUnitario(prod2.getPrecio())
+            .total(prod2.getPrecio().multiply(BigDecimal.valueOf(3)))
             .build();
         detalleOrdenRepo.save(d2);
     

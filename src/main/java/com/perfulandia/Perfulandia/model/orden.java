@@ -7,7 +7,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -57,8 +56,4 @@ public class orden {
     
     @Column(nullable = false)
     private String direccionEnvio;
-
-    @Column(nullable = false)
-    private BigDecimal total;
-    
 }

@@ -2,6 +2,7 @@ package com.perfulandia.Perfulandia.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -45,7 +46,12 @@ public class Producto {
     @Column(nullable = false)
     private Date fechaCreacion;
 
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<itemCarrito> itemsCarrito;
 }
+
+
+
 
 
 

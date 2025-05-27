@@ -68,7 +68,6 @@ public class ordenController {
     if (ordenExistente != null) {
         ordenExistente.setEstado(ordenActualizada.getEstado());
         ordenExistente.setDireccionEnvio(ordenActualizada.getDireccionEnvio());
-        ordenExistente.setTotal(ordenActualizada.getTotal());
         ordenExistente.setCarrito(ordenActualizada.getCarrito());
         ordenExistente.setUsuario(ordenActualizada.getUsuario());
         ordenExistente.setDetalles(ordenActualizada.getDetalles());
