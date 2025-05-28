@@ -11,69 +11,141 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/perfulandia")
 public class ordenController {
-        @Autowired
+    @Autowired
     private ordenService ordenService;
 
-    //listar todo
+    // listar todo
     @GetMapping("/orden")
-    public List<orden> getAllOrden() {
-        return ordenService.getAllOrdenes();
+    public ResponseEntity<List<orden>> getAllOrden() {
+        try {
+            List<orden> ordenes = ordenService.getAllOrdenes();
+            return ResponseEntity.ok(ordenes);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
-    //listar por id
+
+    // listar por id
     @GetMapping("/orden/{id}")
-    public orden getOrdenById(@PathVariable Long id) {
-        return ordenService.getOrdenById(id);
+    public ResponseEntity<orden> getOrdenById(@PathVariable Long id) {
+        try {
+            orden ordenEncontrada = ordenService.getOrdenById(id);
+            if (ordenEncontrada != null) {
+                return ResponseEntity.ok(ordenEncontrada);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
-    //listar por id de usuario
+
+    // listar por id de usuario
     @GetMapping("/orden/usuario/{usuarioId}")
-    public List<orden> getOrdenByUsuarioId(@PathVariable Long usuarioId) {
-        return ordenService.getOrdenByUsuarioId(usuarioId);
+    public ResponseEntity<List<orden>> getOrdenByUsuarioId(@PathVariable Long usuarioId) {
+        try {
+            List<orden> ordenes = ordenService.getOrdenByUsuarioId(usuarioId);
+            return ResponseEntity.ok(ordenes);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
-    //listar por id de carrito
+
+    // listar por id de carrito
     @GetMapping("/orden/carrito/{carritoId}")
-    public List<orden> getOrdenByCarritoId(@PathVariable Long carritoId) {
-        return ordenService.getOrdenByCarritoId(carritoId);
+    public ResponseEntity<List<orden>> getOrdenByCarritoId(@PathVariable Long carritoId) {
+        try {
+            List<orden> ordenes = ordenService.getOrdenByCarritoId(carritoId);
+            return ResponseEntity.ok(ordenes);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
-    //crear orden
+
+    // crear orden
     @PostMapping("/orden")
     public ResponseEntity<orden> createOrden(@RequestBody orden nuevaOrden) {
         try {
+            if (nuevaOrden == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            // Puedes agregar más validaciones aquí, por ejemplo:
+            if (nuevaOrden.getUsuario() == null || nuevaOrden.getCarrito() == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
             orden creada = ordenService.saveOrden(nuevaOrden);
             return ResponseEntity.ok(creada);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(500).body(null);
         }
     }
-    //crear varios ordenes
+
+    // crear varios ordenes
     @PostMapping("/orden/batch")
-    public List<orden> createOrdenes(@RequestBody List<orden> nuevasOrdenes) {
-        return nuevasOrdenes.stream()
-                .map(ordenService::saveOrden)
-                .toList();
+    public ResponseEntity<List<orden>> createOrdenes(@RequestBody List<orden> nuevasOrdenes) {
+        try {
+            if (nuevasOrdenes == null || nuevasOrdenes.isEmpty()) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            // Validar cada orden
+            for (orden o : nuevasOrdenes) {
+                if (o.getUsuario() == null || o.getCarrito() == null) {
+                    return ResponseEntity.badRequest().body(null);
+                }
+            }
+            List<orden> creadas = nuevasOrdenes.stream()
+                    .map(ordenService::saveOrden)
+                    .toList();
+            return ResponseEntity.ok(creadas);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
-    //eliminar orden por id
+
+    // eliminar orden por id
     @DeleteMapping("/orden/{id}")
-    public void deleteOrden(@PathVariable Long id) {
-        ordenService.deleteOrden(id);
+    public ResponseEntity<Void> deleteOrden(@PathVariable Long id) {
+        try {
+            orden ordenExistente = ordenService.getOrdenById(id);
+            if (ordenExistente != null) {
+                ordenService.deleteOrden(id);
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
-    //eliminar todos los ordenes
+
+    // eliminar todos los ordenes
     @DeleteMapping("/orden")
-    public void deleteAllOrdenes() {
-        ordenService.deleteAllOrdenes();
+    public ResponseEntity<Void> deleteAllOrdenes() {
+        try {
+            ordenService.deleteAllOrdenes();
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
-    //actualizar orden por id
+
+    // actualizar orden por id
     @PutMapping("/orden/{id}")
     public ResponseEntity<orden> updateOrden(@PathVariable Long id, @RequestBody orden ordenActualizada) {
-    orden ordenExistente = ordenService.getOrdenById(id);
-    if (ordenExistente != null) {
-        ordenExistente.setEstado(ordenActualizada.getEstado());
-        ordenExistente.setDireccionEnvio(ordenActualizada.getDireccionEnvio());
-        ordenExistente.setCarrito(ordenActualizada.getCarrito());
-        ordenExistente.setUsuario(ordenActualizada.getUsuario());
-        ordenExistente.setDetalles(ordenActualizada.getDetalles());
-        return ResponseEntity.ok(ordenService.updateOrden(ordenExistente));
-    } else {
-        return ResponseEntity.notFound().build();
+        try {
+            orden ordenExistente = ordenService.getOrdenById(id);
+            if (ordenExistente != null) {
+                ordenExistente.setEstado(ordenActualizada.getEstado());
+                ordenExistente.setDireccionEnvio(ordenActualizada.getDireccionEnvio());
+                ordenExistente.setCarrito(ordenActualizada.getCarrito());
+                ordenExistente.setUsuario(ordenActualizada.getUsuario());
+                ordenExistente.setDetalles(ordenActualizada.getDetalles());
+                return ResponseEntity.ok(ordenService.updateOrden(ordenExistente));
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
-}
 }

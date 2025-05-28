@@ -1,14 +1,12 @@
 package com.perfulandia.Perfulandia.controller;
 
 import com.perfulandia.Perfulandia.service.usuarioService;
-
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import com.perfulandia.Perfulandia.model.Usuario;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.validation.annotation.Validated;
@@ -25,14 +23,27 @@ public class usuarioController {
 
     // LISTAR POR ID
     @GetMapping("/users/{id}")
-    public Usuario getUsuarioById(@PathVariable Long id) {
-        return usuarioService.getUsuarioById(id);
+    public ResponseEntity<?> getUsuarioById(@PathVariable Long id) {
+        try {
+            Usuario usuario = usuarioService.getUsuarioById(id);
+            if (usuario == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(usuario);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al obtener el usuario: " + e.getMessage());
+        }
     }
 
     // LISTAR *
     @GetMapping("/users")
-    public List<Usuario> getAllUsuarios() {
-        return usuarioService.getAllUsuarios();
+    public ResponseEntity<?> getAllUsuarios() {
+        try {
+            List<Usuario> usuarios = usuarioService.getAllUsuarios();
+            return ResponseEntity.ok(usuarios);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al obtener los usuarios: " + e.getMessage());
+        }
     }
 
     // CREAR USUARIO
@@ -41,38 +52,57 @@ public class usuarioController {
         try {
             Usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
             return ResponseEntity.ok(nuevoUsuario);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Error de integridad de datos, como email duplicado, etc.
+            String rootCauseMessage = (e.getRootCause() != null) ? e.getRootCause().getMessage() : e.getMessage();
+            return ResponseEntity.badRequest().body("Error de integridad de datos: " + rootCauseMessage);
+        } catch (jakarta.validation.ConstraintViolationException e) {
+            // Error de validación de campos
+            return ResponseEntity.badRequest().body("Error de validación: " + e.getMessage());
         } catch (Exception e) {
-            // Opcional: loguear el error
+            // Otros errores
             return ResponseEntity.badRequest().body("Error al crear el usuario: " + e.getMessage());
         }
     }
     @PostMapping("/users/batch")
-    public ResponseEntity<List<Usuario>> saveUsuarios(@RequestBody List<@Valid Usuario> usuarios) {
+    public ResponseEntity<?> saveUsuarios(@RequestBody List<@Valid Usuario> usuarios) {
         try {
             List<Usuario> nuevosUsuarios = usuarios.stream()
                     .map(usuarioService::saveUsuario)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(nuevosUsuarios);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Error de integridad de datos, como email duplicado, etc.
+            String rootCauseMessage = (e.getRootCause() != null) ? e.getRootCause().getMessage() : e.getMessage();
+            return ResponseEntity.badRequest().body("Error de integridad de datos: " + rootCauseMessage);
+        } catch (jakarta.validation.ConstraintViolationException e) {
+            // Error de validación de campos
+            return ResponseEntity.badRequest().body("Error de validación: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            // Otros errores
+            return ResponseEntity.badRequest().body("Error al crear los usuarios: " + e.getMessage());
         }
     }
 
 
     // ELIMINAR *
     @DeleteMapping("/users")
-    public ResponseEntity<Void> deleteAllUsuarios() {
+    public ResponseEntity<?> deleteAllUsuarios() {
         try {
             usuarioService.deleteAllUsuarios();
             return ResponseEntity.noContent().build();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Error de integridad de datos
+            return ResponseEntity.badRequest().body("Error de integridad de datos: " + e.getRootCause().getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            // Otros errores
+            return ResponseEntity.badRequest().body("Error al eliminar los usuarios: " + e.getMessage());
         }
     }
 
     // ELIMINAR POR ID
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
         try {
             Usuario usuarioExistente = usuarioService.getUsuarioById(id);
             if (usuarioExistente == null) {
@@ -80,14 +110,18 @@ public class usuarioController {
             }
             usuarioService.deleteUsuario(id);
             return ResponseEntity.noContent().build();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Error de integridad de datos
+            return ResponseEntity.badRequest().body("Error de integridad de datos: " + e.getRootCause().getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            // Otros errores
+            return ResponseEntity.badRequest().body("Error al eliminar el usuario: " + e.getMessage());
         }
     }
 
     // actualizar
     @PutMapping("/users/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<?> updateUsuario(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
         try {
             Usuario usuarioExistente = usuarioService.getUsuarioById(id);
             if (usuarioExistente == null) {
@@ -102,10 +136,16 @@ public class usuarioController {
             usuarioExistente.setRol(usuario.getRol());
             Usuario usuarioActualizado = usuarioService.saveUsuario(usuarioExistente);
             return ResponseEntity.ok(usuarioActualizado);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Error de integridad de datos, como email duplicado, etc.
+            return ResponseEntity.badRequest().body("Error de integridad de datos: " + e.getRootCause().getMessage());
+        } catch (jakarta.validation.ConstraintViolationException e) {
+            // Error de validación de campos
+            return ResponseEntity.badRequest().body("Error de validación: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            // Otros errores
+            return ResponseEntity.badRequest().body("Error al actualizar el usuario: " + e.getMessage());
         }
-
     }
 
 }

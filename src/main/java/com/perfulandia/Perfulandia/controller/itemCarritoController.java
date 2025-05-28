@@ -18,39 +18,67 @@ public class itemCarritoController {
     // listar todo
     @GetMapping("/itemCarrito")
     public List<itemCarrito> getAllItemCarrito() {
-        return itemCarritoService.getAllItemCarritos();
+        List<itemCarrito> items = itemCarritoService.getAllItemCarritos();
+        if (items == null || items.isEmpty()) {
+            throw new RuntimeException("No se encontraron items en el carrito.");
+        }
+        return items;
     }
 
     // listar por id
     @GetMapping("/itemCarrito/{id}")
     public itemCarrito getItemCarritoById(@PathVariable Long id) {
-        return itemCarritoService.getItemCarritoById(id);
+        try {
+            itemCarrito item = itemCarritoService.getItemCarritoById(id);
+            if (item == null) {
+                throw new RuntimeException("ItemCarrito not found with id: " + id);
+            }
+            return item;
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving ItemCarrito: " + e.getMessage());
+        }
     }
 
     // crear itemCarrito
     @PostMapping("/itemCarrito")
     public itemCarrito createItemCarrito(@RequestBody itemCarrito nuevoItemCarrito) {
-        return itemCarritoService.saveItemCarrito(nuevoItemCarrito);
+        try {
+            return itemCarritoService.saveItemCarrito(nuevoItemCarrito);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear el itemCarrito: " + e.getMessage());
+        }
     }
 
     // crear varios itemCarrito
     @PostMapping("/itemCarrito/batch")
     public List<itemCarrito> createItemsCarrito(@RequestBody List<itemCarrito> nuevosItemsCarrito) {
-        return nuevosItemsCarrito.stream()
-                .map(itemCarritoService::saveItemCarrito)
-                .toList();
+        try {
+            return nuevosItemsCarrito.stream()
+                    .map(itemCarritoService::saveItemCarrito)
+                    .toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear los itemsCarrito: " + e.getMessage());
+        }
     }
 
     // eliminar itemCarrito por id
     @DeleteMapping("/itemCarrito/{id}")
-    public void deleteItemCarrito(@RequestParam Long id) {
-        itemCarritoService.deleteItemCarrito(id);
+    public void deleteItemCarrito(@PathVariable Long id) {
+        try {
+            itemCarritoService.deleteItemCarrito(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar el itemCarrito: " + e.getMessage());
+        }
     }
 
     // eliminar todos los itemCarrito
     @DeleteMapping("/itemCarrito")
     public void deleteAllItemsCarrito() {
-        itemCarritoService.deleteAllItemCarritos();
+        try {
+            itemCarritoService.deleteAllItemCarritos();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar todos los itemsCarrito: " + e.getMessage());
+        }
     }
 
     // actualizar itemCarrito por id
