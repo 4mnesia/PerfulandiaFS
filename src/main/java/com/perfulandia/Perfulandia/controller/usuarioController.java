@@ -50,40 +50,22 @@ public class usuarioController {
     @PostMapping("/users")
     public ResponseEntity<?> saveUsuario(@Valid @RequestBody Usuario usuario) {
         try {
-            Usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
-            return ResponseEntity.ok(nuevoUsuario);
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            // Error de integridad de datos, como email duplicado, etc.
-            String rootCauseMessage = (e.getRootCause() != null) ? e.getRootCause().getMessage() : e.getMessage();
-            return ResponseEntity.badRequest().body("Error de integridad de datos: " + rootCauseMessage);
-        } catch (jakarta.validation.ConstraintViolationException e) {
-            // Error de validación de campos
-            return ResponseEntity.badRequest().body("Error de validación: " + e.getMessage());
+            return ResponseEntity.ok(usuarioService.saveUsuario(usuario));
         } catch (Exception e) {
-            // Otros errores
-            return ResponseEntity.badRequest().body("Error al crear el usuario: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
     @PostMapping("/users/batch")
-    public ResponseEntity<?> saveUsuarios(@RequestBody List<@Valid Usuario> usuarios) {
+    public ResponseEntity<?> saveUsuarios(@Valid @RequestBody List<Usuario> usuarios) {
         try {
-            List<Usuario> nuevosUsuarios = usuarios.stream()
+            List<Usuario> nuevos = usuarios.stream()
                     .map(usuarioService::saveUsuario)
                     .collect(Collectors.toList());
-            return ResponseEntity.ok(nuevosUsuarios);
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            // Error de integridad de datos, como email duplicado, etc.
-            String rootCauseMessage = (e.getRootCause() != null) ? e.getRootCause().getMessage() : e.getMessage();
-            return ResponseEntity.badRequest().body("Error de integridad de datos: " + rootCauseMessage);
-        } catch (jakarta.validation.ConstraintViolationException e) {
-            // Error de validación de campos
-            return ResponseEntity.badRequest().body("Error de validación: " + e.getMessage());
+            return ResponseEntity.ok(nuevos);
         } catch (Exception e) {
-            // Otros errores
-            return ResponseEntity.badRequest().body("Error al crear los usuarios: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
-
 
     // ELIMINAR *
     @DeleteMapping("/users")
@@ -91,12 +73,8 @@ public class usuarioController {
         try {
             usuarioService.deleteAllUsuarios();
             return ResponseEntity.noContent().build();
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            // Error de integridad de datos
-            return ResponseEntity.badRequest().body("Error de integridad de datos: " + e.getRootCause().getMessage());
         } catch (Exception e) {
-            // Otros errores
-            return ResponseEntity.badRequest().body("Error al eliminar los usuarios: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
@@ -104,18 +82,13 @@ public class usuarioController {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUsuario(@PathVariable Long id) {
         try {
-            Usuario usuarioExistente = usuarioService.getUsuarioById(id);
-            if (usuarioExistente == null) {
+            if (usuarioService.getUsuarioById(id) == null) {
                 return ResponseEntity.notFound().build();
             }
             usuarioService.deleteUsuario(id);
             return ResponseEntity.noContent().build();
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            // Error de integridad de datos
-            return ResponseEntity.badRequest().body("Error de integridad de datos: " + e.getRootCause().getMessage());
         } catch (Exception e) {
-            // Otros errores
-            return ResponseEntity.badRequest().body("Error al eliminar el usuario: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
@@ -123,28 +96,17 @@ public class usuarioController {
     @PutMapping("/users/{id}")
     public ResponseEntity<?> updateUsuario(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
         try {
-            Usuario usuarioExistente = usuarioService.getUsuarioById(id);
-            if (usuarioExistente == null) {
-                return ResponseEntity.notFound().build();
-            }
-            // Actualiza los campos necesarios
-            usuarioExistente.setNombre(usuario.getNombre());
-            usuarioExistente.setEmail(usuario.getEmail());
-            usuarioExistente.setContraseña(usuario.getContraseña());
-            usuarioExistente.setDireccion(usuario.getDireccion());
-            usuarioExistente.setTelefono(usuario.getTelefono());
-            usuarioExistente.setRol(usuario.getRol());
-            Usuario usuarioActualizado = usuarioService.saveUsuario(usuarioExistente);
-            return ResponseEntity.ok(usuarioActualizado);
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            // Error de integridad de datos, como email duplicado, etc.
-            return ResponseEntity.badRequest().body("Error de integridad de datos: " + e.getRootCause().getMessage());
-        } catch (jakarta.validation.ConstraintViolationException e) {
-            // Error de validación de campos
-            return ResponseEntity.badRequest().body("Error de validación: " + e.getMessage());
+            Usuario existente = usuarioService.getUsuarioById(id);
+            if (existente == null) return ResponseEntity.notFound().build();
+            existente.setNombre(usuario.getNombre());
+            existente.setEmail(usuario.getEmail());
+            existente.setContraseña(usuario.getContraseña());
+            existente.setDireccion(usuario.getDireccion());
+            existente.setTelefono(usuario.getTelefono());
+            existente.setRol(usuario.getRol());
+            return ResponseEntity.ok(usuarioService.saveUsuario(existente));
         } catch (Exception e) {
-            // Otros errores
-            return ResponseEntity.badRequest().body("Error al actualizar el usuario: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 

@@ -41,7 +41,7 @@ public class DataSeeder implements CommandLineRunner {
                 .contraseña("password123")
                 .direccion("Calle Falsa 123")
                 .telefono("123456789")
-                .rol(RolUsuario.ADMINISTRADOR)
+                .rol(RolUsuario.ADMINSYSTEM)
                 .build();
         usuarioRepo.save(user1);
 
@@ -51,7 +51,7 @@ public class DataSeeder implements CommandLineRunner {
                 .contraseña("password123")
                 .direccion("Calle Arturo prat")
                 .telefono("333333333")
-                .rol(RolUsuario.ADMINISTRADOR)
+                .rol(RolUsuario.GERENTESUCURSAL)
                 .build();
         usuarioRepo.save(user2);
 
@@ -61,7 +61,7 @@ public class DataSeeder implements CommandLineRunner {
                 .contraseña("password123")
                 .direccion("Calle las calilas")
                 .telefono("999999999")
-                .rol(RolUsuario.CLIENTE)
+                .rol(RolUsuario.EMPLEADOVENTA)
                 .build();
         usuarioRepo.save(user3);
 
@@ -191,7 +191,7 @@ public class DataSeeder implements CommandLineRunner {
 
         carrito cart1 = carrito.builder()
                 .usuario(user1)
-                .estado(false)
+                .estado(true)
                 .build();
         carritoRepo.save(cart1);
         itemCarritoRepo.save(itemCarrito.builder().carrito(cart1).producto(prod3).cantidad(2).build());
@@ -205,7 +205,7 @@ public class DataSeeder implements CommandLineRunner {
 
         carrito cart3 = carrito.builder()
                 .usuario(user3)
-                .estado(false)
+                .estado(true)
                 .build();
         carritoRepo.save(cart3);
         itemCarritoRepo.save(itemCarrito.builder().carrito(cart3).producto(prod1).cantidad(1).build());

@@ -26,6 +26,7 @@ public class itemCarrito {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonBackReference
+    
     private carrito carrito;
 
     @ManyToOne

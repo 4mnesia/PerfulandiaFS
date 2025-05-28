@@ -33,16 +33,12 @@ public class productoController {
     @GetMapping("/productos/{id}")
     public ResponseEntity<?> getProductoById(@PathVariable Long id) {
         try {
+            if (id == null || id <= 0) throw new Exception();
             Producto producto = productoService.getProductoById(id);
-            if (producto != null) {
-                return ResponseEntity.ok(producto);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Producto no encontrado con ID: " + id);
-            }
+            if (producto == null) throw new Exception();
+            return ResponseEntity.ok(producto);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener el producto: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error");
         }
     }
     // Ejemplo de un método para crear un nuevo producto
