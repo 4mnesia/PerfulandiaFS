@@ -12,8 +12,7 @@ public class carritoController {
     @Autowired
     private carritoService carritoService;
 
-    // Aquí puedes agregar los métodos para manejar las operaciones CRUD de carrito
-    // Ejemplo de un método para obtener todos los carritos
+    // Obtener todos los carritos
     @GetMapping("/carrito")
     public List<carrito> getAllCarritos() {
         try {
