@@ -11,10 +11,13 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.validation.annotation.Validated;
+
 @RestController
 @RequestMapping("/api/perfulandia")
 // Ejemplo de uso de @Query en un repositorio, no en el controlador.
 // Aquí solo puedes usarlo como comentario o referencia.
+@Validated
 public class usuarioController {
 
     @Autowired
@@ -34,18 +37,17 @@ public class usuarioController {
 
     // CREAR USUARIO
     @PostMapping("/users")
-    public ResponseEntity<Usuario> saveUsuario(@Valid @RequestBody Usuario usuario) {
+    public ResponseEntity<?> saveUsuario(@Valid @RequestBody Usuario usuario) {
         try {
             Usuario nuevoUsuario = usuarioService.saveUsuario(usuario);
             return ResponseEntity.ok(nuevoUsuario);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            // Opcional: loguear el error
+            return ResponseEntity.badRequest().body("Error al crear el usuario: " + e.getMessage());
         }
     }
-
-    // CREAR VARIOS USUARIOS
     @PostMapping("/users/batch")
-    public ResponseEntity<List<Usuario>> saveUsuarios(@Valid @RequestBody List<Usuario> usuarios) {
+    public ResponseEntity<List<Usuario>> saveUsuarios(@RequestBody List<@Valid Usuario> usuarios) {
         try {
             List<Usuario> nuevosUsuarios = usuarios.stream()
                     .map(usuarioService::saveUsuario)
@@ -55,6 +57,7 @@ public class usuarioController {
             return ResponseEntity.badRequest().build();
         }
     }
+
 
     // ELIMINAR *
     @DeleteMapping("/users")
@@ -71,10 +74,14 @@ public class usuarioController {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         try {
+            Usuario usuarioExistente = usuarioService.getUsuarioById(id);
+            if (usuarioExistente == null) {
+                return ResponseEntity.notFound().build();
+            }
             usuarioService.deleteUsuario(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 

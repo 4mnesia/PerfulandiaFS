@@ -1,7 +1,6 @@
 package com.perfulandia.Perfulandia.service;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.perfulandia.Perfulandia.model.Producto;
 import com.perfulandia.Perfulandia.repository.productoRepository;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class productoService {
-    @Autowired
     private final productoRepository productoRepository;
     private final itemCarritoRepository itemCarritoRepository;
 

@@ -24,8 +24,15 @@ public class detalleOrden {
     private orden orden;
 
     @ManyToOne
-    @JoinColumn(name = "producto_id", nullable = false)
+    @JoinColumn(name = "producto_id")
+    @JsonIgnore
     private Producto producto;
+
+    @ManyToOne
+    @JoinColumn(name = "carrito_id", nullable = true)
+    @JsonIgnore
+    private carrito carrito;
+    
 
     @Column(nullable = false)
     private Integer cantidad;
@@ -34,7 +41,14 @@ public class detalleOrden {
     private BigDecimal precioUnitario;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    @JoinColumn(name = "total", nullable = false)
     private BigDecimal total;
+
+    @Transient
+    public BigDecimal getSubtotal() {
+        if (this.precioUnitario == null || this.cantidad == null) {
+            return BigDecimal.ZERO;
+        }
+        return this.precioUnitario.multiply(BigDecimal.valueOf(this.cantidad));
+    }
 
 }

@@ -33,6 +33,8 @@ public class carrito {
     @JsonIgnore
     private List<itemCarrito> items;
 
+    
+
     @Column(nullable = false)
     private boolean estado;
 

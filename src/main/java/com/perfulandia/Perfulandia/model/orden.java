@@ -30,7 +30,7 @@ public class orden {
     @JoinColumn(name = "carrito_id", nullable = false)
     private carrito carrito;
 
-    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<detalleOrden> detalles;
     

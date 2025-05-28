@@ -56,16 +56,4 @@ public class detalleOrdenController {
         detalleOrdenService.deleteAllDetalles();
     }
 
-    // actualizar detalleOrden por id
-    @PutMapping("/detalleOrden/{id}")
-    public detalleOrden updateDetalleOrden(@RequestParam Long id, @RequestBody detalleOrden detalleOrden) {
-        // verificar si existe el detalleOrden
-        detalleOrden existingDetalleOrden = detalleOrdenService.getDetalleOrdenById(id);
-        if (existingDetalleOrden == null) {
-            throw new RuntimeException("Detalle de orden no encontrado con id: " + id);
-        }
-        detalleOrden.setId(id);
-        return detalleOrdenService.updateDetalleOrden(detalleOrden);
-    }
-
 }

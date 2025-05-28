@@ -58,7 +58,8 @@ public class productoController {
         try {
             productoService.deleteAllProductos();
             return ResponseEntity.ok("All products deleted successfully");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            e.printStackTrace(); // Log the exception for debugging
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting products");
         }
     }

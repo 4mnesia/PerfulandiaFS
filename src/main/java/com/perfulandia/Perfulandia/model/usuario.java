@@ -12,11 +12,11 @@ import lombok.*;
 @Table(name = "usuario")
 @Getter
 @Setter
-@ToString(exclude = {"carrito", "ordenes"}) 
-@EqualsAndHashCode(exclude = {"carrito", "ordenes"})
+@ToString(exclude = { "carrito", "ordenes" })
+@EqualsAndHashCode(exclude = { "carrito", "ordenes" })
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Builder
 
 public class Usuario {
@@ -24,20 +24,20 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre",nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "email",nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
-    
-    @Column(name = "contraseña",nullable = false)
+
+    @Column(name = "contraseña", nullable = false)
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String contraseña;
 
-    @Column(name = "direccion",nullable = false)
+    @Column(name = "direccion", nullable = false)
     private String direccion;
 
-    @Column(name = "telefono",nullable = false)
+    @Column(name = "telefono", nullable = false)
     private String telefono;
 
     @Enumerated(EnumType.ORDINAL)
@@ -47,7 +47,7 @@ public class Usuario {
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private carrito carrito;
-
+    
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<orden> ordenes;

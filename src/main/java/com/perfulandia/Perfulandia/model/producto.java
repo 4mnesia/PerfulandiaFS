@@ -1,6 +1,7 @@
 package com.perfulandia.Perfulandia.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +49,10 @@ public class Producto {
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<itemCarrito> itemsCarrito;
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<detalleOrden> detallesOrden = new ArrayList<>();
 }
 
 

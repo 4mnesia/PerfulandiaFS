@@ -38,7 +38,7 @@ public class carritoController {
 
     // crear varios carritos
     @PostMapping("/carrito/batch")
-    public List<carrito> createCarritos(List<carrito> nuevosCarritos) {
+    public List<carrito> createCarritos(@RequestBody List<carrito> nuevosCarritos) {
         return nuevosCarritos.stream()
                 .map(carritoService::saveCarrito)
                 .toList();
@@ -54,17 +54,5 @@ public class carritoController {
     @DeleteMapping("/carrito")
     public void deleteAllCarritos() {
         carritoService.deleteAllCarritos();
-    }
-
-    // actualizar carrito por id
-    @PutMapping("/carrito/{id}")
-    public carrito updateCarrito(@PathVariable Long id, @RequestBody carrito carrito) {
-        // verificar si existe el carrito
-        carrito carritoExistente = carritoService.getCarritoById(id);
-        if (carritoExistente == null) {
-            throw new RuntimeException("Carrito no encontrado con id: " + id);
-        }
-        carrito.setId(id);
-        return carritoService.updateCarrito(carrito);
     }
 }

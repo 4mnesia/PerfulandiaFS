@@ -35,6 +35,7 @@ public class carritoService {
     public carrito saveCarrito(carrito carrito) {
         return carritoRepository.save(carrito);
     }
+    
 
     // eliminar un carrito
     public void deleteCarrito(Long id) {
@@ -52,6 +53,14 @@ public class carritoService {
     // elimianr todos losc arritos
     public void deleteAllCarritos() {
         carritoRepository.deleteAll();
+    }
+
+
+    // crear varios carritos
+    public List<carrito> createCarritos(List<carrito> nuevosCarritos) {
+        return nuevosCarritos.stream()
+                .map(carritoRepository::save)
+                .toList();
     }
 
 }
