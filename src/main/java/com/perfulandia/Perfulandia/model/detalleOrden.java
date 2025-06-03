@@ -28,7 +28,7 @@ public class detalleOrden {
     @JsonIgnore
     private Producto producto;
 
-    @ManyToOne
+    @ManyToOne//* */
     @JoinColumn(name = "carrito_id", nullable = true)
     @JsonIgnore
     private carrito carrito;

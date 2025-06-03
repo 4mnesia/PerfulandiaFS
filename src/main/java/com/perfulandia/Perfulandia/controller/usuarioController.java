@@ -13,8 +13,6 @@ import org.springframework.validation.annotation.Validated;
 
 @RestController
 @RequestMapping("/api/perfulandia")
-// Ejemplo de uso de @Query en un repositorio, no en el controlador.
-// Aquí solo puedes usarlo como comentario o referencia.
 @Validated
 public class usuarioController {
 

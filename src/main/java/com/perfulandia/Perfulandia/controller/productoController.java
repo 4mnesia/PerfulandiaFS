@@ -16,9 +16,8 @@ public class productoController {
 
     @Autowired
     private productoService productoService;
-    // Aquí puedes agregar los métodos para manejar las operaciones CRUD de productos
 
-    // Ejemplo de un método para obtener todos los productos
+    //obtener todos los productos
     @GetMapping("/productos")
     public ResponseEntity<?> getAllProductos() {
         try {
