@@ -52,3 +52,6 @@ public class detalleOrden {
     }
 
 }
+
+
+//oAuth sirve para autenticar y autorizar a los usuarios en aplicaciones web y móviles, permitiendo el acceso seguro a recursos protegidos sin necesidad de compartir credenciales directamente. Es un estándar abierto que facilita la delegación de permisos entre aplicaciones y servicios, mejorando la seguridad y la experiencia del usuario al evitar el manejo directo de contraseñas.

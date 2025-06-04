@@ -5,5 +5,4 @@ public enum RolUsuario {
     ADMINSYSTEM,
     EMPLEADOVENTA,
     LOGISTICA
-
 }

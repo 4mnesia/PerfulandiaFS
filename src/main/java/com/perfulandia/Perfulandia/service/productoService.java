@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class productoService {
-    private final productoRepository productoRepository;
-    private final itemCarritoRepository itemCarritoRepository;
+    private productoRepository productoRepository;
+    private itemCarritoRepository itemCarritoRepository;
 
     // leer producto por id
     public Producto getProductoById(Long id) {

@@ -13,8 +13,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class carritoService {
+    
     @Autowired
-    private  final carritoRepository carritoRepository;
+    private carritoRepository carritoRepository;
 
     // leer carrito por id
     public carrito getCarritoById(Long id) {
