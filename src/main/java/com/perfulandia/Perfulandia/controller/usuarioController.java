@@ -1,6 +1,6 @@
 package com.perfulandia.Perfulandia.controller;
 
-import com.perfulandia.Perfulandia.service.usuarioService;
+import com.perfulandia.Perfulandia.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.perfulandia.Perfulandia.model.Usuario;
@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 public class usuarioController {
 
     @Autowired
-    private usuarioService usuarioService;
+    private UsuarioService usuarioService;
 
     // LISTAR POR ID
     @GetMapping("/users/{id}")

@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import com.perfulandia.Perfulandia.model.Usuario;
 
 @Repository
-public interface usuarioRepository extends JpaRepository<Usuario, Long> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 }

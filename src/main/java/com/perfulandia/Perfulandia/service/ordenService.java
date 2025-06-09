@@ -6,46 +6,45 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.perfulandia.Perfulandia.model.orden;
-import com.perfulandia.Perfulandia.repository.ordenRepository;
+import com.perfulandia.Perfulandia.model.Orden;
+import com.perfulandia.Perfulandia.repository.OrdenRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ordenService {
+public class OrdenService { 
     @Autowired
-    private ordenRepository ordenRepository;
+    private OrdenRepository ordenRepository;
     // leer orden por id
-    public orden getOrdenById(Long id) {
+    public Orden getOrdenById(Long id) {
         return ordenRepository.findById(id).orElse(null);
     }
     // leer orden por id de usuario 
-    public List<orden> getOrdenByUsuarioId(Long usuarioId) {
-        return ordenRepository.findByUsuarioId(usuarioId)
-                .map(List::of)
-                .orElse(List.of());
+    public List<Orden> getOrdenByUsuarioId(Long usuarioId) {
+        return ordenRepository.findByUsuarioId(usuarioId);
     }
     //leer por id de carrito
-    public List<orden> getOrdenByCarritoId(Long carritoId) {
-        return ordenRepository.findByCarritoId(carritoId)
-                .map(List::of)
-                .orElse(List.of());
+    public List<Orden> getOrdenByCarritoId(Long carritoId) {
+        return ordenRepository.findByCarritoId(carritoId);
     }
     // leer todos los ordenes
-    public List<orden> getAllOrdenes() {
+    public List<Orden> getAllOrdenes() {
         return ordenRepository.findAll();
     }
     // guardar un orden
-    public orden saveOrden(orden orden) {
+    public Orden saveOrden(Orden orden) {
         return ordenRepository.save(orden);
     }
     // eliminar un orden
     public void deleteOrden(Long id) {
+        if (!ordenRepository.existsById(id)) {
+            throw new IllegalArgumentException("Orden con ID " + id + " no existe.");
+        }
         ordenRepository.deleteById(id);
     }
     // actualizar un orden
-    public orden updateOrden(orden orden) {
+    public Orden updateOrden(Orden orden) {
         return ordenRepository.save(orden);
     }
     // eliminar todos los ordenes

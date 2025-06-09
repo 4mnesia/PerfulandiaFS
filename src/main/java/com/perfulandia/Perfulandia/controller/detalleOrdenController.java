@@ -1,7 +1,7 @@
 package com.perfulandia.Perfulandia.controller;
 
-import com.perfulandia.Perfulandia.service.detalleOrdenService;
-import com.perfulandia.Perfulandia.model.detalleOrden;
+import com.perfulandia.Perfulandia.service.DetalleOrdenService;
+import com.perfulandia.Perfulandia.model.DetalleOrden;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,11 +12,11 @@ import java.util.List;
 
 public class detalleOrdenController {
     @Autowired
-    private detalleOrdenService detalleOrdenService;
+    private DetalleOrdenService detalleOrdenService;
 
     // listar todo
     @GetMapping("/detalleOrden")
-    public List<detalleOrden> getAllDetalleOrden() {
+    public List<DetalleOrden> getAllDetalleOrden() {
         try {
             return detalleOrdenService.getAllDetalles();
         } catch (Exception e) {
@@ -26,7 +26,7 @@ public class detalleOrdenController {
     }
     // listar por id de producto
     @GetMapping("/detalleOrden/producto/{productoId}")
-    public List<detalleOrden> getDetallesByProductoId(@PathVariable Long productoId) {
+    public List<DetalleOrden> getDetallesByProductoId(@PathVariable Long productoId) {
         try {
             return detalleOrdenService.getDetallesByProductoId(productoId);
         } catch (Exception e) {
@@ -35,7 +35,7 @@ public class detalleOrdenController {
     }
     // listar por id
     @GetMapping("/detalleOrden/{id}")
-    public detalleOrden getDetalleOrdenById(@PathVariable Long id) {
+    public DetalleOrden getDetalleOrdenById(@PathVariable Long id) {
         try {
             return detalleOrdenService.getDetalleOrdenById(id);
         } catch (Exception e) {
@@ -45,7 +45,7 @@ public class detalleOrdenController {
 
     // crear detalleOrden
     @PostMapping("/detalleOrden")
-    public detalleOrden createDetalleOrden(@RequestBody detalleOrden nuevoDetalleOrden) {
+    public DetalleOrden createDetalleOrden(@RequestBody DetalleOrden nuevoDetalleOrden) {
         try {
             return detalleOrdenService.saveDetalleOrden(nuevoDetalleOrden);
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class detalleOrdenController {
 
     // crear varios detalleOrden
     @PostMapping("/detalleOrden/batch")
-    public List<detalleOrden> createDetallesOrden(@RequestBody List<detalleOrden> nuevosDetallesOrden) {
+    public List<DetalleOrden> createDetallesOrden(@RequestBody List<DetalleOrden> nuevosDetallesOrden) {
         try {
             return nuevosDetallesOrden.stream()
                     .map(detalleOrdenService::saveDetalleOrden)

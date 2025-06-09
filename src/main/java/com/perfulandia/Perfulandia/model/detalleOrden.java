@@ -1,7 +1,6 @@
 package com.perfulandia.Perfulandia.model;
 
 import java.math.BigDecimal;
-import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,26 +11,18 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 
-public class detalleOrden {
+public class DetalleOrden {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "orden_id", nullable = false)
-    @JsonBackReference
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private orden orden;
-
-    @ManyToOne
     @JoinColumn(name = "producto_id")
-    @JsonIgnore
     private Producto producto;
 
     @ManyToOne//* */
     @JoinColumn(name = "carrito_id", nullable = true)
-    @JsonIgnore
-    private carrito carrito;
+    private Carrito carrito;
     
 
     @Column(nullable = false)

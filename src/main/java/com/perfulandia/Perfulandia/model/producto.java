@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 
 public class Producto {
     @Id
@@ -47,12 +44,12 @@ public class Producto {
     @Column(nullable = false)
     private Date fechaCreacion;
 
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<itemCarrito> itemsCarrito;
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    private List<ItemCarrito> itemsCarrito;
 
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<detalleOrden> detallesOrden = new ArrayList<>();
+    private List<DetalleOrden> detallesOrden = new ArrayList<>();
 }
 
 

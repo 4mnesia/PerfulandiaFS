@@ -5,7 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.perfulandia.Perfulandia.service.productoService;
+import com.perfulandia.Perfulandia.service.ProductoService;
 import com.perfulandia.Perfulandia.model.Producto;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 public class productoController {
 
     @Autowired
-    private productoService productoService;
+    private ProductoService productoService;
 
     //obtener todos los productos
     @GetMapping("/productos")

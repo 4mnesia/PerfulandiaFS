@@ -4,8 +4,8 @@ package com.perfulandia.Perfulandia.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.perfulandia.Perfulandia.model.itemCarrito;
-import com.perfulandia.Perfulandia.service.itemCarritoService;
+import com.perfulandia.Perfulandia.model.ItemCarrito;
+import com.perfulandia.Perfulandia.service.ItemCarritoService;
 
 import java.util.List;
 
@@ -13,12 +13,12 @@ import java.util.List;
 @RequestMapping("/api/perfulandia")
 public class itemCarritoController {
     @Autowired
-    private itemCarritoService itemCarritoService;
+    private ItemCarritoService itemCarritoService;
 
     // listar todo
     @GetMapping("/itemCarrito")
-    public List<itemCarrito> getAllItemCarrito() {
-        List<itemCarrito> items = itemCarritoService.getAllItemCarritos();
+    public List<ItemCarrito> getAllItemCarrito() {
+        List<ItemCarrito> items = itemCarritoService.getAllItemCarritos();
         if (items == null || items.isEmpty()) {
             throw new RuntimeException("No se encontraron items en el carrito.");
         }
@@ -27,9 +27,9 @@ public class itemCarritoController {
 
     // listar por id
     @GetMapping("/itemCarrito/{id}")
-    public itemCarrito getItemCarritoById(@PathVariable Long id) {
+    public ItemCarrito getItemCarritoById(@PathVariable Long id) {
         try {
-            itemCarrito item = itemCarritoService.getItemCarritoById(id);
+            ItemCarrito item = itemCarritoService.getItemCarritoById(id);
             if (item == null) {
                 throw new RuntimeException("ItemCarrito not found with id: " + id);
             }
@@ -41,7 +41,7 @@ public class itemCarritoController {
 
     // crear itemCarrito
     @PostMapping("/itemCarrito")
-    public itemCarrito createItemCarrito(@RequestBody itemCarrito nuevoItemCarrito) {
+    public ItemCarrito createItemCarrito(@RequestBody ItemCarrito nuevoItemCarrito) {
         try {
             return itemCarritoService.saveItemCarrito(nuevoItemCarrito);
         } catch (Exception e) {
@@ -51,7 +51,7 @@ public class itemCarritoController {
 
     // crear varios itemCarrito
     @PostMapping("/itemCarrito/batch")
-    public List<itemCarrito> createItemsCarrito(@RequestBody List<itemCarrito> nuevosItemsCarrito) {
+    public List<ItemCarrito> createItemsCarrito(@RequestBody List<ItemCarrito> nuevosItemsCarrito) {
         try {
             return nuevosItemsCarrito.stream()
                     .map(itemCarritoService::saveItemCarrito)
@@ -83,9 +83,9 @@ public class itemCarritoController {
 
     // actualizar itemCarrito por id
     @PutMapping("/itemCarrito/{id}")
-    public itemCarrito updateItemCarrito(@RequestParam Long id, @RequestBody itemCarrito itemCarrito) {
+    public ItemCarrito updateItemCarrito(@RequestParam Long id, @RequestBody ItemCarrito itemCarrito) {
         // verificar si existe el itemCarrito
-        itemCarrito existingItemCarrito = itemCarritoService.getItemCarritoById(id);
+        ItemCarrito existingItemCarrito = itemCarritoService.getItemCarritoById(id);
         if (existingItemCarrito == null) {
             throw new RuntimeException("ItemCarrito not found with id: " + id);
         }

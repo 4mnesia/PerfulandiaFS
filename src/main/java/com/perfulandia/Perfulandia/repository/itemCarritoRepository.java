@@ -6,14 +6,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.perfulandia.Perfulandia.model.itemCarrito;
+import com.perfulandia.Perfulandia.model.ItemCarrito;
 import jakarta.transaction.Transactional;
 
 
 
 @Repository
-public interface itemCarritoRepository extends JpaRepository<itemCarrito, Long> {
-    Optional<itemCarrito> findByCarritoId(Long carritoId);
+public interface ItemCarritoRepository extends JpaRepository<ItemCarrito, Long> {
+    Optional<ItemCarrito> findByCarritoId(Long carritoId);
 
     @Modifying
     @Transactional

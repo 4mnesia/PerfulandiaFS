@@ -6,36 +6,34 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.perfulandia.Perfulandia.model.detalleOrden;
-import com.perfulandia.Perfulandia.repository.detalleOrdenRepository;
+import com.perfulandia.Perfulandia.model.DetalleOrden;
+import com.perfulandia.Perfulandia.repository.DetalleOrdenRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class detalleOrdenService {
+public class DetalleOrdenService {
     @Autowired
-    private detalleOrdenRepository detalleOrdenRepository;
+    private DetalleOrdenRepository detalleOrdenRepository;
 
     // leer detalles por id
-    public detalleOrden getDetalleOrdenById(Long id) {
+    public DetalleOrden getDetalleOrdenById(Long id) {
         return detalleOrdenRepository.findById(id).orElse(null);
     }
 
     // leer detalles por producto
-    public List<detalleOrden> getDetallesByProductoId(Long productoId) {
-        return detalleOrdenRepository.findByProductoId(productoId)
-                .map(List::of)
-                .orElseGet(List::of);
+    public List<DetalleOrden> getDetallesByProductoId(Long productoId) {
+        return detalleOrdenRepository.findByProductoId(productoId);
     }
 
     // leer todos los detalles
-    public List<detalleOrden> getAllDetalles() {
+    public List<DetalleOrden> getAllDetalles() {
         return detalleOrdenRepository.findAll();
     }
 
     // guardar un detalle
-    public detalleOrden saveDetalleOrden(detalleOrden detalleOrden) {
+    public DetalleOrden saveDetalleOrden(DetalleOrden detalleOrden) {
         return detalleOrdenRepository.save(detalleOrden);
     }
 
@@ -45,7 +43,7 @@ public class detalleOrdenService {
     }
 
     // actualizar un detalle
-    public detalleOrden updateDetalleOrden(detalleOrden detalleOrden) {
+    public DetalleOrden updateDetalleOrden(DetalleOrden detalleOrden) {
         return detalleOrdenRepository.save(detalleOrden);
     }
 
@@ -58,14 +56,14 @@ public class detalleOrdenService {
     //subtotal de un detalle
     
 
-    public BigDecimal calcularSubtotal(detalleOrden detalleOrden) {
+    public BigDecimal calcularSubtotal(DetalleOrden detalleOrden) {
         if (detalleOrden.getCantidad() == null || detalleOrden.getPrecioUnitario() == null) {
             return BigDecimal.ZERO;
         }
         return detalleOrden.getPrecioUnitario().multiply(BigDecimal.valueOf(detalleOrden.getCantidad()));
     }
     // calcular total de un detalle
-    public BigDecimal calcularTotal(List<detalleOrden> detalles) {
+    public BigDecimal calcularTotal(List<DetalleOrden> detalles) {
         return detalles.stream()
                 .map(this::calcularSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
