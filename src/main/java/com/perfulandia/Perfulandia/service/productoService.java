@@ -4,17 +4,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import com.perfulandia.Perfulandia.model.Producto;
 import com.perfulandia.Perfulandia.repository.ProductoRepository;
-
-import jakarta.transaction.Transactional;
-
-import com.perfulandia.Perfulandia.repository.ItemCarritoRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ProductoService {
     private ProductoRepository productoRepository;
-    private ItemCarritoRepository itemCarritoRepository;
 
     // leer producto por id
     public Producto getProductoById(Long id) {
@@ -29,14 +24,8 @@ public class ProductoService {
         return productoRepository.save(producto);
     }
     // eliminar un producto
-    @Transactional
-    public void deleteProducto(Long id) {
-        // Primero eliminamos los items del carrito asociados al producto
-        itemCarritoRepository.deleteByProductoId(id);
-        // Luego eliminamos el producto
-        if (!productoRepository.existsById(id)) {
-            throw new IllegalArgumentException("Producto con ID " + id + " no existe.");
-        } productoRepository.deleteById(id);
+   public void deleteProducto(Long id) {
+        productoRepository.deleteById(id);
     }
     // actualizar un producto
     public Producto updateProducto(Producto producto) {
@@ -47,5 +36,4 @@ public class ProductoService {
         productoRepository.deleteAll();
     }
 
-    //
 }

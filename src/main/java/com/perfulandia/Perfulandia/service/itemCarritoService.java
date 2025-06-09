@@ -20,12 +20,6 @@ public class ItemCarritoService {
     public ItemCarrito getItemCarritoById(Long id) {
         return itemCarritoRepository.findById(id).orElse(null);
     }
-    // leer itemCarrito por id de carrito
-    public List<ItemCarrito> getItemCarritoByCarritoId(Long carritoId) {
-        return itemCarritoRepository.findByCarritoId(carritoId)
-                .map(List::of)
-                .orElseGet(List::of);
-    }
     // leer todos los itemCarrito
     public List<ItemCarrito> getAllItemCarritos() {
         return itemCarritoRepository.findAll();
