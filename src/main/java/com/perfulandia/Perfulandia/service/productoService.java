@@ -3,18 +3,18 @@ package com.perfulandia.Perfulandia.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.perfulandia.Perfulandia.model.Producto;
-import com.perfulandia.Perfulandia.repository.productoRepository;
+import com.perfulandia.Perfulandia.repository.ProductoRepository;
 
 import jakarta.transaction.Transactional;
 
-import com.perfulandia.Perfulandia.repository.itemCarritoRepository;
+import com.perfulandia.Perfulandia.repository.ItemCarritoRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class productoService {
-    private productoRepository productoRepository;
-    private itemCarritoRepository itemCarritoRepository;
+public class ProductoService {
+    private ProductoRepository productoRepository;
+    private ItemCarritoRepository itemCarritoRepository;
 
     // leer producto por id
     public Producto getProductoById(Long id) {

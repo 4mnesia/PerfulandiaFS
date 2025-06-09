@@ -1,10 +1,6 @@
 
 package com.perfulandia.Perfulandia.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,24 +10,18 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
-public class itemCarrito {
+public class ItemCarrito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "carrito_id")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @JsonBackReference
-    
-    private carrito carrito;
+    private Carrito carrito;
 
     @ManyToOne
     @JoinColumn(name = "producto_id")
-    @JsonIgnore
     private Producto producto;
 
     @Column(nullable = false)

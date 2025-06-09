@@ -1,7 +1,7 @@
 
 package com.perfulandia.Perfulandia.model;
 
-public enum estadoOrden {
+public enum EstadoOrden {
     PENDIENTE,
     PROCESANDO,
     ENVIADO,

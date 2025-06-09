@@ -3,11 +3,10 @@ package com.perfulandia.Perfulandia.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ordenes")
@@ -15,9 +14,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
-public class orden {
+
+public class Orden {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,31 +27,21 @@ public class orden {
 
     @ManyToOne
     @JoinColumn(name = "carrito_id", nullable = false)
-    private carrito carrito;
+    private Carrito carrito;
 
-    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<detalleOrden> detalles;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "orden_id")
+    private List<DetalleOrden> detalles;
     
     @Enumerated(EnumType.STRING)
-    private estadoOrden estado;
+    private EstadoOrden estado;
     
-    @Column(nullable = false)
-    private Date fechaCreacion;
-    
-    @Column(nullable = false)
-    private Date fechaActualizacion;
-    
-    @PrePersist
-    protected void onCreate() {
-    fechaCreacion = new Date();
-    fechaActualizacion = new Date();
-    }
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime fechaCreacion;
 
-    @PreUpdate
-    protected void onUpdate() {
-    fechaActualizacion = new Date();    
-    }
+    @LastModifiedDate
+    private LocalDateTime fechaActualizacion;
     
     @Column(nullable = false)
     private String direccionEnvio;

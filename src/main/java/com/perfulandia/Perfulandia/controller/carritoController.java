@@ -1,20 +1,20 @@
 package com.perfulandia.Perfulandia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import com.perfulandia.Perfulandia.service.carritoService;
-import com.perfulandia.Perfulandia.model.carrito;
+import com.perfulandia.Perfulandia.service.CarritoService;
+import com.perfulandia.Perfulandia.model.Carrito;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/perfulandia")
-public class carritoController {
+public class CarritoController {
     @Autowired
-    private carritoService carritoService;
+    private CarritoService carritoService;
 
     // Obtener todos los carritos
     @GetMapping("/carrito")
-    public List<carrito> getAllCarritos() {
+    public List<Carrito> getAllCarritos() {
         try {
             return carritoService.getAllCarritos();
         } catch (Exception e) {
@@ -24,7 +24,7 @@ public class carritoController {
 
     // carritos por id
     @GetMapping("/carrito/{id}")
-    public carrito getCarritoById(@PathVariable Long id) {
+    public Carrito getCarritoById(@PathVariable Long id) {
         try {
             return carritoService.getCarritoById(id);
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class carritoController {
     }
     // carrito por id de usuario
     @GetMapping("/carrito/usuario/{usuarioId}")
-    public carrito getCarritoByUsuario(@PathVariable Long usuarioId) {
+    public Carrito getCarritoByUsuario(@PathVariable Long usuarioId) {
         try {
             return carritoService.getCarritoByUsuario(usuarioId);
         } catch (Exception e) {
@@ -43,7 +43,7 @@ public class carritoController {
 
     // crear carrito
     @PostMapping("/carrito")
-    public carrito createCarrito(@RequestBody carrito nuevoCarrito) {
+    public Carrito createCarrito(@RequestBody Carrito nuevoCarrito) {
         try {
             return carritoService.saveCarrito(nuevoCarrito);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class carritoController {
 
     // crear varios carritos
     @PostMapping("/carrito/batch")
-    public List<carrito> createCarritos(@RequestBody List<carrito> nuevosCarritos) {
+    public List<Carrito> createCarritos(@RequestBody List<Carrito> nuevosCarritos) {
         try {
             return nuevosCarritos.stream()
                     .map(carritoService::saveCarrito)

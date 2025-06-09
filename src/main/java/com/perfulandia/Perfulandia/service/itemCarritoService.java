@@ -6,32 +6,32 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.perfulandia.Perfulandia.model.itemCarrito;
-import com.perfulandia.Perfulandia.repository.itemCarritoRepository;
+import com.perfulandia.Perfulandia.model.ItemCarrito;
+import com.perfulandia.Perfulandia.repository.ItemCarritoRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class itemCarritoService {
+public class ItemCarritoService {
     @Autowired
-    private itemCarritoRepository itemCarritoRepository;
+    private ItemCarritoRepository itemCarritoRepository;
     // leer itemCarrito por id
-    public itemCarrito getItemCarritoById(Long id) {
+    public ItemCarrito getItemCarritoById(Long id) {
         return itemCarritoRepository.findById(id).orElse(null);
     }
     // leer itemCarrito por id de carrito
-    public List<itemCarrito> getItemCarritoByCarritoId(Long carritoId) {
+    public List<ItemCarrito> getItemCarritoByCarritoId(Long carritoId) {
         return itemCarritoRepository.findByCarritoId(carritoId)
                 .map(List::of)
                 .orElseGet(List::of);
     }
     // leer todos los itemCarrito
-    public List<itemCarrito> getAllItemCarritos() {
+    public List<ItemCarrito> getAllItemCarritos() {
         return itemCarritoRepository.findAll();
     }
     // guardar un itemCarrito
-    public itemCarrito saveItemCarrito(itemCarrito itemCarrito) {
+    public ItemCarrito saveItemCarrito(ItemCarrito itemCarrito) {
         return itemCarritoRepository.save(itemCarrito);
     }
     // eliminar un itemCarrito
@@ -39,7 +39,7 @@ public class itemCarritoService {
         itemCarritoRepository.deleteById(id);
     }
     // actualizar un itemCarrito
-    public itemCarrito updateItemCarrito(itemCarrito itemCarrito) {
+    public ItemCarrito updateItemCarrito(ItemCarrito itemCarrito) {
         return itemCarritoRepository.save(itemCarrito);
     }
     // eliminar todos los itemCarrito

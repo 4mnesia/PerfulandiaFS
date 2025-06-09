@@ -1,22 +1,15 @@
 package com.perfulandia.Perfulandia.model;
 
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
 @Table(name = "usuario")
-@Getter
-@Setter
-@ToString(exclude = { "carrito", "ordenes" })
-@EqualsAndHashCode(exclude = { "carrito", "ordenes" })
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Builder
 
 public class Usuario {
@@ -44,12 +37,10 @@ public class Usuario {
     @Column(name = "rol", nullable = false)
     private RolUsuario rol;
 
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private carrito carrito;
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private Carrito carrito;
     
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<orden> ordenes;
 
 }

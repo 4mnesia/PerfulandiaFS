@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.perfulandia.Perfulandia.model.Usuario;
-import com.perfulandia.Perfulandia.repository.usuarioRepository;
+import com.perfulandia.Perfulandia.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 
-public class usuarioService {
+public class UsuarioService {
     @Autowired
-    private usuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;
     // leer usuario por id
     public Usuario getUsuarioById(Long id) {
         return usuarioRepository.findById(id).orElse(null);
