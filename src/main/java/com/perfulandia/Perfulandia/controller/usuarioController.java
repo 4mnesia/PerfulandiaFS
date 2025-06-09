@@ -14,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 @RestController
 @RequestMapping("/api/perfulandia")
 @Validated
-public class usuarioController {
+public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;

@@ -29,7 +29,7 @@ public class Usuario {
 
     @Column(name = "direccion", nullable = false)
     private String direccion;
-
+    
     @Column(name = "telefono", nullable = false)
     private String telefono;
 
@@ -41,6 +41,6 @@ public class Usuario {
     private Carrito carrito;
     
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<orden> ordenes;
+    private List<Orden> ordenes;
 
 }
