@@ -1,4 +1,4 @@
-package com.perfulandia.Perfulandia.config;
+package com.perfulandia.Perfulandia;
 
 import com.perfulandia.Perfulandia.model.*;
 import com.perfulandia.Perfulandia.repository.*;
