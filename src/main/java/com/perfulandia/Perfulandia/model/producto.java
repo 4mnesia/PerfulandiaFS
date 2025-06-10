@@ -1,6 +1,6 @@
 package com.perfulandia.Perfulandia.model;
 
-import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +36,7 @@ public class Producto {
     private String modelo;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal precio;
+    private Double precio;
 
     @Column(nullable = false)
     private Integer stock;

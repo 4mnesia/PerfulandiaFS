@@ -1,107 +1,70 @@
-/*package com.perfulandia.Perfulandia;
+package com.perfulandia.Perfulandia;
 
-import com.perfulandia.Perfulandia.model.*;
-import com.perfulandia.Perfulandia.repository.*;
+import net.datafaker.Faker;
 
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Random;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import java.math.BigDecimal;
-import java.util.Date;
+import com.perfulandia.Perfulandia.repository.CarritoRepository;
+/*import com.perfulandia.Perfulandia.repository.DetalleOrdenRepository;
+import com.perfulandia.Perfulandia.repository.ItemCarritoRepository;
+import com.perfulandia.Perfulandia.repository.OrdenRepository;*/
+import com.perfulandia.Perfulandia.model.Carrito;
+import com.perfulandia.Perfulandia.model.Producto;
+
+import com.perfulandia.Perfulandia.repository.ProductoRepository;
+import com.perfulandia.Perfulandia.model.RolUsuario;
+import com.perfulandia.Perfulandia.model.Usuario;
+import com.perfulandia.Perfulandia.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-@Builder
-
 public class DataLoader implements CommandLineRunner {
-    private final UsuarioRepository usuarioRepo;
-    private final ProductoRepository productoRepo;
-    private final CarritoRepository carritoRepo;
-    private final ItemCarritoRepository itemCarritoRepo;
-    private final OrdenRepository ordenRepo;
-    private final DetalleOrdenRepository detalleOrdenRepo;
 
-    @Override
-    public void run(String... args) throws Exception {
+        private final UsuarioRepository usuarioRepository;
+        private final ProductoRepository productoRepository;
+        /*private final DetalleOrdenRepository detalleOrdenRepository;
+        private final ItemCarritoRepository itemCarritoRepository;
+        private final OrdenRepository ordenRepository;*/
+        private final CarritoRepository carritoRepository;
 
-        detalleOrdenRepo.deleteAll();
-        ordenRepo.deleteAll();
-        itemCarritoRepo.deleteAll();
-        carritoRepo.deleteAll();
-        productoRepo.deleteAll();
-        usuarioRepo.deleteAll();
+        @Override
+        public void run(String... args) throws Exception {
+                Faker faker = new Faker();
+                Random random = new Random();
 
-        // USUARIOS
+                for (int i = 0; i < 50; i++) {
+                        Usuario usuario = Usuario.builder()
+                                        .nombre(faker.name().fullName())
+                                        .email(faker.internet().emailAddress())
+                                        .contraseña(faker.internet().password())
+                                        .direccion(faker.address().fullAddress())
+                                        .telefono(faker.phoneNumber().cellPhone())
+                                        .rol(RolUsuario.values()[faker.random().nextInt(RolUsuario.values().length)])
+                                        .build();
+                        usuarioRepository.save(usuario);
+                }
+                for (int i = 0; i < 10; i++) {
+                        Producto producto = Producto.builder()
+                                        .nombre(faker.commerce().productName())
+                                        .descripcion(faker.lorem().sentence())
+                                        .precio(Double.valueOf(faker.commerce().price()))
+                                        .stock(faker.number().numberBetween(5, 100))
+                                        .build();
+                        productoRepository.save(producto);
+                }
+                // 3. Carritos (5) - relacionados a usuarios
+                List<Usuario> usuarios = usuarioRepository.findAll();
+                for (int i = 0; i < 5; i++) {
+                        Usuario usuario = usuarios.get(random.nextInt(usuarios.size()));
+                        Carrito carrito = Carrito.builder()
+                                        .usuario(usuario)
+                                        .build();
+                        carritoRepository.save(carrito);
+                }
 
-        Usuario user1 = Usuario.builder()
-                .nombre("Flavio")
-                .email("flavio@gmail.com")
-                .contraseña("password123")
-                .direccion("Calle Falsa 123")
-                .telefono("123456789")
-                .rol(RolUsuario.ADMINSYSTEM)
-                .build();
-        usuarioRepo.save(user1);
-
-
-        // PRODUCTOS
-
-        Producto prod1 = Producto.builder()
-                .nombre("Chanel No. 5")
-                .descripcion("Descripción del perfume 1")
-                .categoria("Fragancia")
-                .marca("RoseArt")
-                .modelo("MOD0001")
-                .precio(new BigDecimal("23983.48"))
-                .stock(42)
-                .fechaCreacion(new Date())
-                .build();
-        productoRepo.save(prod1);
-
-        
-
-        // CARRITOS
-
-        Carrito cart1 = Carrito.builder()
-                .usuario(user1)
-                .estado(true)
-                .build();
-        carritoRepo.save(cart1);
-        itemCarritoRepo.save(ItemCarrito.builder().carrito(cart1).producto(prod1).cantidad(2).build());
-
-        // ITEMS
-
-        ItemCarrito item1 = ItemCarrito.builder()
-                .carrito(cart1)
-                .producto(prod1)
-                .cantidad(1)
-                .build();
-        itemCarritoRepo.save(item1);
-
-        // ORDENES
-
-        Orden orden1 = Orden.builder()
-                .usuario(user1)
-                .carrito(cart1)
-                .estado(EstadoOrden.PENDIENTE)
-                .fechaCreacion(new Date())
-                .fechaActualizacion(new Date())
-                .direccionEnvio(user1.getDireccion())
-                .build();
-        ordenRepo.save(orden1);
-
-        // DETALLES ORDEN
-
-        DetalleOrden d1 = DetalleOrden.builder()
-                .producto(prod1)
-                .cantidad(1)
-                .precioUnitario(prod1.getPrecio())
-                .total(prod1.getPrecio().multiply(BigDecimal.valueOf(1))) // total = precioUnitario * cantidad
-                .carrito(cart1)
-                .build();
-        detalleOrdenRepo.save(d1);
-    }
+        }
 }
-*/
