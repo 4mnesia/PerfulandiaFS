@@ -17,17 +17,16 @@ public class ProductoController {
     @Autowired
     private ProductoService productoService;
 
-    //obtener todos los productos
+    // Obtener todos los productos con validación sencilla
     @GetMapping("/productos")
     public ResponseEntity<?> getAllProductos() {
-        try {
-            List<Producto> productos = productoService.getAllProductos();
-            return ResponseEntity.ok(productos);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener los productos: " + e.getMessage());
+        List<Producto> productos = productoService.getAllProductos();
+        if (productos == null || productos.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No hay productos disponibles.");
         }
+        return ResponseEntity.ok(productos);
     }
+
     // Ejemplo de un método para obtener un producto por su ID y si no existe devolver un null
     @GetMapping("/productos/{id}")
     public ResponseEntity<?> getProductoById(@PathVariable Long id) {

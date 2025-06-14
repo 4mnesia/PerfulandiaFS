@@ -22,10 +22,6 @@ public class CarritoService {
         return carritoRepository.findById(id).orElse(null);
     }
 
-    // leer el carrito por id de usuario
-    public Carrito getCarritoByUsuario(Long usuarioId) {
-        return carritoRepository.findByUsuarioId(usuarioId).orElse(null);
-    }
 
     // leer todos los carritos
     public List<Carrito> getAllCarritos() {

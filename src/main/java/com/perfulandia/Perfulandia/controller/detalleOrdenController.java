@@ -24,15 +24,7 @@ public class DetalleOrdenController {
             throw new RuntimeException("Error al obtener los detalles de la orden: " + e.getMessage(), e);
         }
     }
-    // listar por id de producto
-    @GetMapping("/detalleOrden/producto/{productoId}")
-    public List<DetalleOrden> getDetallesByProductoId(@PathVariable Long productoId) {
-        try {
-            return detalleOrdenService.getDetallesByProductoId(productoId);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al obtener los detalles por productoId: " + e.getMessage(), e);
-        }
-    }
+    
     // listar por id
     @GetMapping("/detalleOrden/{id}")
     public DetalleOrden getDetalleOrdenById(@PathVariable Long id) {

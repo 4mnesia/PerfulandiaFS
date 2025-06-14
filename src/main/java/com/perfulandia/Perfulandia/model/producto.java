@@ -1,9 +1,9 @@
 package com.perfulandia.Perfulandia.model;
 
 
-import java.util.ArrayList;
+
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +36,7 @@ public class Producto {
     private String modelo;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private Double precio;
+    private BigDecimal precio;
 
     @Column(nullable = false)
     private Integer stock;
@@ -44,12 +44,6 @@ public class Producto {
     @Column(nullable = false)
     private Date fechaCreacion;
 
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
-    private List<ItemCarrito> itemsCarrito;
-
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<DetalleOrden> detallesOrden = new ArrayList<>();
 }
 
 

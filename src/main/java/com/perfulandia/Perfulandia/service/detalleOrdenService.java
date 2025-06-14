@@ -21,12 +21,6 @@ public class DetalleOrdenService {
     public DetalleOrden getDetalleOrdenById(Long id) {
         return detalleOrdenRepository.findById(id).orElse(null);
     }
-
-    // leer detalles por producto
-    public List<DetalleOrden> getDetallesByProductoId(Long productoId) {
-        return detalleOrdenRepository.findByProductoId(productoId);
-    }
-
     // leer todos los detalles
     public List<DetalleOrden> getAllDetalles() {
         return detalleOrdenRepository.findAll();
@@ -54,9 +48,7 @@ public class DetalleOrdenService {
     
     
     //subtotal de un detalle
-    
-
-    public BigDecimal calcularSubtotal(DetalleOrden detalleOrden) {
+    public static BigDecimal calcularSubtotal(DetalleOrden detalleOrden) {
         if (detalleOrden.getCantidad() == null || detalleOrden.getPrecioUnitario() == null) {
             return BigDecimal.ZERO;
         }
@@ -65,7 +57,7 @@ public class DetalleOrdenService {
     // calcular total de un detalle
     public BigDecimal calcularTotal(List<DetalleOrden> detalles) {
         return detalles.stream()
-                .map(this::calcularSubtotal)
+                .map(DetalleOrdenService::calcularSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

@@ -1,6 +1,5 @@
 package com.perfulandia.Perfulandia.model;
 
-import java.util.List;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -33,14 +32,8 @@ public class Usuario {
     @Column(name = "telefono", nullable = false)
     private String telefono;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false)
     private RolUsuario rol;
-
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private Carrito carrito;
-    
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<Orden> ordenes;
 
 }

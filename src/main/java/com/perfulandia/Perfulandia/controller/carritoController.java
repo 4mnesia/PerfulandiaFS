@@ -31,15 +31,6 @@ public class CarritoController {
             throw new RuntimeException("Error al obtener el carrito por ID: " + e.getMessage());
         }
     }
-    // carrito por id de usuario
-    @GetMapping("/carrito/usuario/{usuarioId}")
-    public Carrito getCarritoByUsuario(@PathVariable Long usuarioId) {
-        try {
-            return carritoService.getCarritoByUsuario(usuarioId);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al obtener el carrito por usuario: " + e.getMessage());
-        }
-    }
 
     // crear carrito
     @PostMapping("/carrito")

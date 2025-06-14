@@ -18,13 +18,12 @@ public class DetalleOrden {
 
     @ManyToOne
     @JoinColumn(name = "producto_id")
-    private Producto producto;
+    private Producto producto;  
 
-    @ManyToOne//* */
+    @ManyToOne
     @JoinColumn(name = "carrito_id", nullable = true)
     private Carrito carrito;
     
-
     @Column(nullable = false)
     private Integer cantidad;
 
@@ -41,7 +40,6 @@ public class DetalleOrden {
         }
         return this.precioUnitario.multiply(BigDecimal.valueOf(this.cantidad));
     }
-
 }
 
 
