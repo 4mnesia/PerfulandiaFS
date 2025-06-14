@@ -1,6 +1,10 @@
 package com.perfulandia.Perfulandia.model;
 
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,10 +22,16 @@ public class DetalleOrden {
 
     @ManyToOne
     @JoinColumn(name = "producto_id")
+    @JsonIgnoreProperties({
+        "descripcion", "categoria", "marca",
+        "modelo", "precio", "stock", "fechaCreacion"
+    })
+
     private Producto producto;  
 
     @ManyToOne
     @JoinColumn(name = "carrito_id", nullable = true)
+    @JsonIgnore
     private Carrito carrito;
     
     @Column(nullable = false)
