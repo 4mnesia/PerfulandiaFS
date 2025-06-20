@@ -11,26 +11,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
 import com.perfulandia.Perfulandia.repository.*;
 import com.perfulandia.Perfulandia.model.*;
 import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
 import com.perfulandia.Perfulandia.model.Enums.RolUsuario;
 
-@Profile("test")
+@Profile("dev")
 @Component
 public class DataLoader implements CommandLineRunner {
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private ProductoRepository productoRepository;
-    @Autowired
-    private CarritoRepository carritoRepository;
-    @Autowired
-    private ItemCarritoRepository itemCarritoRepository;
-    @Autowired
-    private DetalleOrdenRepository detalleOrdenRepository;
-    @Autowired
-    private OrdenRepository ordenRepository;
+
+    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private ProductoRepository productoRepository;
+    @Autowired private CarritoRepository carritoRepository;
+    @Autowired private ItemCarritoRepository itemCarritoRepository;
+    @Autowired private OrdenRepository ordenRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -39,20 +34,18 @@ public class DataLoader implements CommandLineRunner {
         RolUsuario[] roles = RolUsuario.values();
         EstadoOrden[] estados = EstadoOrden.values();
 
-        // 0) Su deleteall 
+        // 0) Limpiar tablas
         ordenRepository.deleteAll();
-        detalleOrdenRepository.deleteAll();
         itemCarritoRepository.deleteAll();
         carritoRepository.deleteAll();
         usuarioRepository.deleteAll();
         productoRepository.deleteAll();
 
-        // 1) Creo 10 productos
+        // 1) Crear Productos
         Date fechaCreacionDate = faker.date().past(90, TimeUnit.DAYS);
         for (int i = 0; i < 10; i++) {
-            BigDecimal precio = BigDecimal
-                    .valueOf(faker.number().numberBetween(1000, 20000))
-                    .divide(BigDecimal.valueOf(100));
+            BigDecimal precio = BigDecimal.valueOf(faker.number().numberBetween(1000, 20000))
+                                          .divide(BigDecimal.valueOf(100));
             Producto p = Producto.builder()
                     .nombre(faker.commerce().productName())
                     .descripcion(faker.lorem().sentence())
@@ -66,7 +59,7 @@ public class DataLoader implements CommandLineRunner {
             productoRepository.save(p);
         }
 
-        // 2) Creo 5 usuarios
+        // 2) Crear Usuarios
         for (int i = 0; i < 5; i++) {
             Usuario u = new Usuario();
             u.setNombre(faker.name().fullName());
@@ -78,55 +71,58 @@ public class DataLoader implements CommandLineRunner {
             usuarioRepository.save(u);
         }
 
-        List<Usuario> usuarios = usuarioRepository.findAll();
+        List<Usuario> usuarios  = usuarioRepository.findAll();
         List<Producto> productos = productoRepository.findAll();
+        List<Carrito>  carritos  = new ArrayList<>();
 
-        // 3) Para cada usuario: creo 1 carrito + ítems
+        // 3) Para cada Usuario: crear Carrito + Items
         for (Usuario usuario : usuarios) {
             Carrito carrito = new Carrito();
             carrito.setUsuario(usuario);
-            carritoRepository.save(carrito);
+            carrito.setEstado(random.nextBoolean());
+            carrito = carritoRepository.save(carrito);
+            carritos.add(carrito);
 
             int numItems = faker.number().numberBetween(1, 4);
             for (int j = 0; j < numItems; j++) {
                 Producto prod = productos.get(random.nextInt(productos.size()));
                 int qty = faker.number().numberBetween(1, 3);
-                ItemCarrito item = new ItemCarrito();
-                item.setCarrito(carrito);
-                item.setProducto(prod);
-                item.setCantidad(qty);
+
+                ItemCarrito item = ItemCarrito.builder()
+                    .producto(prod)
+                    .cantidad(qty)
+                    .carrito(carrito)
+                    .build();
                 itemCarritoRepository.save(item);
             }
         }
 
-        // 4) Para cada carrito: creo una orden con sus detalles
-        List<Carrito> carritos = carritoRepository.findAll();
+        // 4) Para cada Carrito: crear DetalleOrden + Orden
         for (Carrito carrito : carritos) {
-            // detalles
             List<DetalleOrden> detalles = new ArrayList<>();
             int numDetalles = faker.number().numberBetween(1, 3);
             for (int j = 0; j < numDetalles; j++) {
                 Producto prod = productos.get(random.nextInt(productos.size()));
                 int qty = faker.number().numberBetween(1, 2);
+
                 DetalleOrden d = new DetalleOrden();
                 d.setProducto(prod);
                 d.setCarrito(carrito);
                 d.setCantidad(qty);
                 d.setPrecioUnitario(prod.getPrecio());
                 d.setTotal(prod.getPrecio().multiply(BigDecimal.valueOf(qty)));
+
                 detalles.add(d);
             }
 
-            // fechas aleatorias
-            Date past = faker.date().past(30, TimeUnit.DAYS);
+            // Fechas aleatorias
+            Date past   = faker.date().past(30, TimeUnit.DAYS);
             LocalDateTime created = LocalDateTime.ofInstant(past.toInstant(), ZoneId.systemDefault());
             Date between = faker.date().between(past, new Date());
             LocalDateTime updated = LocalDateTime.ofInstant(between.toInstant(), ZoneId.systemDefault());
 
-            // orden
+            // Aquí el cascade ALL de Orden se encargará de persistir los DetalleOrden
             Orden o = Orden.builder()
-                    .usuario(carrito.getUsuario())
-                    .carrito(carrito)
                     .detalles(detalles)
                     .estado(estados[random.nextInt(estados.length)])
                     .fechaCreacion(created)

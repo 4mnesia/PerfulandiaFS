@@ -39,6 +39,10 @@ public class OrdenController {
             return ResponseEntity.badRequest().body("Error al obtener la orden por id: " + e.getMessage());
         }
     }
+    //guardar 
+
+    //modificar
+    
 
     //delet por id
     @DeleteMapping("/orden/{id}")
