@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Perfulandia</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+
+<body>
+
+
+  <nav class="navbar">
+    <div class="search-box">
+      <input type="text" placeholder="Buscar productos..." />
+      <button>Buscar</button>
+    </div>
+    <div class="acciones">
+      <div class="accion">Iniciar sesión</div>
+      <div class="accion" id="toggle-carrito">Carrito</div>
+    </div>
+  </nav>
+
+
+  <div class="banner">
+    <img src="perfulandia.png" alt="Banner Perfulandia" />
+  </div>
+
+
+  <section class="productos">
+
+    <div class="producto">
+      <img src="perfumedior.jpeg" alt="Perfume Dior" class="producto-img" />
+      <h3>Perfume Dior</h3>
+      <p>$25.000</p>
+      <button class="btn-agregar" data-nombre="Perfume Dior" data-precio="25000">Agregar al carrito</button>
+    </div>
+
+    <div class="producto">
+      <img src="perfumeversace.jpeg" alt="Perfume Versace" class="producto-img" />
+      <h3>Perfume Versace</h3>
+      <p>$22.000</p>
+      <button class="btn-agregar" data-nombre="Perfume Versace" data-precio="22000">Agregar al carrito</button>
+    </div>
+
+    <div class="producto">
+      <img src="perfumecalvin.jpeg" alt="Perfume Calvin" class="producto-img" />
+      <h3>Perfume Calvin Klein</h3>
+      <p>$20.000</p>
+      <button class="btn-agregar" data-nombre="Perfume Calvin Klein" data-precio="20000">Agregar al carrito</button>
+    </div>
+
+    <div class="producto">
+      <img src="perfumeinvictus.jpeg" alt="Perfume Invictus" class="producto-img" />
+      <h3>Perfume Invictus</h3>
+      <p>$24.000</p>
+      <button class="btn-agregar" data-nombre="Perfume Invictus" data-precio="24000">Agregar al carrito</button>
+    </div>
+
+    <div class="producto">
+      <img src="perfumebadboy.jpeg" alt="Perfume Bad Boy" class="producto-img" />
+      <h3>Perfume Bad Boy</h3>
+      <p>$23.000</p>
+      <button class="btn-agregar" data-nombre="Perfume Bad Boy" data-precio="23000">Agregar al carrito</button>
+    </div>
+
+    <div class="producto">
+      <img src="perfumeone.jpeg" alt="Perfume One" class="producto-img" />
+      <h3>Perfume One</h3>
+      <p>$21.000</p>
+      <button class="btn-agregar" data-nombre="Perfume One" data-precio="21000">Agregar al carrito</button>
+    </div>
+
+    <div class="producto">
+      <img src="perfumeonly.jpeg" alt="Perfume Only" class="producto-img" />
+      <h3>Perfume Only</h3>
+      <p>$19.000</p>
+      <button class="btn-agregar" data-nombre="Perfume Only" data-precio="19000">Agregar al carrito</button>
+    </div>
+
+    <div class="producto">
+      <img src="perfumepolo.jpeg" alt="Perfume Polo" class="producto-img" />
+      <h3>Perfume Polo</h3>
+      <p>$26.000</p>
+      <button class="btn-agregar" data-nombre="Perfume Polo" data-precio="26000">Agregar al carrito</button>
+    </div>
+
+  </section>
+
+
+  <div id="carrito-container" class="oculto">
+    <h2>Carrito de Compras</h2>
+    <ul id="lista-carrito"></ul>
+    <p id="total">Total: $0</p>
+    <button id="btn-pagar">Pagar</button>
+  </div>
+
+
+  <footer class="footer">
+    <p>Términos y condiciones | Políticas de privacidad | Uso de cookies</p>
+  </footer>
+
+  <script src="carrito.js"></script>
+</body>
+
+</html>
