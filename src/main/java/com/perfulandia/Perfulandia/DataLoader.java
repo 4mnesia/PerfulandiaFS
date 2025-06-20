@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import com.perfulandia.Perfulandia.repository.*;
 import com.perfulandia.Perfulandia.model.*;
+import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
+import com.perfulandia.Perfulandia.model.Enums.RolUsuario;
 
 @Profile("test")
 @Component

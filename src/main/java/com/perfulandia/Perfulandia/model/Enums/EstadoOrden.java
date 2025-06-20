@@ -1,5 +1,5 @@
 
-package com.perfulandia.Perfulandia.model;
+package com.perfulandia.Perfulandia.model.Enums;
 
 public enum EstadoOrden {
     PENDIENTE,

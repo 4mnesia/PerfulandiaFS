@@ -1,5 +1,7 @@
 package com.perfulandia.Perfulandia.model;
 
+import com.perfulandia.Perfulandia.model.Enums.RolUsuario;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;

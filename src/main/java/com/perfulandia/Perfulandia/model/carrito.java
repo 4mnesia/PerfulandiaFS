@@ -2,9 +2,6 @@ package com.perfulandia.Perfulandia.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,14 +21,9 @@ public class Carrito {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "carrito_id")
     @Builder.Default
-    // Relaciona los items con el carrito
-    //el cascade es para que al eliminar el carrito, se eliminen los items asociados
-    //el orphanRemoval es para que al eliminar un item del carrito, se elimine de la base de datos
-    //builder.default es para que al crear un carrito, se cree una lista vacía de items
     private List<ItemCarrito> item = new ArrayList<>();
 
     @Column(nullable = false)

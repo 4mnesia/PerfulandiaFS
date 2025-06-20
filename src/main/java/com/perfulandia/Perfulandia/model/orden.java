@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
+
 import java.time.LocalDateTime;
 
 @Entity

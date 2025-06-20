@@ -5,8 +5,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.perfulandia.Perfulandia.service.ProductoService;
 import com.perfulandia.Perfulandia.model.Producto;
+import com.perfulandia.Perfulandia.service.ProductoService;
+
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
