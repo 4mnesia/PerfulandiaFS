@@ -54,7 +54,28 @@ public class CarritoController {
         }
     }
 
-    // Ejemplo de un método para eliminar un carrito por su ID
+    // actualizar carrito
+    @PutMapping("/carrito/{id}")
+    public Carrito updateCarrito(@PathVariable Long id, @RequestBody Carrito carritoActualizado) {
+        try {
+            Carrito existente = carritoService.getCarritoById(id);
+            if (existente == null) {
+                throw new RuntimeException("Carrito no encontrado con id: " + id);
+            }
+            existente.setUsuario(carritoActualizado.getUsuario());
+            existente.setEstado(carritoActualizado.isEstado());
+            // Solución: no reemplazar la lista, sino modificarla
+            existente.getItem().clear();
+            if (carritoActualizado.getItem() != null) {
+                existente.getItem().addAll(carritoActualizado.getItem());
+            }
+            return carritoService.updateCarrito(existente);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al actualizar el carrito: " + e.getMessage());
+        }
+    }
+
+    // eliminar un carrito por su ID
     @DeleteMapping("/carrito/{id}")
     public void deleteCarrito(@PathVariable Long id) {
         try {

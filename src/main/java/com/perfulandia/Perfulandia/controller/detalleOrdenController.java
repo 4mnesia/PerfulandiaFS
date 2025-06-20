@@ -24,7 +24,7 @@ public class DetalleOrdenController {
             throw new RuntimeException("Error al obtener los detalles de la orden: " + e.getMessage(), e);
         }
     }
-    
+
     // listar por id
     @GetMapping("/detalleOrden/{id}")
     public DetalleOrden getDetalleOrdenById(@PathVariable Long id) {
@@ -54,6 +54,24 @@ public class DetalleOrdenController {
                     .toList();
         } catch (Exception e) {
             throw new RuntimeException("Error al crear los detalles de la orden: " + e.getMessage(), e);
+        }
+    }
+
+    // actualizar detalleorden por id
+    @PutMapping("/detalleOrden/{id}")
+    public DetalleOrden updateDetalleOrden(@PathVariable Long id, @RequestBody DetalleOrden detalleActualizado) {
+        try {
+            DetalleOrden existente = detalleOrdenService.getDetalleOrdenById(id);
+            if (existente == null) {
+                throw new RuntimeException("DetalleOrden no encontrado con id: " + id);
+            }
+            existente.setProducto(detalleActualizado.getProducto());
+            existente.setCantidad(detalleActualizado.getCantidad());
+            existente.setPrecioUnitario(detalleActualizado.getPrecioUnitario());
+            existente.setTotal(detalleActualizado.getTotal());
+            return detalleOrdenService.updateDetalleOrden(existente);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al actualizar el detalle de la orden: " + e.getMessage(), e);
         }
     }
 

@@ -21,6 +21,18 @@ public class OrdenService {
     public List<Orden> getAllOrdenes() {
         return ordenRepository.findAll();
     }
+    //guardar orden
+    public Orden saveOrden(Orden orden) {
+        return ordenRepository.save(orden);
+    }
+    //modificar orden
+    public Orden updateOrden(Long id, Orden orden) {
+        if (ordenRepository.existsById(id)) {
+            orden.setId(id);
+            return ordenRepository.save(orden);
+        }
+        return null;
+    }
 
     // eliminar un orden
     public void deleteOrden(Long id) {

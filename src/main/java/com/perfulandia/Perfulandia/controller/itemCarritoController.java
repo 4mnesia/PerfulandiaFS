@@ -83,8 +83,7 @@ public class ItemCarritoController {
 
     // actualizar itemCarrito por id
     @PutMapping("/itemCarrito/{id}")
-    public ItemCarrito updateItemCarrito(@RequestParam Long id, @RequestBody ItemCarrito itemCarrito) {
-        // verificar si existe el itemCarrito
+    public ItemCarrito updateItemCarrito(@PathVariable Long id, @RequestBody ItemCarrito itemCarrito) {
         ItemCarrito existingItemCarrito = itemCarritoService.getItemCarritoById(id);
         if (existingItemCarrito == null) {
             throw new RuntimeException("ItemCarrito not found with id: " + id);
