@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.perfulandia.Perfulandia.model.Carrito;
 import com.perfulandia.Perfulandia.repository.CarritoRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -35,8 +37,11 @@ public class CarritoService {
     
 
     // eliminar un carrito
+    @Transactional
     public void deleteCarrito(Long id) {
-        carritoRepository.deleteById(id);
+        Carrito c = carritoRepository.findById(id)
+           .orElseThrow(() -> new EntityNotFoundException("Carrito no encontrado"));
+        carritoRepository.delete(c);
     }
 
     // actualizar un carrito

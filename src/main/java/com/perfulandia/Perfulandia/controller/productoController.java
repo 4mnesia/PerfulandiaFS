@@ -51,7 +51,7 @@ public class ProductoController {
                     .body("Error al crear el producto: " + e.getMessage());
         }
     }
-    // Ejemplo de un método para crear varios productos
+    //crear varios productos
     @PostMapping("/productos/batch")
     public ResponseEntity<?> createProductos(@RequestBody List<Producto> nuevosProductos) {
         try {
@@ -65,7 +65,7 @@ public class ProductoController {
         }
     }
     
-    // Ejemplo de un método para eliminar un producto por su ID
+    // eliminar un producto por su ID
     @DeleteMapping("/productos/{id}")
     public ResponseEntity<?> deleteProducto(@PathVariable Long id) {
         try {

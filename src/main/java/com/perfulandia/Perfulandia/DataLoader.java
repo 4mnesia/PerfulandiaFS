@@ -1,31 +1,33 @@
 package com.perfulandia.Perfulandia;
-
 import net.datafaker.Faker;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
 import com.perfulandia.Perfulandia.repository.*;
 import com.perfulandia.Perfulandia.model.*;
 import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
 import com.perfulandia.Perfulandia.model.Enums.RolUsuario;
-
 @Profile("dev")
 @Component
+@Transactional
 public class DataLoader implements CommandLineRunner {
-
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private ProductoRepository productoRepository;
-    @Autowired private CarritoRepository carritoRepository;
-    @Autowired private ItemCarritoRepository itemCarritoRepository;
-    @Autowired private OrdenRepository ordenRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private ProductoRepository productoRepository;
+    @Autowired
+    private CarritoRepository carritoRepository;
+    @Autowired
+    private ItemCarritoRepository itemCarritoRepository;
+    @Autowired
+    private OrdenRepository ordenRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -42,10 +44,15 @@ public class DataLoader implements CommandLineRunner {
         productoRepository.deleteAll();
 
         // 1) Crear Productos
-        Date fechaCreacionDate = faker.date().past(90, TimeUnit.DAYS);
+        LocalDateTime randomProdDate = LocalDateTime.now()
+                .minusDays(faker.number().numberBetween(1, 90));
+        Date fechaCreacionDate = Date.from(
+                randomProdDate.atZone(ZoneId.systemDefault())
+                        .toInstant());
+
         for (int i = 0; i < 10; i++) {
             BigDecimal precio = BigDecimal.valueOf(faker.number().numberBetween(1000, 20000))
-                                          .divide(BigDecimal.valueOf(100));
+                    .divide(BigDecimal.valueOf(100));
             Producto p = Producto.builder()
                     .nombre(faker.commerce().productName())
                     .descripcion(faker.lorem().sentence())
@@ -71,11 +78,11 @@ public class DataLoader implements CommandLineRunner {
             usuarioRepository.save(u);
         }
 
-        List<Usuario> usuarios  = usuarioRepository.findAll();
+        List<Usuario> usuarios = usuarioRepository.findAll();
         List<Producto> productos = productoRepository.findAll();
-        List<Carrito>  carritos  = new ArrayList<>();
+        List<Carrito> carritos = new ArrayList<>();
 
-        // 3) Para cada Usuario: crear Carrito + Items
+        // 3)crear Carrito + Items
         for (Usuario usuario : usuarios) {
             Carrito carrito = new Carrito();
             carrito.setUsuario(usuario);
@@ -89,10 +96,10 @@ public class DataLoader implements CommandLineRunner {
                 int qty = faker.number().numberBetween(1, 3);
 
                 ItemCarrito item = ItemCarrito.builder()
-                    .producto(prod)
-                    .cantidad(qty)
-                    .carrito(carrito)
-                    .build();
+                        .producto(prod)
+                        .cantidad(qty)
+                        .carrito(carrito)
+                        .build();
                 itemCarritoRepository.save(item);
             }
         }
@@ -116,12 +123,13 @@ public class DataLoader implements CommandLineRunner {
             }
 
             // Fechas aleatorias
-            Date past   = faker.date().past(30, TimeUnit.DAYS);
-            LocalDateTime created = LocalDateTime.ofInstant(past.toInstant(), ZoneId.systemDefault());
-            Date between = faker.date().between(past, new Date());
-            LocalDateTime updated = LocalDateTime.ofInstant(between.toInstant(), ZoneId.systemDefault());
+            LocalDateTime created = LocalDateTime.now()
+                    .minusDays(faker.number().numberBetween(1, 30));
+            long maxSecs = ChronoUnit.SECONDS.between(created, LocalDateTime.now());
+            LocalDateTime updated = created.plusSeconds(
+                    faker.number().numberBetween(0, (int) maxSecs));
 
-            // Aquí el cascade ALL de Orden se encargará de persistir los DetalleOrden
+            //cascade ALL de Orden se encargará de persistir los DetalleOrden
             Orden o = Orden.builder()
                     .detalles(detalles)
                     .estado(estados[random.nextInt(estados.length)])

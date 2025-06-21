@@ -17,7 +17,7 @@ public class Carrito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
@@ -25,6 +25,10 @@ public class Carrito {
     @JoinColumn(name = "carrito_id")
     @Builder.Default
     private List<ItemCarrito> item = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<DetalleOrden> detalles = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean estado;

@@ -1,7 +1,12 @@
 package com.perfulandia.Perfulandia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+
 import com.perfulandia.Perfulandia.service.CarritoService;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import com.perfulandia.Perfulandia.model.Carrito;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -77,14 +82,17 @@ public class CarritoController {
 
     // eliminar un carrito por su ID
     @DeleteMapping("/carrito/{id}")
-    public void deleteCarrito(@PathVariable Long id) {
+    public ResponseEntity<?> deleteCarrito(@PathVariable Long id) {
         try {
             carritoService.deleteCarrito(id);
+            return ResponseEntity.ok("Carrito eliminado con todo su contenido");
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            throw new RuntimeException("Error al eliminar el carrito: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                     .body("Error al eliminar el carrito: " + e.getMessage());
         }
     }
-
     // borrar todos los carritos
     @DeleteMapping("/carrito")
     public void deleteAllCarritos() {
