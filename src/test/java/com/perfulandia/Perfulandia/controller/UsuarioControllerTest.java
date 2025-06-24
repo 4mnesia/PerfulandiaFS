@@ -28,9 +28,6 @@ public class UsuarioControllerTest {
 
     @MockBean
     private UsuarioService usuarioService;
-    // Eliminado el uso de usuarioRepository porque no se puede usar con WebMvcTest
-
-    private Long usuarioIdLimpio = 1L; // Valor dummy para pruebas de delete
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -77,14 +74,14 @@ public class UsuarioControllerTest {
         mockMvc.perform(post("/api/perfulandia/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(usuario)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated()) // ahora esperamos 201
                 .andExpect(jsonPath("$.telefono").value("555-1234"));
     }
 
     @Test
     public void testUpdateUsuario() throws Exception {
         when(usuarioService.getUsuarioById(1L)).thenReturn(usuario);
-        when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
+        when(usuarioService.updateUsuario(any(Usuario.class))).thenReturn(usuario);
 
         mockMvc.perform(put("/api/perfulandia/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -94,17 +91,13 @@ public class UsuarioControllerTest {
     }
 
     @Test
-    void testDeleteUsuario() throws Exception {
-        // Simula que el usuario existe
-        when(usuarioService.getUsuarioById(usuarioIdLimpio)).thenReturn(usuario);
-        doNothing().when(usuarioService).deleteUsuario(usuarioIdLimpio);
+    public void testDeleteUsuario() throws Exception {
+        doNothing().when(usuarioService).deleteUsuario(1L);
 
-        mockMvc.perform(delete("/api/perfulandia/users/{id}", usuarioIdLimpio)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent()); // 204
+        mockMvc.perform(delete("/api/perfulandia/users/1"))
+                .andExpect(status().isNoContent());
 
-        verify(usuarioService, times(1)).getUsuarioById(usuarioIdLimpio);
-        verify(usuarioService, times(1)).deleteUsuario(usuarioIdLimpio);
+        verify(usuarioService, times(1)).deleteUsuario(1L);
     }
 
     @Test
@@ -122,8 +115,8 @@ public class UsuarioControllerTest {
         when(usuarioService.saveUsuarios(batch)).thenReturn(batch);
 
         mockMvc.perform(post("/api/perfulandia/users/batch")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(batch)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(batch)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[1].id").value(2))

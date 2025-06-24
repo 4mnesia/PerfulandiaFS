@@ -86,15 +86,26 @@ public class CarritoControllerTest {
         verify(carritoService, times(1)).getCarritoById(1L);
         verify(carritoService, times(1)).updateCarrito(any(Carrito.class));
     }
-    //test para eliminar todos los carritos
+    //test para eliminar un carrito
     @Test
     public void testDeleteCarrito() throws Exception {
         doNothing().when(carritoService).deleteCarrito(1L);
 
         mockMvc.perform(delete("/api/perfulandia/carrito/1"))
-               .andExpect(status().isOk());
+               .andExpect(status().isOk())
+               .andExpect(content().string("Carrito eliminado con todo su contenido"));
 
         verify(carritoService, times(1)).deleteCarrito(1L);
+    }
+    //test para eliminar todos los carritos
+    @Test
+    public void testDeleteAllCarritos() throws Exception {
+        doNothing().when(carritoService).deleteAllCarritos();
+
+        mockMvc.perform(delete("/api/perfulandia/carrito"))
+               .andExpect(status().isNoContent());
+
+        verify(carritoService, times(1)).deleteAllCarritos();
     }
     //test para crear varios carritos
     @Test

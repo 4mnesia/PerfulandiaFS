@@ -69,7 +69,7 @@ public class DataLoader implements CommandLineRunner {
         for (int i = 0; i < 5; i++) {
             Usuario u = Usuario.builder()
                 .nombre(faker.name().fullName())
-                .email(faker.internet().emailAddress())
+                .email(faker.internet().emailAddress() + i)
                 .direccion(faker.address().fullAddress())
                 .telefono(faker.phoneNumber().phoneNumber())
                 .rol(roles[random.nextInt(roles.length)])

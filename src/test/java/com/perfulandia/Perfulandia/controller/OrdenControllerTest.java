@@ -116,15 +116,15 @@ public class OrdenControllerTest {
                 .andExpect(jsonPath("$.estado").value("PENDIENTE"));
     }
 
-    @Test
-    public void testDeleteOrden() throws Exception {
-        doNothing().when(ordenService).deleteOrden(1L);
+     @Test
+ public void testDeleteOrden() throws Exception {
+     doNothing().when(ordenService).deleteOrden(1L);
 
-        mockMvc.perform(delete("/api/perfulandia/orden/1"))
-                .andExpect(status().isOk());
+     mockMvc.perform(delete("/api/perfulandia/orden/1"))
+           .andExpect(status().isNoContent()); 
 
-        verify(ordenService, times(1)).deleteOrden(1L);
-    }
+     verify(ordenService, times(1)).deleteOrden(1L);
+ }
 
     @Test
     public void testDeleteAllOrdenes() throws Exception {
