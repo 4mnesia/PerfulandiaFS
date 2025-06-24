@@ -7,7 +7,6 @@ import com.perfulandia.Perfulandia.model.Usuario;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.springframework.validation.annotation.Validated;
 
@@ -53,12 +52,11 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+    // CREAR VARIOS USUARIOS
     @PostMapping("/users/batch")
     public ResponseEntity<?> saveUsuarios(@Valid @RequestBody List<Usuario> usuarios) {
         try {
-            List<Usuario> nuevos = usuarios.stream()
-                    .map(usuarioService::saveUsuario)
-                    .collect(Collectors.toList());
+            List<Usuario> nuevos = usuarioService.saveUsuarios(usuarios);
             return ResponseEntity.ok(nuevos);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());

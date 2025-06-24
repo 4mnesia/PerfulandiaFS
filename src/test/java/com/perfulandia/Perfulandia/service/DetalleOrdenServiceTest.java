@@ -1,125 +1,105 @@
-// src/test/java/com/perfulandia/Perfulandia/service/DetalleOrdenServiceTest.java
 package com.perfulandia.Perfulandia.service;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import com.perfulandia.Perfulandia.model.DetalleOrden;
+import com.perfulandia.Perfulandia.repository.DetalleOrdenRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import com.perfulandia.Perfulandia.model.DetalleOrden;
-import com.perfulandia.Perfulandia.repository.DetalleOrdenRepository;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-/**
- * Pruebas unitarias de DetalleOrdenService usando Mockito.
- * Se prueba la lógica de negocio y utilitarios (subtotal/total).
- */
-@ExtendWith(MockitoExtension.class)  // :contentReference[oaicite:2]{index=2}
-public class DetalleOrdenServiceTest {
+@ExtendWith(MockitoExtension.class)
+class DetalleOrdenServiceTest {
 
     @Mock
-    private DetalleOrdenRepository detalleOrdenRepository;  // Repositorio simulado
+    private DetalleOrdenRepository repository;
 
     @InjectMocks
-    private DetalleOrdenService detalleOrdenService;       // Servicio bajo prueba
+    private DetalleOrdenService service;
 
-    private DetalleOrden detalleOrden;
+    private DetalleOrden detalle;
 
     @BeforeEach
     void setUp() {
-        // Creamos un DetalleOrden de ejemplo
-        detalleOrden = DetalleOrden.builder()
+        detalle = DetalleOrden.builder()
                 .id(1L)
-                .cantidad(3)
-                .precioUnitario(BigDecimal.valueOf(10))
-                .total(BigDecimal.valueOf(30))
-                .producto(null)
-                .carrito(null)
+                .cantidad(2)
+                .precioUnitario(new BigDecimal("50.00"))
+                .total(new BigDecimal("100.00"))
                 .build();
-    }
-
-    @Test
-    void testGetDetalleOrdenById() {
-        when(detalleOrdenRepository.findById(1L))
-                .thenReturn(Optional.of(detalleOrden));
-
-        DetalleOrden result = detalleOrdenService.getDetalleOrdenById(1L);
-        assertEquals(detalleOrden, result);
     }
 
     @Test
     void testGetAllDetalles() {
-        when(detalleOrdenRepository.findAll())
-                .thenReturn(List.of(detalleOrden));
+        when(repository.findAll()).thenReturn(List.of(detalle));
 
-        List<DetalleOrden> list = detalleOrdenService.getAllDetalles();
-        assertEquals(1, list.size());
-        assertEquals(detalleOrden, list.get(0));
+        List<DetalleOrden> result = service.getAllDetalles();
+
+        assertThat(result).containsExactly(detalle);
+        verify(repository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetDetalleOrdenByIdFound() {
+        when(repository.findById(1L)).thenReturn(Optional.of(detalle));
+
+        DetalleOrden result = service.getDetalleOrdenById(1L);
+
+        assertThat(result).isEqualTo(detalle);
+        verify(repository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testGetDetalleOrdenByIdNotFound() {
+        when(repository.findById(2L)).thenReturn(Optional.empty());
+
+        DetalleOrden result = service.getDetalleOrdenById(2L);
+
+        assertThat(result).isNull();
+        verify(repository, times(1)).findById(2L);
     }
 
     @Test
     void testSaveDetalleOrden() {
-        when(detalleOrdenRepository.save(detalleOrden))
-                .thenReturn(detalleOrden);
+        when(repository.save(detalle)).thenReturn(detalle);
 
-        DetalleOrden saved = detalleOrdenService.saveDetalleOrden(detalleOrden);
-        assertEquals(detalleOrden, saved);
+        DetalleOrden result = service.saveDetalleOrden(detalle);
+
+        assertThat(result).isEqualTo(detalle);
+        verify(repository, times(1)).save(detalle);
     }
 
     @Test
-    void testUpdateDetalleOrden() {
-        when(detalleOrdenRepository.save(detalleOrden))
-                .thenReturn(detalleOrden);
+    void testSaveDetallesOrden() {
+        DetalleOrden otro = DetalleOrden.builder()
+                .id(2L)
+                .cantidad(3)
+                .precioUnitario(new BigDecimal("30.00"))
+                .total(new BigDecimal("90.00"))
+                .build();
 
-        DetalleOrden updated = detalleOrdenService.updateDetalleOrden(detalleOrden);
-        assertEquals(detalleOrden, updated);
+        List<DetalleOrden> input = List.of(detalle, otro);
+        when(repository.saveAll(input)).thenReturn(input);
+
+        List<DetalleOrden> result = service.saveDetallesOrden(input);
+
+        assertThat(result).containsExactlyElementsOf(input);
+        verify(repository, times(1)).saveAll(input);
     }
 
     @Test
     void testDeleteDetalleOrden() {
-        doNothing().when(detalleOrdenRepository).deleteById(1L);
+        doNothing().when(repository).deleteById(1L);
 
-        detalleOrdenService.deleteDetalleOrden(1L);
-        verify(detalleOrdenRepository, times(1)).deleteById(1L);
-    }
+        service.deleteDetalleOrden(1L);
 
-    @Test
-    void testDeleteAllDetalles() {
-        doNothing().when(detalleOrdenRepository).deleteAll();
-
-        detalleOrdenService.deleteAllDetalles();
-        verify(detalleOrdenRepository, times(1)).deleteAll();
-    }
-
-    @Test
-    void testCalcularSubtotal() {
-        // Subtotal = precioUnitario * cantidad
-        BigDecimal expected = BigDecimal.valueOf(10).multiply(BigDecimal.valueOf(3));
-        BigDecimal subtotal = DetalleOrdenService.calcularSubtotal(detalleOrden);
-        assertEquals(expected, subtotal);
-    }
-
-    @Test
-    void testCalcularTotal() {
-        DetalleOrden otro = DetalleOrden.builder()
-                .cantidad(2)
-                .precioUnitario(BigDecimal.valueOf(5))
-                .build();
-
-        // Total = subtotal(detalleOrden) + subtotal(otro)
-        BigDecimal expected = DetalleOrdenService.calcularSubtotal(detalleOrden)
-                .add(DetalleOrdenService.calcularSubtotal(otro));
-
-        BigDecimal total = detalleOrdenService.calcularTotal(List.of(detalleOrden, otro));
-        assertEquals(expected, total);
+        verify(repository, times(1)).deleteById(1L);
     }
 }

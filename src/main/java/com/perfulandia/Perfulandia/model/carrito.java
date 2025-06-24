@@ -11,27 +11,29 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class Carrito {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    // Relación unidireccional a Usuario
+    @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
+    // Unidireccional a ItemCarrito: crea FK carrito_id en item_carrito
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "carrito_id")
     @Builder.Default
     private List<ItemCarrito> item = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    // Unidireccional a DetalleOrden: crea FK carrito_id en detalle_orden
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "carrito_id")
     @Builder.Default
     private List<DetalleOrden> detalles = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean estado;
-
 }
-

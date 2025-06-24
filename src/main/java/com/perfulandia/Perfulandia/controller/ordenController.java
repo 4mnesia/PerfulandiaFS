@@ -2,8 +2,10 @@ package com.perfulandia.Perfulandia.controller;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import com.perfulandia.Perfulandia.model.Orden; // <-- IMPORTA LA CLASE CON MAYÚSCULA
+
+import com.perfulandia.Perfulandia.model.Orden;
 import com.perfulandia.Perfulandia.service.OrdenService;
 
 import java.util.List;
@@ -11,14 +13,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/perfulandia")
 public class OrdenController {
+
     @Autowired
-    private OrdenService ordenService; // <-- minúscula la variable
+    private OrdenService ordenService;
 
     // listar todo
     @GetMapping("/orden")
     public ResponseEntity<?> getAllOrdenes() {
         try {
-            List<Orden> ordenes = ordenService.getAllOrdenes(); // <-- Orden, no orden
+            List<Orden> ordenes = ordenService.getAllOrdenes();
             return ResponseEntity.ok(ordenes);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al obtener las ordenes: " + e.getMessage());
@@ -29,7 +32,7 @@ public class OrdenController {
     @GetMapping("/orden/{id}")
     public ResponseEntity<?> getOrdenById(@PathVariable Long id) {
         try {
-            Orden orden = ordenService.getOrdenById(id); // <-- tipo corregido a 'orden'
+            Orden orden = ordenService.getOrdenById(id);
             if (orden != null) {
                 return ResponseEntity.ok(orden);
             } else {
@@ -39,8 +42,8 @@ public class OrdenController {
             return ResponseEntity.badRequest().body("Error al obtener la orden por id: " + e.getMessage());
         }
     }
-    // guardar
 
+    // guardar
     @PostMapping("/orden")
     public ResponseEntity<?> saveOrden(@RequestBody Orden orden) {
         try {
@@ -50,10 +53,25 @@ public class OrdenController {
             if (orden.getDetalles() == null || orden.getDetalles().isEmpty()) {
                 return ResponseEntity.badRequest().body("La orden debe tener al menos un detalle");
             }
-            Orden ordenGuardada = ordenService.saveOrden(orden);
-            return ResponseEntity.ok(ordenGuardada);
+            ordenService.saveOrden(orden);
+            // Aquí devolvemos 201 CREATED y el mensaje esperado por el test
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body("Orden creada correctamente");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al guardar la orden: " + e.getMessage());
+        }
+    }
+    // crear varias ordenes
+    @PostMapping("/orden/batch")
+    public ResponseEntity<?> saveOrdenes(@RequestBody List<Orden> ordenes) {
+        try {
+            List<Orden> ordenesGuardadas = ordenService.saveOrdenes(ordenes);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(ordenesGuardadas);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al guardar las ordenes: " + e.getMessage());
         }
     }
 
@@ -72,7 +90,7 @@ public class OrdenController {
         }
     }
 
-    // delet por id
+    // delete por id
     @DeleteMapping("/orden/{id}")
     public ResponseEntity<?> deleteOrden(@PathVariable Long id) {
         try {
@@ -83,7 +101,7 @@ public class OrdenController {
         }
     }
 
-    // delet all
+    // delete all
     @DeleteMapping("/orden")
     public ResponseEntity<?> deleteAllOrdenes() {
         try {

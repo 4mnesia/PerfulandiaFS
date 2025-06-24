@@ -46,16 +46,17 @@ public class CarritoController {
             throw new RuntimeException("Error al crear el carrito: " + e.getMessage());
         }
     }
-
     // crear varios carritos
     @PostMapping("/carrito/batch")
-    public List<Carrito> createCarritos(@RequestBody List<Carrito> nuevosCarritos) {
+    public ResponseEntity<List<Carrito>> createCarritosBatch(@RequestBody List<Carrito> carritos) {
         try {
-            return nuevosCarritos.stream()
-                    .map(carritoService::saveCarrito)
-                    .toList();
+            if (carritos == null || carritos.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            List<Carrito> saved = carritoService.saveCarritos(carritos);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            throw new RuntimeException("Error al crear los carritos: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 

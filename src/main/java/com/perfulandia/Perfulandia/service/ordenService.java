@@ -25,6 +25,10 @@ public class OrdenService {
     public Orden saveOrden(Orden orden) {
         return ordenRepository.save(orden);
     }
+    //guardar varias ordenes
+    public List<Orden> saveOrdenes(List<Orden> ordenes) {
+        return ordenRepository.saveAll(ordenes);
+    }
     //modificar orden
     public Orden updateOrden(Long id, Orden orden) {
         if (ordenRepository.existsById(id)) {

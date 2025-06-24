@@ -34,7 +34,10 @@ public class CarritoService {
     public Carrito saveCarrito(Carrito carrito) {
         return carritoRepository.save(carrito);
     }
-    
+    // guardar varios carritos
+    public List<Carrito> saveCarritos(List<Carrito> carritos) {
+        return carritoRepository.saveAll(carritos);
+    }
 
     // eliminar un carrito
     @Transactional
@@ -55,14 +58,6 @@ public class CarritoService {
     // elimianr todos losc arritos
     public void deleteAllCarritos() {
         carritoRepository.deleteAll();
-    }
-
-
-    // crear varios carritos
-    public List<Carrito> createCarritos(List<Carrito> nuevosCarritos) {
-        return nuevosCarritos.stream()
-                .map(carritoRepository::save)
-                .toList();
     }
 
 }

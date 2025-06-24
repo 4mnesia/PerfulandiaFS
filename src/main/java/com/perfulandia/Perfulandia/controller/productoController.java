@@ -28,18 +28,22 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
-    // Ejemplo de un método para obtener un producto por su ID y si no existe devolver un null
+    // Ejemplo de un método para obtener un producto por su ID y si no existe
+    // devolver un null
     @GetMapping("/productos/{id}")
     public ResponseEntity<?> getProductoById(@PathVariable Long id) {
         try {
-            if (id == null || id <= 0) throw new Exception();
+            if (id == null || id <= 0)
+                throw new Exception();
             Producto producto = productoService.getProductoById(id);
-            if (producto == null) throw new Exception();
+            if (producto == null)
+                throw new Exception();
             return ResponseEntity.ok(producto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error");
         }
     }
+
     // Ejemplo de un método para crear un nuevo producto
     @PostMapping("/productos")
     public ResponseEntity<?> createProducto(@RequestBody Producto nuevoProducto) {
@@ -51,20 +55,18 @@ public class ProductoController {
                     .body("Error al crear el producto: " + e.getMessage());
         }
     }
-    //crear varios productos
+
+    // crear varios productos
     @PostMapping("/productos/batch")
-    public ResponseEntity<?> createProductos(@RequestBody List<Producto> nuevosProductos) {
-        try {
-            List<Producto> productosGuardados = nuevosProductos.stream()
-                    .map(productoService::saveProducto)
-                    .toList();
-            return ResponseEntity.status(HttpStatus.CREATED).body(productosGuardados);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al crear los productos: " + e.getMessage());
+    public ResponseEntity<List<Producto>> createProductosBatch(
+            @RequestBody List<Producto> productos) {
+        if (productos == null || productos.isEmpty()) {
+            return ResponseEntity.badRequest().build();
         }
+        List<Producto> saved = productoService.saveAllProductos(productos);
+        return ResponseEntity.ok(saved);
     }
-    
+
     // eliminar un producto por su ID
     @DeleteMapping("/productos/{id}")
     public ResponseEntity<?> deleteProducto(@PathVariable Long id) {
@@ -79,7 +81,8 @@ public class ProductoController {
                     .body("Error al eliminar el producto: " + e.getMessage());
         }
     }
-    //borrar todos los productos
+
+    // borrar todos los productos
     @DeleteMapping("/productos")
     public ResponseEntity<String> deleteAllProductos() {
         try {
@@ -93,7 +96,8 @@ public class ProductoController {
                     .body("Error al eliminar los productos: " + e.getMessage());
         }
     }
-    //actualizar un producto
+
+    // actualizar un producto
     @PutMapping("/productos/{id}")
     public ResponseEntity<?> updateProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
         try {
@@ -113,5 +117,5 @@ public class ProductoController {
                     .body("Error al actualizar el producto: " + e.getMessage());
         }
     }
-    
+
 }

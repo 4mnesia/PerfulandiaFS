@@ -1,5 +1,6 @@
 package com.perfulandia.Perfulandia.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -10,7 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +28,9 @@ public class UsuarioControllerTest {
 
     @MockBean
     private UsuarioService usuarioService;
+    // Eliminado el uso de usuarioRepository porque no se puede usar con WebMvcTest
+
+    private Long usuarioIdLimpio = 1L; // Valor dummy para pruebas de delete
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -69,8 +75,8 @@ public class UsuarioControllerTest {
         when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
 
         mockMvc.perform(post("/api/perfulandia/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuario)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(usuario)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.telefono").value("555-1234"));
     }
@@ -81,19 +87,48 @@ public class UsuarioControllerTest {
         when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
 
         mockMvc.perform(put("/api/perfulandia/users/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuario)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(usuario)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rol").value("EMPLEADOVENTA"));
     }
 
     @Test
-    public void testDeleteUsuario() throws Exception {
-        doNothing().when(usuarioService).deleteUsuario(1L);
+    void testDeleteUsuario() throws Exception {
+        // Simula que el usuario existe
+        when(usuarioService.getUsuarioById(usuarioIdLimpio)).thenReturn(usuario);
+        doNothing().when(usuarioService).deleteUsuario(usuarioIdLimpio);
 
-        mockMvc.perform(delete("/api/perfulandia/users/1"))
-                .andExpect(status().isNoContent()); // DELETE devuelve 204
+        mockMvc.perform(delete("/api/perfulandia/users/{id}", usuarioIdLimpio)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent()); // 204
 
-        verify(usuarioService, times(1)).deleteUsuario(1L);
+        verify(usuarioService, times(1)).getUsuarioById(usuarioIdLimpio);
+        verify(usuarioService, times(1)).deleteUsuario(usuarioIdLimpio);
+    }
+
+    @Test
+    public void testCreateUsuariosBatch() throws Exception {
+        Usuario usuario2 = Usuario.builder()
+                .id(2L)
+                .nombre("Maria Lopez")
+                .email("maria@example.com")
+                .contraseña("passhrh456757")
+                .direccion("Calle Nueva 789")
+                .telefono("555-5678")
+                .rol(RolUsuario.LOGISTICA)
+                .build();
+        List<Usuario> batch = List.of(usuario, usuario2);
+        when(usuarioService.saveUsuarios(batch)).thenReturn(batch);
+
+        mockMvc.perform(post("/api/perfulandia/users/batch")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(batch)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].nombre").value("Maria Lopez"));
+
+        verify(usuarioService, times(1)).saveUsuarios(batch);
     }
 }

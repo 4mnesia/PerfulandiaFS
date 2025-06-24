@@ -30,6 +30,10 @@ public class DetalleOrdenService {
     public DetalleOrden saveDetalleOrden(DetalleOrden detalleOrden) {
         return detalleOrdenRepository.save(detalleOrden);
     }
+    //guardar varios detalles
+    public List<DetalleOrden> saveDetallesOrden(List<DetalleOrden> detallesOrden) {
+        return detalleOrdenRepository.saveAll(detallesOrden);
+    }   
 
     // eliminar un detalle
     public void deleteDetalleOrden(Long id) {

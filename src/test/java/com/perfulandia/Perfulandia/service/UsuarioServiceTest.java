@@ -69,4 +69,30 @@ class UsuarioServiceTest {
         assertDoesNotThrow(() -> usuarioService.deleteUsuario(1L));
         verify(usuarioRepository, times(1)).deleteById(1L);
     }
+
+    @Test
+    void testSaveUsuariosBatch() {
+        Usuario usuario2 = Usuario.builder()
+                .id(2L)
+                .nombre("Luis")
+                .email("luis@test.com")
+                .contraseña("clave4567")
+                .direccion("Otra")
+                .telefono("456")
+                .rol(RolUsuario.EMPLEADOVENTA)
+                .build();
+        List<Usuario> batch = List.of(usuario, usuario2);
+        when(usuarioRepository.saveAll(batch)).thenReturn(batch);
+
+        List<Usuario> guardados = usuarioService.saveUsuarios(batch);
+        assertEquals(2, guardados.size());
+        assertEquals("Luis", guardados.get(1).getNombre());
+    }
+
+    @Test
+    void testDeleteUsuarioPorId() {
+        doNothing().when(usuarioRepository).deleteById(1L);
+        usuarioService.deleteUsuario(1L);
+        verify(usuarioRepository, times(1)).deleteById(1L);
+    }
 }

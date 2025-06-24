@@ -2,26 +2,22 @@ package com.perfulandia.Perfulandia.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "item_carrito")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder 
+@Builder
 public class ItemCarrito {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Relación unidireccional a Producto
     @ManyToOne
-    @JoinColumn(name = "carrito_id")
-    @JsonIgnore       
-    private Carrito carrito;
-
-    @ManyToOne
-    @JoinColumn(name = "producto_id")
+    @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
     @Column(nullable = false)

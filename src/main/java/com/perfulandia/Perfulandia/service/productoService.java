@@ -29,6 +29,10 @@ public class ProductoService {
     public Producto saveProducto(Producto producto) {
         return productoRepository.save(producto);
     }
+    // guardar varios productos
+    public List<Producto> saveAllProductos(List<Producto> productos) {
+        return productoRepository.saveAll(productos);
+    }
 
     // eliminar un producto
     public void deleteProducto(Long id) {
@@ -44,5 +48,6 @@ public class ProductoService {
     public void deleteAllProductos() {
         productoRepository.deleteAll();
     }
+
 
 }

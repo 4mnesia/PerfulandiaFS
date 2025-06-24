@@ -1,94 +1,116 @@
-
 package com.perfulandia.Perfulandia.controller;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 import com.perfulandia.Perfulandia.model.ItemCarrito;
 import com.perfulandia.Perfulandia.service.ItemCarritoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/perfulandia")
+@RequestMapping("/api/perfulandia/itemcarrito")
 public class ItemCarritoController {
+
     @Autowired
-    private ItemCarritoService itemCarritoService;
+    private ItemCarritoService service;
 
-    // listar todo
-    @GetMapping("/itemCarrito")
-    public List<ItemCarrito> getAllItemCarrito() {
-        List<ItemCarrito> items = itemCarritoService.getAllItemCarritos();
-        if (items == null || items.isEmpty()) {
-            throw new RuntimeException("No se encontraron items en el carrito.");
+    // GET /api/perfulandia/itemcarrito
+    @GetMapping
+    public ResponseEntity<?> getAllItems() {
+        try {
+            return ResponseEntity.ok(service.getAllItemCarritos());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body("Error al obtener items: " + e.getMessage());
         }
-        return items;
     }
 
-    // listar por id
-    @GetMapping("/itemCarrito/{id}")
-    public ItemCarrito getItemCarritoById(@PathVariable Long id) {
+    // GET /api/perfulandia/itemcarrito/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getItemById(@PathVariable Long id) {
         try {
-            ItemCarrito item = itemCarritoService.getItemCarritoById(id);
-            if (item == null) {
-                throw new RuntimeException("ItemCarrito not found with id: " + id);
+            ItemCarrito item = service.getItemCarritoById(id);
+            if (item != null) {
+                return ResponseEntity.ok(item);
+            } else {
+                return ResponseEntity.notFound()
+                        .build();
             }
-            return item;
         } catch (Exception e) {
-            throw new RuntimeException("Error retrieving ItemCarrito: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body("Error al obtener item por id: " + e.getMessage());
         }
     }
 
-    // crear itemCarrito
-    @PostMapping("/itemCarrito")
-    public ItemCarrito createItemCarrito(@RequestBody ItemCarrito nuevoItemCarrito) {
+    // POST /api/perfulandia/itemcarrito  (un solo item)
+    @PostMapping
+    public ResponseEntity<?> createItem(@RequestBody ItemCarrito item) {
         try {
-            return itemCarritoService.saveItemCarrito(nuevoItemCarrito);
+            if (item == null) {
+                return ResponseEntity.badRequest()
+                        .body("El item no puede ser nulo");
+            }
+            ItemCarrito saved = service.saveItemCarrito(item);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            throw new RuntimeException("Error al crear el itemCarrito: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body("Error al crear item: " + e.getMessage());
         }
     }
 
-    // crear varios itemCarrito
-    @PostMapping("/itemCarrito/batch")
-    public List<ItemCarrito> createItemsCarrito(@RequestBody List<ItemCarrito> nuevosItemsCarrito) {
+    // POST /api/perfulandia/itemcarrito/batch  (varios items de golpe)
+    @PostMapping("/batch")
+    public ResponseEntity<?> createItems(@RequestBody List<ItemCarrito> items) {
         try {
-            return nuevosItemsCarrito.stream()
-                    .map(itemCarritoService::saveItemCarrito)
-                    .toList();
+            if (items == null || items.isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body("La lista de items no puede estar vacía");
+            }
+            List<ItemCarrito> saved = service.saveAllItemCarritos(items);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            throw new RuntimeException("Error al crear los itemsCarrito: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body("Error al crear items en lote: " + e.getMessage());
         }
     }
 
-    // eliminar itemCarrito por id
-    @DeleteMapping("/itemCarrito/{id}")
-    public void deleteItemCarrito(@PathVariable Long id) {
+    // PUT /api/perfulandia/itemcarrito/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateItem(@PathVariable Long id, @RequestBody ItemCarrito item) {
         try {
-            itemCarritoService.deleteItemCarrito(id);
+            ItemCarrito existing = service.getItemCarritoById(id);
+            if (existing == null) {
+                return ResponseEntity.notFound().build();
+            }
+            // Validaciones básicas
+            if (item.getCantidad() == null || item.getCantidad() < 1) {
+                return ResponseEntity.badRequest().body("La cantidad debe ser mayor a 0");
+            }
+            if (item.getProducto() == null) {
+                return ResponseEntity.badRequest().body("El producto no puede ser nulo");
+            }
+            // Actualiza solo los campos necesarios
+            existing.setCantidad(item.getCantidad());
+            existing.setProducto(item.getProducto());
+            // Agrega aquí otros campos que quieras actualizar
+
+            service.saveItemCarrito(existing);
+            return ResponseEntity.ok("Item actualizado correctamente");
         } catch (Exception e) {
-            throw new RuntimeException("Error al eliminar el itemCarrito: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error al actualizar item: " + e.getMessage());
         }
     }
 
-    // eliminar todos los itemCarrito
-    @DeleteMapping("/itemCarrito")
-    public void deleteAllItemsCarrito() {
+    // DELETE /api/perfulandia/itemcarrito/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteItem(@PathVariable Long id) {
         try {
-            itemCarritoService.deleteAllItemCarritos();
+            service.deleteItemCarrito(id);
+            return ResponseEntity.ok("Item eliminado correctamente");
         } catch (Exception e) {
-            throw new RuntimeException("Error al eliminar todos los itemsCarrito: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body("Error al eliminar item: " + e.getMessage());
         }
-    }
-
-    // actualizar itemCarrito por id
-    @PutMapping("/itemCarrito/{id}")
-    public ItemCarrito updateItemCarrito(@PathVariable Long id, @RequestBody ItemCarrito itemCarrito) {
-        ItemCarrito existingItemCarrito = itemCarritoService.getItemCarritoById(id);
-        if (existingItemCarrito == null) {
-            throw new RuntimeException("ItemCarrito not found with id: " + id);
-        }
-        itemCarrito.setId(id);
-        return itemCarritoService.updateItemCarrito(itemCarrito);
     }
 }

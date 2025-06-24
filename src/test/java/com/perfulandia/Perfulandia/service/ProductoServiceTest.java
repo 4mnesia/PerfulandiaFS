@@ -67,6 +67,49 @@ class ProductoServiceTest {
     }
 
     @Test
+    void testUpdateProducto() {
+        Producto modified = Producto.builder()
+                .id(1L)
+                .nombre("Modificado")
+                .descripcion("Desc Modificada")
+                .categoria("Cat Modificada")
+                .marca("Marca Modificada")
+                .modelo("Model Modificado")
+                .precio(new BigDecimal("77.77"))
+                .stock(20)
+                .fechaCreacion(producto.getFechaCreacion())
+                .build();
+
+        when(productoRepository.findById(1L)).thenReturn(Optional.of(producto));
+        when(productoRepository.save(modified)).thenReturn(modified);
+
+        Producto result = productoService.updateProducto(modified);
+        assertNotNull(result);
+        assertEquals("Modificado", result.getNombre());
+    }
+    @Test
+    void testCreateProductosBatch() {
+        List<Producto> productos = List.of(
+                Producto.builder().id(1L).nombre("Producto 1").build(),
+                Producto.builder().id(2L).nombre("Producto 2").build()
+        );
+
+        when(productoRepository.saveAll(productos)).thenReturn(productos);
+
+        List<Producto> result = productoService.saveAllProductos(productos);
+        assertEquals(2, result.size());
+        assertEquals("Producto 1", result.get(0).getNombre());
+    }
+
+    @Test
+    void testDeleteAllProductos() {
+        doNothing().when(productoRepository).deleteAll();
+
+        assertDoesNotThrow(() -> productoService.deleteAllProductos());
+        verify(productoRepository, times(1)).deleteAll();
+    }
+
+    @Test
     void testDeleteProducto() {
         doNothing().when(productoRepository).deleteById(1L);
 

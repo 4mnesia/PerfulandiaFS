@@ -1,7 +1,6 @@
 package com.perfulandia.Perfulandia.model;
 
 import java.math.BigDecimal;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,20 +10,17 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class DetalleOrden {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Relación unidireccional a Producto
     @ManyToOne
-    @JoinColumn(name = "producto_id")
-    private Producto producto;  
+    @JoinColumn(name = "producto_id", nullable = false)
+    private Producto producto;
 
-    @ManyToOne
-    @JoinColumn(name = "carrito_id", nullable = true)
-    private Carrito carrito;
-    
     @Column(nullable = false)
     private Integer cantidad;
 
@@ -42,6 +38,3 @@ public class DetalleOrden {
         return this.precioUnitario.multiply(BigDecimal.valueOf(this.cantidad));
     }
 }
-
-
-//oAuth sirve para autenticar y autorizar a los usuarios en aplicaciones web y móviles, permitiendo el acceso seguro a recursos protegidos sin necesidad de compartir credenciales directamente. Es un estándar abierto que facilita la delegación de permisos entre aplicaciones y servicios, mejorando la seguridad y la experiencia del usuario al evitar el manejo directo de contraseñas.

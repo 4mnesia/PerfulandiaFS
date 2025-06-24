@@ -27,6 +27,10 @@ public class UsuarioService {
     public Usuario saveUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
+    // guardar varios usuarios
+    public List<Usuario> saveUsuarios(List<Usuario> usuarios) {
+        return usuarioRepository.saveAll(usuarios);
+    }
     // eliminar un usuario
     public void deleteUsuario(Long id) {
         usuarioRepository.deleteById(id);

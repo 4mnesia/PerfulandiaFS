@@ -28,10 +28,10 @@ public class Usuario {
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String contraseña;
 
-    @Column(name = "direccion", nullable = false)
+    @Column(name = "direccion")
     private String direccion;
     
-    @Column(name = "telefono", nullable = false)
+    @Column(name = "telefono")
     private String telefono;
 
     @Enumerated(EnumType.STRING)

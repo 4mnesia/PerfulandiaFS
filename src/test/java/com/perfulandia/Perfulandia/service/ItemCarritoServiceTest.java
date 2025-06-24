@@ -1,76 +1,118 @@
-// src/test/java/com/perfulandia/perfulandia/service/ItemCarritoServiceTest.java
 package com.perfulandia.Perfulandia.service;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import com.perfulandia.Perfulandia.model.ItemCarrito;
 import com.perfulandia.Perfulandia.repository.ItemCarritoRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
-public class ItemCarritoServiceTest {
+class ItemCarritoServiceTest {
 
     @Mock
-    private ItemCarritoRepository repo;            // Mock del repositorio
+    private ItemCarritoRepository repository;
 
     @InjectMocks
-    private ItemCarritoService service;            // Servicio con el repo inyectado
+    private ItemCarritoService service;
 
-    private ItemCarrito item;
+    private ItemCarrito item1;
+    private ItemCarrito item2;
 
     @BeforeEach
     void setUp() {
-        // Objeto de prueba
-        item = ItemCarrito.builder()
+        item1 = ItemCarrito.builder()
                 .id(1L)
                 .cantidad(2)
+                .build();
+        item2 = ItemCarrito.builder()
+                .id(2L)
+                .cantidad(5)
                 .build();
     }
 
     @Test
-    void testGetAll() {
-        when(repo.findAll()).thenReturn(List.of(item));
+    void testGetAllItemCarritos() {
+        when(repository.findAll()).thenReturn(List.of(item1, item2));
 
-        var result = service.getAllItemCarritos();
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(repo).findAll();
+        List<ItemCarrito> result = service.getAllItemCarritos();
+
+        assertThat(result).containsExactly(item1, item2);
+        verify(repository, times(1)).findAll();
     }
 
     @Test
-    void testGetById() {
-        when(repo.findById(1L)).thenReturn(Optional.of(item));
+    void testGetItemCarritoById() {
+        when(repository.findById(1L)).thenReturn(Optional.of(item1));
 
-        var result = service.getItemCarritoById(1L);
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        verify(repo).findById(1L);
+        ItemCarrito result = service.getItemCarritoById(1L);
+
+        assertThat(result).isEqualTo(item1);
+        verify(repository, times(1)).findById(1L);
     }
 
     @Test
-    void testSave() {
-        when(repo.save(any(ItemCarrito.class))).thenReturn(item);
+    void testSaveItemCarrito() {
+        when(repository.save(item1)).thenReturn(item1);
 
-        var saved = service.saveItemCarrito(item);
-        assertNotNull(saved);
-        assertEquals(item.getId(), saved.getId());
-        verify(repo).save(item);
+        ItemCarrito result = service.saveItemCarrito(item1);
+
+        assertThat(result).isEqualTo(item1);
+        verify(repository, times(1)).save(item1);
     }
 
     @Test
-    void testDelete() {
-        doNothing().when(repo).deleteById(1L);
+    void testSaveAllItemCarritos() {
+        List<ItemCarrito> batch = List.of(item1, item2);
+        when(repository.saveAll(batch)).thenReturn(batch);
+
+        List<ItemCarrito> result = service.saveAllItemCarritos(batch);
+
+        assertThat(result).containsExactly(item1, item2);
+        verify(repository, times(1)).saveAll(batch);
+    }
+
+
+    @Test
+    void testDeleteItemCarrito() {
+        doNothing().when(repository).deleteById(1L);
 
         service.deleteItemCarrito(1L);
-        verify(repo).deleteById(1L);
+
+        verify(repository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testUpdateItemCarrito() {
+        // Preparamos un item existente
+        ItemCarrito existing = ItemCarrito.builder()
+                .id(1L)
+                .cantidad(2)
+                .build();
+
+        // El item modificado que queremos guardar
+        ItemCarrito modified = ItemCarrito.builder()
+                .id(1L)
+                .cantidad(10)
+                .build();
+
+        // Stub: al buscar por ID devolvemos el existente
+        when(repository.findById(1L)).thenReturn(Optional.of(existing));
+        // Stub: al guardar devolvemos el objeto que se le pase
+        when(repository.save(any(ItemCarrito.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Llamada al método real que toma (item)
+        ItemCarrito result = service.updateItemCarrito(modified);
+
+        // Verificaciones
+        verify(repository, times(1)).save(any(ItemCarrito.class));
+        assertThat(result.getCantidad()).isEqualTo(10);
     }
 }

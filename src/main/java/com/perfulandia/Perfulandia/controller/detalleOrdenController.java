@@ -1,97 +1,107 @@
 package com.perfulandia.Perfulandia.controller;
 
-import com.perfulandia.Perfulandia.service.DetalleOrdenService;
 import com.perfulandia.Perfulandia.model.DetalleOrden;
-import org.springframework.web.bind.annotation.*;
+import com.perfulandia.Perfulandia.service.DetalleOrdenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/perfulandia")
-
 public class DetalleOrdenController {
+
     @Autowired
-    private DetalleOrdenService detalleOrdenService;
+    private DetalleOrdenService service;
 
-    // listar todo
-    @GetMapping("/detalleOrden")
-    public List<DetalleOrden> getAllDetalleOrden() {
+    // Endpoints para DetalleOrden
+    // Listar todos los detalles
+    @GetMapping("/detalleorden")
+    public ResponseEntity<?> getAllDetalles() {
         try {
-            return detalleOrdenService.getAllDetalles();
+            List<DetalleOrden> list = service.getAllDetalles();
+            return ResponseEntity.ok(list);
         } catch (Exception e) {
-            // Puedes personalizar el manejo de errores según tus necesidades
-            throw new RuntimeException("Error al obtener los detalles de la orden: " + e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Error al obtener detalles: " + e.getMessage());
         }
     }
-
-    // listar por id
-    @GetMapping("/detalleOrden/{id}")
-    public DetalleOrden getDetalleOrdenById(@PathVariable Long id) {
+    // Listar detalle por ID
+    @GetMapping("/detalleorden/{id}")
+    public ResponseEntity<?> getDetalleById(@PathVariable Long id) {
         try {
-            return detalleOrdenService.getDetalleOrdenById(id);
+            DetalleOrden d = service.getDetalleOrdenById(id);
+            if (d != null)
+                return ResponseEntity.ok(d);
+            else
+                return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            throw new RuntimeException("Error al obtener el detalle de la orden por id: " + e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Error al obtener detalle: " + e.getMessage());
         }
     }
-
-    // crear detalleOrden
-    @PostMapping("/detalleOrden")
-    public DetalleOrden createDetalleOrden(@RequestBody DetalleOrden nuevoDetalleOrden) {
+    // Crear un nuevo detalle
+    @PostMapping("/detalleorden")
+    public ResponseEntity<?> createDetalle(@RequestBody DetalleOrden detalle) {
         try {
-            return detalleOrdenService.saveDetalleOrden(nuevoDetalleOrden);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear el detalle de la orden: " + e.getMessage(), e);
-        }
-    }
-
-    // crear varios detalleOrden
-    @PostMapping("/detalleOrden/batch")
-    public List<DetalleOrden> createDetallesOrden(@RequestBody List<DetalleOrden> nuevosDetallesOrden) {
-        try {
-            return nuevosDetallesOrden.stream()
-                    .map(detalleOrdenService::saveDetalleOrden)
-                    .toList();
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear los detalles de la orden: " + e.getMessage(), e);
-        }
-    }
-
-    // actualizar detalleorden por id
-    @PutMapping("/detalleOrden/{id}")
-    public DetalleOrden updateDetalleOrden(@PathVariable Long id, @RequestBody DetalleOrden detalleActualizado) {
-        try {
-            DetalleOrden existente = detalleOrdenService.getDetalleOrdenById(id);
-            if (existente == null) {
-                throw new RuntimeException("DetalleOrden no encontrado con id: " + id);
+            if (detalle == null) {
+                return ResponseEntity.badRequest().body("Detalle no puede ser nulo");
             }
-            existente.setProducto(detalleActualizado.getProducto());
-            existente.setCantidad(detalleActualizado.getCantidad());
-            existente.setPrecioUnitario(detalleActualizado.getPrecioUnitario());
-            existente.setTotal(detalleActualizado.getTotal());
-            return detalleOrdenService.updateDetalleOrden(existente);
+            DetalleOrden saved = service.saveDetalleOrden(detalle);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            throw new RuntimeException("Error al actualizar el detalle de la orden: " + e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Error al guardar detalle: " + e.getMessage());
         }
     }
-
-    // eliminar detalleOrden por id
-    @DeleteMapping("/detalleOrden/{id}")
-    public void deleteDetalleOrden(@PathVariable Long id) {
+    // Crear varios detalles en lote
+    @PostMapping("/detalleorden/batch")
+    public ResponseEntity<?> createDetallesBatch(@RequestBody List<DetalleOrden> detalles) {
         try {
-            detalleOrdenService.deleteDetalleOrden(id);
+            if (detalles == null || detalles.isEmpty()) {
+                return ResponseEntity.badRequest().body("La lista no puede estar vacía");
+            }
+            List<DetalleOrden> saved = service.saveDetallesOrden(detalles);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            throw new RuntimeException("Error al eliminar el detalle de la orden: " + e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Error al guardar detalles en lote: " + e.getMessage());
         }
     }
-
-    // eliminar todos los detalleOrden
-    @DeleteMapping("/detalleOrden")
-    public void deleteAllDetallesOrden() {
+    
+    @PutMapping("/detalleorden/{id}")
+    public ResponseEntity<?> updateDetalle(@PathVariable Long id,
+            @RequestBody DetalleOrden detalle) {
         try {
-            detalleOrdenService.deleteAllDetalles();
+            detalle.setId(id);
+            DetalleOrden updated = service.saveDetalleOrden(detalle);
+            return ResponseEntity.ok(updated);
         } catch (Exception e) {
-            throw new RuntimeException("Error al eliminar todos los detalles de la orden: " + e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Error al actualizar detalle: " + e.getMessage());
+        }
+    }
+    // Eliminar un detalle por su ID
+    @DeleteMapping("/detalleorden/{id}")
+    public ResponseEntity<?> deleteDetalle(@PathVariable Long id) {
+        try {
+            service.deleteDetalleOrden(id);
+            return ResponseEntity.ok("Detalle eliminado correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body("Error al eliminar detalle: " + e.getMessage());
+        }
+    }
+    // Eliminar todos los detalles
+    @DeleteMapping("/detalleorden")
+    public ResponseEntity<?> deleteAllDetalles() {
+        try {
+            service.deleteAllDetalles();
+            return ResponseEntity.ok("Todos los detalles eliminados correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body("Error al eliminar todos los detalles: " + e.getMessage());
         }
     }
 }

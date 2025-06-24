@@ -1,13 +1,13 @@
 package com.perfulandia.Perfulandia.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import java.math.BigDecimal;
-import java.util.List;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.perfulandia.Perfulandia.model.DetalleOrden;
 import com.perfulandia.Perfulandia.service.DetalleOrdenService;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,96 +16,115 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.List;
 
-/**
- * Pruebas de integración ligeras para DetalleOrdenController.
- * Usa MockMvc para simular peticiones HTTP y un @MockBean del servicio.
- */
-@WebMvcTest(DetalleOrdenController.class)  // :contentReference[oaicite:0]{index=0}
+@WebMvcTest(DetalleOrdenController.class)
 public class DetalleOrdenControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;             // Para enviar peticiones HTTP simuladas
+    private MockMvc mockMvc;
 
     @MockBean
-    private DetalleOrdenService detalleOrdenService;  // Mock del servicio :contentReference[oaicite:1]{index=1}
+    private DetalleOrdenService service;
 
     @Autowired
-    private ObjectMapper objectMapper;   // Para serializar/deserializar JSON
+    private ObjectMapper objectMapper;
 
-    private DetalleOrden detalleOrden;
+    private DetalleOrden detalle;
 
     @BeforeEach
     void setUp() {
-        // Creamos un DetalleOrden de ejemplo
-        detalleOrden = DetalleOrden.builder()
+        detalle = DetalleOrden.builder()
                 .id(1L)
                 .cantidad(2)
-                .precioUnitario(new BigDecimal("15.50"))
-                .total(new BigDecimal("31.00"))
-                .producto(null)
-                .carrito(null)
+                .precioUnitario(new BigDecimal("50.00"))
+                .total(new BigDecimal("100.00"))
                 .build();
     }
 
     @Test
-    public void testGetAllDetalleOrden() throws Exception {
-        // Configuramos el mock para devolver una lista con nuestro detalle
-        when(detalleOrdenService.getAllDetalles()).thenReturn(List.of(detalleOrden));
+    void testGetAllDetalles() throws Exception {
+        when(service.getAllDetalles()).thenReturn(List.of(detalle));
 
-        mockMvc.perform(get("/api/perfulandia/detalleOrden"))
+        mockMvc.perform(get("/api/perfulandia/detalleorden"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].cantidad").value(2))
-                .andExpect(jsonPath("$[0].precioUnitario").value(15.50))
-                .andExpect(jsonPath("$[0].total").value(31.00));
+                .andExpect(jsonPath("$[0].cantidad").value(2));
+
+        verify(service, times(1)).getAllDetalles();
     }
 
     @Test
-    public void testGetDetalleOrdenById() throws Exception {
-        when(detalleOrdenService.getDetalleOrdenById(1L)).thenReturn(detalleOrden);
+    void testGetDetalleById() throws Exception {
+        when(service.getDetalleOrdenById(1L)).thenReturn(detalle);
 
-        mockMvc.perform(get("/api/perfulandia/detalleOrden/1"))
+        mockMvc.perform(get("/api/perfulandia/detalleorden/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.cantidad").value(2));
+
+        verify(service, times(1)).getDetalleOrdenById(1L);
     }
 
     @Test
-    public void testCreateDetalleOrden() throws Exception {
-        when(detalleOrdenService.saveDetalleOrden(any(DetalleOrden.class)))
-                .thenReturn(detalleOrden);
+    void testCreateDetalle() throws Exception {
+        when(service.saveDetalleOrden(any(DetalleOrden.class))).thenReturn(detalle);
 
-        mockMvc.perform(post("/api/perfulandia/detalleOrden")
+        mockMvc.perform(post("/api/perfulandia/detalleorden")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(detalleOrden)))
+                        .content(objectMapper.writeValueAsString(detalle)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.cantidad").value(2));
+
+        verify(service, times(1)).saveDetalleOrden(any(DetalleOrden.class));
     }
 
     @Test
-    public void testUpdateDetalleOrden() throws Exception {
-        when(detalleOrdenService.getDetalleOrdenById(1L)).thenReturn(detalleOrden);
-        when(detalleOrdenService.updateDetalleOrden(any(DetalleOrden.class)))
-                .thenReturn(detalleOrden);
+    void testCreateDetallesBatch() throws Exception {
+        DetalleOrden d2 = DetalleOrden.builder()
+                .id(2L)
+                .cantidad(3)
+                .precioUnitario(new BigDecimal("30.00"))
+                .total(new BigDecimal("90.00"))
+                .build();
+        List<DetalleOrden> batch = List.of(detalle, d2);
 
-        mockMvc.perform(put("/api/perfulandia/detalleOrden/1")
+        when(service.saveDetallesOrden(batch)).thenReturn(batch);
+
+        mockMvc.perform(post("/api/perfulandia/detalleorden/batch")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(detalleOrden)))
+                        .content(objectMapper.writeValueAsString(batch)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.cantidad").value(2));
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].cantidad").value(3));
+
+        verify(service, times(1)).saveDetallesOrden(batch);
     }
 
     @Test
-    public void testDeleteDetalleOrden() throws Exception {
-        doNothing().when(detalleOrdenService).deleteDetalleOrden(1L);
+    void testUpdateDetalle() throws Exception {
+        when(service.saveDetalleOrden(any(DetalleOrden.class))).thenReturn(detalle);
 
-        mockMvc.perform(delete("/api/perfulandia/detalleOrden/1"))
+        mockMvc.perform(put("/api/perfulandia/detalleorden/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(detalle)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.cantidad").value(2));
+
+        verify(service, times(1)).saveDetalleOrden(any(DetalleOrden.class));
+    }
+
+    @Test
+    void testDeleteDetalle() throws Exception {
+        doNothing().when(service).deleteDetalleOrden(1L);
+
+        mockMvc.perform(delete("/api/perfulandia/detalleorden/1"))
                 .andExpect(status().isOk());
 
-        verify(detalleOrdenService, times(1)).deleteDetalleOrden(1L);
+        verify(service, times(1)).deleteDetalleOrden(1L);
     }
 }

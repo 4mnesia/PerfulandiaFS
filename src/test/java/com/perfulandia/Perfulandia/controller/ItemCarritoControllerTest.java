@@ -1,9 +1,12 @@
 package com.perfulandia.Perfulandia.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.perfulandia.Perfulandia.model.ItemCarrito;
+import com.perfulandia.Perfulandia.model.Producto;
 import com.perfulandia.Perfulandia.service.ItemCarritoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,87 +16,131 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.List;
 
-@WebMvcTest(ItemCarritoController.class) 
+@WebMvcTest(ItemCarritoController.class)
 public class ItemCarritoControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;              // Para simular peticiones HTTP
+    private MockMvc mockMvc;
 
     @MockBean
-    private ItemCarritoService service;    // Mock del servicio
+    private ItemCarritoService service;
 
     @Autowired
-    private ObjectMapper objectMapper;     // Para convertir objetos a JSON
+    private ObjectMapper objectMapper;
 
-    private ItemCarrito item;
+    private ItemCarrito item1;
+    private ItemCarrito item2;
+    private Producto productoEjemplo;
 
     @BeforeEach
     void setUp() {
-        // Creamos un ItemCarrito de ejemplo
-        item = ItemCarrito.builder()
+        productoEjemplo = Producto.builder()
+                .id(100L)
+                .nombre("Perfume Test")
+                .descripcion("Aroma de prueba")
+                .categoria("Fragancia")
+                .marca("MarcaTest")
+                .modelo("ModeloX")
+                .precio(new java.math.BigDecimal("99.99"))
+                .build();
+        item1 = ItemCarrito.builder()
                 .id(1L)
                 .cantidad(2)
-                // Puedes añadir aquí un Producto simulado si tu controlador lo serializa
+                .producto(productoEjemplo)
+                .build();
+        item2 = ItemCarrito.builder()
+                .id(2L)
+                .cantidad(5)
+                .producto(productoEjemplo)
                 .build();
     }
 
     @Test
     void testGetAllItems() throws Exception {
-        // Arranque: el servicio devuelve una lista con nuestro ejemplo
-        when(service.getAllItemCarritos()).thenReturn(List.of(item));
+        when(service.getAllItemCarritos()).thenReturn(List.of(item1, item2));
 
-        // Ejecución y verificación de código HTTP y JSON
         mockMvc.perform(get("/api/perfulandia/itemcarrito"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].cantidad").value(2));
+                .andExpect(jsonPath("$[1].cantidad").value(5));
+
+        verify(service, times(1)).getAllItemCarritos();
     }
 
     @Test
     void testGetItemById() throws Exception {
-        when(service.getItemCarritoById(1L)).thenReturn(item);
+        when(service.getItemCarritoById(1L)).thenReturn(item1);
 
         mockMvc.perform(get("/api/perfulandia/itemcarrito/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.cantidad").value(2));
+
+        verify(service, times(1)).getItemCarritoById(1L);
     }
 
     @Test
     void testCreateItem() throws Exception {
-        when(service.saveItemCarrito(any(ItemCarrito.class))).thenReturn(item);
+        when(service.saveItemCarrito(any(ItemCarrito.class))).thenReturn(item1);
 
         mockMvc.perform(post("/api/perfulandia/itemcarrito")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(item)))
+                        .content(objectMapper.writeValueAsString(item1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.cantidad").value(2));
-    }
 
-    @Test
-    void testUpdateItem() throws Exception {
-        when(service.saveItemCarrito(any(ItemCarrito.class))).thenReturn(item);
-
-        mockMvc.perform(put("/api/perfulandia/itemcarrito/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(item)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.cantidad").value(2));
+        verify(service, times(1)).saveItemCarrito(any(ItemCarrito.class));
     }
 
     @Test
     void testDeleteItem() throws Exception {
-        // No esperamos retorno, solo que no falle
         doNothing().when(service).deleteItemCarrito(1L);
 
         mockMvc.perform(delete("/api/perfulandia/itemcarrito/1"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string("Item eliminado correctamente"));
 
-        // Verifica que el servicio fue invocado correctamente
         verify(service, times(1)).deleteItemCarrito(1L);
+    }
+
+    @Test
+    void testCreateItemsBatch() throws Exception {
+        List<ItemCarrito> batch = List.of(item1, item2);
+        when(service.saveAllItemCarritos(batch)).thenReturn(batch);
+
+        mockMvc.perform(post("/api/perfulandia/itemcarrito/batch")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(batch)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].cantidad").value(5));
+
+        verify(service, times(1)).saveAllItemCarritos(batch);
+    }
+
+    @Test
+    void testUpdateItem() throws Exception {
+        ItemCarrito updatedItem = ItemCarrito.builder()
+                .id(1L)
+                .cantidad(10)
+                .producto(productoEjemplo)
+                .build();
+
+        when(service.getItemCarritoById(1L)).thenReturn(item1);
+        when(service.saveItemCarrito(any(ItemCarrito.class))).thenReturn(updatedItem);
+
+        mockMvc.perform(put("/api/perfulandia/itemcarrito/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedItem)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Item actualizado correctamente"));
+
+        verify(service, times(1)).getItemCarritoById(1L);
+        verify(service, times(1)).saveItemCarrito(any(ItemCarrito.class));
     }
 }
