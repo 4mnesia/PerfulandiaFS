@@ -64,4 +64,21 @@ public class DetalleOrdenService {
                 .map(DetalleOrdenService::calcularSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    //v2
+
+    /** Filtra detalles por orden */
+    public List<DetalleOrden> findByOrdenId(Long ordenId) {
+        return detalleOrdenRepository.findByOrdenId(ordenId);
+    }
+
+    /** Filtra detalles por carrito */
+    public List<DetalleOrden> findByCarritoId(Long carritoId) {
+        return detalleOrdenRepository.findByCarritoId(carritoId);
+    }
+
+    /** Suma el total vendido de un producto */
+    public BigDecimal sumTotalByProductoId(Long productoId) {
+        return detalleOrdenRepository.sumTotalByProductoId(productoId);
+    }
 }

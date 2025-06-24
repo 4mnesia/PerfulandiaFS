@@ -1,9 +1,11 @@
 package com.perfulandia.Perfulandia.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.perfulandia.Perfulandia.model.Orden;
+import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
 import com.perfulandia.Perfulandia.repository.OrdenRepository;
 
 @Service
@@ -46,5 +48,22 @@ public class OrdenService {
     // eliminar todos los ordenes
     public void deleteAllOrdenes() {
         ordenRepository.deleteAll();
+    }
+
+    //v2
+
+     /** Filtra órdenes por estado */
+    public List<Orden> findByEstado(EstadoOrden estado) {
+        return ordenRepository.findByEstado(estado);
+    }
+
+    /** Filtra órdenes por rango de fechas */
+    public List<Orden> findByFechaCreacionBetween(LocalDateTime desde, LocalDateTime hasta) {
+        return ordenRepository.findByFechaCreacionBetween(desde, hasta);
+    }
+
+    /** Obtiene las últimas 10 órdenes */
+    public List<Orden> findTop10ByOrderByFechaCreacionDesc() {
+        return ordenRepository.findTop10ByOrderByFechaCreacionDesc();
     }
 }

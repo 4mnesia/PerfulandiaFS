@@ -1,6 +1,7 @@
 package com.perfulandia.Perfulandia.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,25 @@ public class CarritoService {
     // elimianr todos losc arritos
     public void deleteAllCarritos() {
         carritoRepository.deleteAll();
+    }
+
+
+
+
+    //V2
+    /** Filtra carritos por usuario */
+    public List<Carrito> findByUsuarioId(Long usuarioId) {
+        return carritoRepository.findByUsuarioId(usuarioId);
+    }
+
+    /** Filtra carritos por estado */
+    public List<Carrito> findByEstado(boolean estado) {
+        return carritoRepository.findByEstado(estado);
+    }
+
+    /** Busca el carrito activo de un usuario */
+    public Optional<Carrito> findByUsuarioIdAndEstadoTrue(Long usuarioId) {
+        return carritoRepository.findByUsuarioIdAndEstadoTrue(usuarioId);
     }
 
 }

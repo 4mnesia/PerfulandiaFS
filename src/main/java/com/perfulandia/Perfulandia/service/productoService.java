@@ -1,5 +1,6 @@
 package com.perfulandia.Perfulandia.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,24 @@ public class ProductoService {
     // eliminar todos los productos
     public void deleteAllProductos() {
         productoRepository.deleteAll();
+    }
+
+    //V2
+
+    public List<Producto> findByCategoria(String categoria) {
+        return productoRepository.findByCategoria(categoria);
+    }
+
+    public List<Producto> findByMarca(String marca) {
+        return productoRepository.findByMarca(marca);
+    }
+
+    public List<Producto> findByModeloContaining(String fragmento) {
+        return productoRepository.findByModeloContaining(fragmento);
+    }
+
+    public List<Producto> findByPrecioBetween(BigDecimal min, BigDecimal max) {
+        return productoRepository.findByPrecioBetween(min, max);
     }
 
 

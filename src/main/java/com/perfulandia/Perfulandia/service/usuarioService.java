@@ -1,11 +1,13 @@
 package com.perfulandia.Perfulandia.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.perfulandia.Perfulandia.model.Usuario;
+import com.perfulandia.Perfulandia.model.Enums.RolUsuario;
 import com.perfulandia.Perfulandia.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +44,20 @@ public class UsuarioService {
     // actualizar un usuario
     public Usuario updateUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
+    }
+
+    //V2
+
+    public Optional<Usuario> findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
+
+    public List<Usuario> findByRol(RolUsuario rol) {
+        return usuarioRepository.findByRol(rol);
+    }
+
+    public List<Usuario> findByNombreContainingIgnoreCase(String nombre) {
+        return usuarioRepository.findByNombreContainingIgnoreCase(nombre);
     }
 
 }
