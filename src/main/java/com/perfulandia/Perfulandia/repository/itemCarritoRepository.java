@@ -8,15 +8,7 @@ import com.perfulandia.Perfulandia.model.ItemCarrito;
 
 @Repository
 public interface ItemCarritoRepository extends JpaRepository<ItemCarrito, Long> {
-    // Todos los items de un carrito
-    List<ItemCarrito> findByCarritoId(Long carritoId);
+    List<ItemCarrito> findByCarrito_Id(Long carritoId);
 
-    // Items de un determinado producto
-    List<ItemCarrito> findByProductoId(Long productoId);
-
-    // Conteo de items en un carrito
-    long countByCarritoId(Long carritoId);
-
-    // Elimina todos los items de un carrito
-    void deleteByCarritoId(Long carritoId);
+    List<ItemCarrito> findByProducto_Id(Long productoId);
 }

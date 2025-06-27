@@ -12,5 +12,4 @@ public class PerfulandiaApplication {
 		SpringApplication.run(PerfulandiaApplication.class, args);
 		
 	}
-
 }

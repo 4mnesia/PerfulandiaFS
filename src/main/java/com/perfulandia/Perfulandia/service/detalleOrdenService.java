@@ -69,16 +69,12 @@ public class DetalleOrdenService {
 
     /** Filtra detalles por orden */
     public List<DetalleOrden> findByOrdenId(Long ordenId) {
-        return detalleOrdenRepository.findByOrdenId(ordenId);
+        return detalleOrdenRepository.findByOrden_Id(ordenId);
     }
 
     /** Filtra detalles por carrito */
     public List<DetalleOrden> findByCarritoId(Long carritoId) {
-        return detalleOrdenRepository.findByCarritoId(carritoId);
+        return detalleOrdenRepository.findByCarrito_Id(carritoId);
     }
 
-    /** Suma el total vendido de un producto */
-    public BigDecimal sumTotalByProductoId(Long productoId) {
-        return detalleOrdenRepository.sumTotalByProductoId(productoId);
-    }
 }

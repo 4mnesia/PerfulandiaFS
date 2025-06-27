@@ -1,14 +1,10 @@
 package com.perfulandia.Perfulandia.service;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.perfulandia.Perfulandia.model.Carrito;
 import com.perfulandia.Perfulandia.repository.CarritoRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -67,17 +63,9 @@ public class CarritoService {
     //V2
     /** Filtra carritos por usuario */
     public List<Carrito> findByUsuarioId(Long usuarioId) {
-        return carritoRepository.findByUsuarioId(usuarioId);
+        return carritoRepository.findByUsuario_Id(usuarioId);
     }
 
-    /** Filtra carritos por estado */
-    public List<Carrito> findByEstado(boolean estado) {
-        return carritoRepository.findByEstado(estado);
-    }
 
-    /** Busca el carrito activo de un usuario */
-    public Optional<Carrito> findByUsuarioIdAndEstadoTrue(Long usuarioId) {
-        return carritoRepository.findByUsuarioIdAndEstadoTrue(usuarioId);
-    }
 
 }

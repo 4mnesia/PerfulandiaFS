@@ -3,6 +3,7 @@ package com.perfulandia.Perfulandia.controller;
 
 import com.perfulandia.Perfulandia.assemblers.DetalleOrdenModelAssembler;
 import com.perfulandia.Perfulandia.model.DetalleOrden;
+import com.perfulandia.Perfulandia.repository.DetalleOrdenRepository;
 import com.perfulandia.Perfulandia.service.DetalleOrdenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.*;
@@ -20,29 +21,33 @@ import static org.springframework.hateoas.IanaLinkRelations.SELF;
 @RequestMapping("/api/v2/perfulandia/detalleorden")
 public class DetalleOrdenControllerV2 {
 
-    @Autowired private DetalleOrdenService service;
-    @Autowired private DetalleOrdenModelAssembler assembler;
+    @Autowired
+    private DetalleOrdenService service;
+    @Autowired
+    private DetalleOrdenModelAssembler assembler;
+    @Autowired
+    private DetalleOrdenRepository detalleOrdenRepository;
 
     @GetMapping(params = "ordenId")
     public CollectionModel<EntityModel<DetalleOrden>> getByOrdenId(
             @RequestParam Long ordenId) {
         List<EntityModel<DetalleOrden>> list = service
-            .findByOrdenId(ordenId).stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
+                .findByOrdenId(ordenId).stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
         return CollectionModel.of(list,
-            linkTo(methodOn(getClass()).getByOrdenId(ordenId)).withSelfRel());
+                linkTo(methodOn(getClass()).getByOrdenId(ordenId)).withSelfRel());
     }
 
     @GetMapping(params = "carritoId")
     public CollectionModel<EntityModel<DetalleOrden>> getByCarritoId(
             @RequestParam Long carritoId) {
         List<EntityModel<DetalleOrden>> list = service
-            .findByCarritoId(carritoId).stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
+                .findByCarritoId(carritoId).stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
         return CollectionModel.of(list,
-            linkTo(methodOn(getClass()).getByCarritoId(carritoId)).withSelfRel());
+                linkTo(methodOn(getClass()).getByCarritoId(carritoId)).withSelfRel());
     }
 
     @GetMapping("/sumTotal")
@@ -50,18 +55,18 @@ public class DetalleOrdenControllerV2 {
             @RequestParam Long productoId) {
         BigDecimal total = service.sumTotalByProductoId(productoId);
         return EntityModel.of(total,
-            linkTo(methodOn(getClass()).sumTotalByProductoId(productoId)).withSelfRel());
+                linkTo(methodOn(getClass()).sumTotalByProductoId(productoId)).withSelfRel());
     }
 
     // resto de CRUD...
     @GetMapping
     public CollectionModel<EntityModel<DetalleOrden>> getAllDetalles() {
         List<EntityModel<DetalleOrden>> detalles = service.getAllDetalles().stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
 
         return CollectionModel.of(detalles,
-            linkTo(methodOn(DetalleOrdenControllerV2.class).getAllDetalles()).withSelfRel());
+                linkTo(methodOn(DetalleOrdenControllerV2.class).getAllDetalles()).withSelfRel());
     }
 
     @GetMapping("/{id}")
@@ -79,8 +84,8 @@ public class DetalleOrdenControllerV2 {
         DetalleOrden saved = service.saveDetalleOrden(nuevo);
         EntityModel<DetalleOrden> resource = assembler.toModel(saved);
         return ResponseEntity
-            .created(resource.getRequiredLink(SELF).toUri())
-            .body(resource);
+                .created(resource.getRequiredLink(SELF).toUri())
+                .body(resource);
     }
 
     @PutMapping("/{id}")
@@ -97,4 +102,7 @@ public class DetalleOrdenControllerV2 {
         service.deleteDetalleOrden(id);
         return ResponseEntity.noContent().build();
     }
+    public List<DetalleOrden> getByCarrito(Long carritoId) {
+    return detalleOrdenRepository.findByCarrito_Id(carritoId);
+}
 }
