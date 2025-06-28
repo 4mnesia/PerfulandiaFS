@@ -1,8 +1,6 @@
 package com.perfulandia.Perfulandia.service;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,14 +46,15 @@ public class UsuarioService {
 
     //V2
 
-    public Optional<Usuario> findByEmail(String email) {
-        return usuarioRepository.findByEmail(email);
-    }
-
+    //filtrar por rol
     public List<Usuario> findByRol(RolUsuario rol) {
         return usuarioRepository.findByRol(rol);
     }
-
+    //filtrar por email
+    public Usuario findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
+    //filtrar por nombre ignorando mayúsculas y minúsculas
     public List<Usuario> findByNombreContainingIgnoreCase(String nombre) {
         return usuarioRepository.findByNombreContainingIgnoreCase(nombre);
     }

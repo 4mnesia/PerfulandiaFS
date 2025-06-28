@@ -1,96 +1,57 @@
 package com.perfulandia.Perfulandia.controller;
 
-import com.perfulandia.Perfulandia.assemblers.CarritoModelAssembler;
 import com.perfulandia.Perfulandia.model.Carrito;
 import com.perfulandia.Perfulandia.service.CarritoService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
-import java.util.stream.Collectors;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-import static org.springframework.hateoas.IanaLinkRelations.SELF;
 
 @RestController
-@RequestMapping("/api/v2/perfulandia/carrito")
+@RequestMapping("/api/v2/carrito")
 public class CarritoControllerV2 {
 
     @Autowired
-    private CarritoService service;
-    @Autowired
-    private CarritoModelAssembler assembler;
+    private CarritoService carritoService;
 
-    // Filtrar por usuarioId
-    @GetMapping(params = "usuarioId")
-    public CollectionModel<EntityModel<Carrito>> getByUsuario(
-            @RequestParam Long usuarioId) {
-        List<EntityModel<Carrito>> list = service
-                .findByUsuarioId(usuarioId).stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
-        return CollectionModel.of(list,
-                linkTo(methodOn(getClass()).getByUsuario(usuarioId)).withSelfRel());
+    // filtrar por usuario
+    @Operation(summary = "Filtrar carritos por ID de usuario", description = "Obtiene los carritos asociados a un usuario específico")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de carritos filtrados por usuario", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Carrito.class)))),
+            @ApiResponse(responseCode = "404", description = "No se encontraron carritos para el usuario proporcionado") })
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<Carrito>> getCarritosByUsuarioId(@PathVariable Long usuarioId) {
+        List<Carrito> carritos = carritoService.findByUsuarioId(usuarioId);
+        if (carritos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(carritos);
     }
 
-    // Filtrar por estado
-    @GetMapping(params = "estado")
-    public CollectionModel<EntityModel<Carrito>> getByEstado(
-            @RequestParam boolean estado) {
-        List<EntityModel<Carrito>> list = service
-                .findByEstado(estado).stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
-        return CollectionModel.of(list,
-                linkTo(methodOn(getClass()).getByEstado(estado)).withSelfRel());
-    }
-
-    // Carrito activo de un usuario
-    @GetMapping(value = "/active", params = "usuarioId")
-    public EntityModel<Carrito> getActiveCarrito(@RequestParam Long usuarioId) {
-        Carrito c = service.findByUsuarioIdAndEstadoTrue(usuarioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return assembler.toModel(c);
-    }
-
-    // Resto de endpoints ya conocidos...
-    @GetMapping
-    public CollectionModel<EntityModel<Carrito>> getAllCarritos() {
-        List<EntityModel<Carrito>> list = service.getAllCarritos().stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
-        return CollectionModel.of(list,
-                linkTo(methodOn(getClass()).getAllCarritos()).withSelfRel());
-    }
-
-    @GetMapping("/{id}")
-    public EntityModel<Carrito> getCarritoById(@PathVariable Long id) {
-        Carrito c = service.getCarritoById(id);
-        if (c == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        return assembler.toModel(c);
-    }
-
-    @PostMapping
-    public ResponseEntity<EntityModel<Carrito>> createCarrito(@RequestBody Carrito nuevo) {
-        Carrito saved = service.saveCarrito(nuevo);
-        EntityModel<Carrito> res = assembler.toModel(saved);
-        return ResponseEntity.created(res.getRequiredLink(SELF).toUri()).body(res);
-    }
-
-    @PutMapping("/{id}")
-    public EntityModel<Carrito> updateCarrito(@PathVariable Long id,
-            @RequestBody Carrito actualizado) {
-        actualizado.setId(id);
-        Carrito saved = service.updateCarrito(actualizado);
-        return assembler.toModel(saved);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCarrito(@PathVariable Long id) {
-        service.deleteCarrito(id);
-        return ResponseEntity.noContent().build();
+    // filtrar por estado
+    @Operation(summary = "Filtrar carritos por estado", description = "Obtiene los carritos según su estado (activo/inactivo)")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de carritos filtrados por estado", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Carrito.class)))),
+        @ApiResponse(responseCode = "404", description = "No se encontraron carritos para el estado proporcionado")
+    })
+    @GetMapping("/estado/{estado}")
+    public ResponseEntity<List<Carrito>> getCarritosByEstado(
+            @Parameter(description = "Estado del carrito (true para activo, false para inactivo)", required = true, in = ParameterIn.PATH, example = "true") @PathVariable boolean estado) {
+        List<Carrito> carritos = carritoService.findByEstado(estado);
+        if (carritos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(carritos);
     }
 }

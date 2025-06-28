@@ -67,14 +67,13 @@ public class DetalleOrdenService {
 
     //v2
 
-    /** Filtra detalles por orden */
+    //*filtrar por orden id */
     public List<DetalleOrden> findByOrdenId(Long ordenId) {
         return detalleOrdenRepository.findByOrden_Id(ordenId);
     }
-
-    /** Filtra detalles por carrito */
-    public List<DetalleOrden> findByCarritoId(Long carritoId) {
-        return detalleOrdenRepository.findByCarrito_Id(carritoId);
+    //*filtrar por rango de precio unitario */
+    public List<DetalleOrden> findByPrecioUnitarioBetween(BigDecimal min, BigDecimal max) {
+        return detalleOrdenRepository.findByPrecioUnitarioBetween(min, max);
     }
 
 }

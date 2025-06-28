@@ -3,6 +3,8 @@ package com.perfulandia.Perfulandia.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.*;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,6 +15,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Builder
 public class Carrito {
 
@@ -23,23 +26,16 @@ public class Carrito {
 
     // Relación unidireccional a Usuario
     @Schema(description = "Usuario propietario del carrito")
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario;
 
     // Unidireccional a ItemCarrito: crea FK carrito_id en item_carrito
     @Schema(description = "Items añadidos en el carrito")
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "carrito_id")
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL)
     @Builder.Default
     private List<ItemCarrito> item = new ArrayList<>();
-
-    // Unidireccional a DetalleOrden: crea FK carrito_id en detalle_orden
-    @Schema(description = "Detalles de orden generados a partir de este carrito")
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "carrito_id")
-    @Builder.Default
-    private List<DetalleOrden> detalles = new ArrayList<>();
 
     @Schema(description = "Estado del carrito (activo/inactivo)", example = "true")
     @Column(nullable = false)

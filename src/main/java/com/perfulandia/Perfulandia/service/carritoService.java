@@ -1,5 +1,6 @@
 package com.perfulandia.Perfulandia.service;
 
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,12 +61,15 @@ public class CarritoService {
 
 
 
+
     //V2
-    /** Filtra carritos por usuario */
-    public List<Carrito> findByUsuarioId(Long usuarioId) {
-        return carritoRepository.findByUsuario_Id(usuarioId);
+
+    /** Filtra carritos por estado */
+    public List<Carrito> findByEstado(boolean estado) {
+        return carritoRepository.findByEstado(estado);
     }
-
-
-
+    /** Filtra carritos por usuario id*/
+    public List<Carrito> findByUsuarioId(Long usuarioId) {
+        return carritoRepository.findByUsuarioId(usuarioId);
+    } 
 }

@@ -1,24 +1,20 @@
 package com.perfulandia.Perfulandia.assemblers;
 
-import com.perfulandia.Perfulandia.controller.DetalleOrdenControllerV2;
-import com.perfulandia.Perfulandia.model.DetalleOrden;
-import org.springframework.hateoas.EntityModel;
+import com.perfulandia.Perfulandia.controller.*;
+import com.perfulandia.Perfulandia.model.*;
+import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
-import org.springframework.lang.NonNull;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Component
-public class DetalleOrdenModelAssembler
-        implements RepresentationModelAssembler<DetalleOrden, EntityModel<DetalleOrden>> {
+public class DetalleOrdenModelAssembler implements RepresentationModelAssembler<DetalleOrden, EntityModel<DetalleOrden>> {
     @Override
-    @NonNull
-    public EntityModel<DetalleOrden> toModel(@NonNull DetalleOrden detalle) {
+    public EntityModel<DetalleOrden> toModel(DetalleOrden detalle) {
         return EntityModel.of(detalle,
-                linkTo(methodOn(DetalleOrdenControllerV2.class)
-                        .getDetalleById(detalle.getId())).withSelfRel(),
-                linkTo(methodOn(DetalleOrdenControllerV2.class)
-                        .getAllDetalles()).withRel("detalleordenes"));
+                linkTo(methodOn(DetalleOrdenController.class).getDetalleById(detalle.getId())).withSelfRel(),
+                // Ajusta el nombre del método según exista en tu DetalleOrdenController: getAllDetalleOrdenes() o getAllDetallesOrden()
+                linkTo(methodOn(DetalleOrdenController.class).getAllDetalles()).withRel("detallesOrden")
+        );
     }
 }

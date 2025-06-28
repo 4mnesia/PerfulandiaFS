@@ -1,102 +1,60 @@
-// OrdenControllerV2.java
 package com.perfulandia.Perfulandia.controller;
 
-import com.perfulandia.Perfulandia.assemblers.OrdenModelAssembler;
 import com.perfulandia.Perfulandia.model.Orden;
 import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
 import com.perfulandia.Perfulandia.service.OrdenService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import java.time.LocalDateTime;
+
 import java.util.List;
-import java.util.stream.Collectors;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-import static org.springframework.hateoas.IanaLinkRelations.SELF;
 
 @RestController
-@RequestMapping("/api/v2/perfulandia/orden")
+@RequestMapping("/api/v2/ordenes")
 public class OrdenControllerV2 {
 
-    @Autowired private OrdenService service;
-    @Autowired private OrdenModelAssembler assembler;
+    @Autowired private OrdenService ordenService;
 
-    @GetMapping(params = "estado")
-    public CollectionModel<EntityModel<Orden>> getByEstado(
-            @RequestParam EstadoOrden estado) {
-        List<EntityModel<Orden>> list = service
-            .findByEstado(estado).stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
-        return CollectionModel.of(list,
-            linkTo(methodOn(getClass()).getByEstado(estado)).withSelfRel());
-    }
-
-    @GetMapping("/between")
-    public CollectionModel<EntityModel<Orden>> getByFechaBetween(
-            @RequestParam LocalDateTime desde,
-            @RequestParam LocalDateTime hasta) {
-        List<EntityModel<Orden>> list = service
-            .findByFechaCreacionBetween(desde, hasta).stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
-        return CollectionModel.of(list,
-            linkTo(methodOn(getClass()).getByFechaBetween(desde, hasta)).withSelfRel());
-    }
-
-    @GetMapping("/latest")
-    public CollectionModel<EntityModel<Orden>> getLatest() {
-        List<EntityModel<Orden>> list = service
-            .findTop10ByOrderByFechaCreacionDesc().stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
-        return CollectionModel.of(list,
-            linkTo(methodOn(getClass()).getLatest()).withSelfRel());
-    }
-
-    // resto de CRUD...
-    @GetMapping
-    public CollectionModel<EntityModel<Orden>> getAllOrdenes() {
-        List<EntityModel<Orden>> ordenes = service.getAllOrdenes().stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
-
-        return CollectionModel.of(ordenes,
-            linkTo(methodOn(OrdenControllerV2.class).getAllOrdenes()).withSelfRel());
-    }
-
-    @GetMapping("/{id}")
-    public EntityModel<Orden> getOrdenById(@PathVariable Long id) {
-        Orden o = service.getOrdenById(id);
-        if (o == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    //filtrar por estado
+    @Operation(summary = "Filtrar órdenes por estado", description = "Obtiene las órdenes filtradas por el estado proporcionado")
+    @ApiResponse(responseCode = "200", description = "Lista de órdenes filtradas por estado", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "404", description = "No se encontraron órdenes para el estado proporcionado")
+    @GetMapping("/estado/{estado}")
+    public ResponseEntity<List<Orden>> getByEstado(@PathVariable String estado) {
+        List<Orden> ordenes = ordenService.findByEstado(EstadoOrden.valueOf(estado));
+        if (ordenes.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-        return assembler.toModel(o);
+        return ResponseEntity.ok(ordenes);
     }
-
-    @PostMapping
-    public ResponseEntity<EntityModel<Orden>> createOrden(@RequestBody Orden nuevo) {
-        Orden saved = service.saveOrden(nuevo);
-        EntityModel<Orden> resource = assembler.toModel(saved);
-        return ResponseEntity
-            .created(resource.getRequiredLink(SELF).toUri())
-            .body(resource);
+    //filtrar por dirección de envío ignore case
+    @Operation(summary = "Filtrar órdenes por dirección de envío", description = "Obtiene las órdenes filtradas por la dirección de envío proporcionada")
+    @ApiResponse(responseCode = "200", description = "Lista de órdenes filtradas por dirección de envío", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "404", description = "No se encontraron órdenes para la dirección de envío proporcionada")
+    @GetMapping("/direccion-envio/{direccion}")
+    public ResponseEntity<List<Orden>> getByDireccionEnvio(@PathVariable String direccion) {
+        List<Orden> ordenes = ordenService.findByDireccionEnvio(direccion);
+        if (ordenes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(ordenes);
     }
-
-    @PutMapping("/{id}")
-    public EntityModel<Orden> updateOrden(@PathVariable Long id,
-                                         @RequestBody Orden actualizado) {
-        actualizado.setId(id);
-        Orden saved = service.updateOrden(id, actualizado);
-        return assembler.toModel(saved);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrden(@PathVariable Long id) {
-        service.deleteOrden(id);
-        return ResponseEntity.noContent().build();
+    //filtrar por fecha de creación
+    @Operation(summary = "Filtrar órdenes por rango de fecha de creación", description = "Obtiene las órdenes filtradas por el rango de fecha de creación proporcionado")
+    @ApiResponse(responseCode = "200", description = "Lista de órdenes filtradas por rango de fecha de creación", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    @ApiResponse(responseCode = "404", description = "No se encontraron órdenes para el rango de fecha proporcionado")
+    @GetMapping("/fecha-creacion")
+    public ResponseEntity<List<Orden>> getByFechaCreacion(@RequestParam String fechaInicio, @RequestParam String fechaFin) {
+        java.time.LocalDateTime inicio = java.time.LocalDateTime.parse(fechaInicio);
+        java.time.LocalDateTime fin = java.time.LocalDateTime.parse(fechaFin);
+        List<Orden> ordenes = ordenService.findByFechaCreacionBetween(inicio, fin);
+        if (ordenes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(ordenes);
     }
 }

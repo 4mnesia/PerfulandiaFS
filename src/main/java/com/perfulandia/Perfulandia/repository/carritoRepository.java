@@ -7,5 +7,8 @@ import com.perfulandia.Perfulandia.model.Carrito;
 
 @Repository
 public interface CarritoRepository extends JpaRepository<Carrito, Long> {
-    List<Carrito> findByUsuario_Id(Long usuarioId);
+    // Filtra carritos por ID de usuario
+    List<Carrito> findByUsuarioId(Long usuarioId);
+    // Filtra carritos por estado (activo/inactivo)
+    List<Carrito> findByEstado(boolean estado);
 }

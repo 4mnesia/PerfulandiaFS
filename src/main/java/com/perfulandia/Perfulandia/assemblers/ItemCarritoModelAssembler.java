@@ -1,26 +1,19 @@
 package com.perfulandia.Perfulandia.assemblers;
 
-import com.perfulandia.Perfulandia.controller.ItemCarritoControllerV2;
-import com.perfulandia.Perfulandia.model.ItemCarrito;
-import org.springframework.hateoas.EntityModel;
+import com.perfulandia.Perfulandia.controller.*;
+import com.perfulandia.Perfulandia.model.*;
+import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
-import org.springframework.lang.NonNull;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Component
-public class ItemCarritoModelAssembler
-        implements RepresentationModelAssembler<ItemCarrito, EntityModel<ItemCarrito>> {
+public class ItemCarritoModelAssembler implements RepresentationModelAssembler<ItemCarrito, EntityModel<ItemCarrito>> {
     @Override
-    @NonNull
-    public EntityModel<ItemCarrito> toModel(@NonNull ItemCarrito item) {
+    public EntityModel<ItemCarrito> toModel(ItemCarrito item) {
         return EntityModel.of(item,
-            linkTo(methodOn(ItemCarritoControllerV2.class)
-                     .getItemCarritoById(item.getId())).withSelfRel(),
-            linkTo(methodOn(ItemCarritoControllerV2.class)
-                     .getAllItemCarritos()).withRel("itemcarritos")
+                linkTo(methodOn(ItemCarritoController.class).getItemById(item.getId())).withSelfRel(),
+                linkTo(methodOn(ItemCarritoController.class).getAllItems()).withRel("itemsCarrito")
         );
     }
 }
-

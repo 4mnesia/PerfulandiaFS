@@ -52,21 +52,25 @@ public class ProductoService {
 
     //V2
 
-    public List<Producto> findByCategoria(String categoria) {
-        return productoRepository.findByCategoria(categoria);
+    /** Filtra productos por categoría */
+    public List<Producto> findByCategoria(String categoriaId) {
+        return productoRepository.findByCategoria(categoriaId);
     }
-
-    public List<Producto> findByMarca(String marca) {
-        return productoRepository.findByMarca(marca);
+    //filtrar nombre ignorando mayúsculas y minúsculas
+    public List<Producto> findByNombreContainingIgnoreCase(String nombre) {
+        return productoRepository.findByNombreContainingIgnoreCase(nombre);
     }
-
-    public List<Producto> findByModeloContaining(String fragmento) {
-        return productoRepository.findByModeloContaining(fragmento);
-    }
-
+    //filtrar por precio
     public List<Producto> findByPrecioBetween(BigDecimal min, BigDecimal max) {
         return productoRepository.findByPrecioBetween(min, max);
     }
+    //filtrar por stock
+    public List<Producto> findByStockGreaterThan(int stock) {
+        return productoRepository.findByStockGreaterThan(stock);
+    }
 
-
+    /** Filtra productos por marca */
+    public List<Producto> findByMarca(String marca) {
+        return productoRepository.findByMarca(marca);
+    }
 }

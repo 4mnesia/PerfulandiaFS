@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.hamcrest.Matchers.hasSize;
 import com.perfulandia.Perfulandia.model.Producto;
 import com.perfulandia.Perfulandia.service.ProductoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -118,17 +119,25 @@ public class ProductoControllerTest {
     }
 
     @Test
-    public void testCreateProductosBatch() throws Exception {
+    void testCreateProductosBatch() throws Exception {
+        
         List<Producto> batch = List.of(producto1, producto2);
+
+        // Mockeo el servicio
         when(productoService.saveAllProductos(batch)).thenReturn(batch);
 
+        // Ejecuto el POST al endpoint /api/perfulandia/productos/batch
         mockMvc.perform(post("/api/perfulandia/productos/batch")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(batch)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[1].nombre").value("Prod A"));
+            .andExpect(status().isOk())                        // devuelve 200 OK
+            .andExpect(jsonPath("$", hasSize(2)))               // array de 2 elementos
+            .andExpect(jsonPath("$[0].id").value(1))            // primer id = 1
+            .andExpect(jsonPath("$[1].nombre").value("Prod B")) // segundo nombre = "Prod B"
+        ;
 
+        // Verifico que el servicio se llamó correctamente
         verify(productoService, times(1)).saveAllProductos(batch);
     }
 }
+

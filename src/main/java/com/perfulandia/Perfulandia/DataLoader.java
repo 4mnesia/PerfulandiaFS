@@ -1,146 +1,147 @@
+
 package com.perfulandia.Perfulandia;
-
-import net.datafaker.Faker;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.perfulandia.Perfulandia.model.*;
 import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
 import com.perfulandia.Perfulandia.model.Enums.RolUsuario;
 import com.perfulandia.Perfulandia.repository.*;
 
-@Profile("dev")
+import net.datafaker.Faker;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
+
 @Component
-@Transactional
 public class DataLoader implements CommandLineRunner {
 
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private ProductoRepository productoRepository;
-    @Autowired private CarritoRepository carritoRepository;
-    @Autowired private OrdenRepository ordenRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private ProductoRepository productoRepository;
+    @Autowired
+    private CarritoRepository carritoRepository;
+    @Autowired
+    private ItemCarritoRepository itemCarritoRepository;
+    @Autowired
+    private OrdenRepository ordenRepository;
+    @Autowired
+    private DetalleOrdenRepository detalleOrdenRepository;
 
     @Override
     public void run(String... args) throws Exception {
-        Faker faker = new Faker();
+        Faker faker = new Faker(new Locale("es"));
         Random random = new Random();
 
-        RolUsuario[] roles    = RolUsuario.values();
-        EstadoOrden[] estados = EstadoOrden.values();
-
-        // 0) Limpiar tablas
+        // (Opcional) Limpiar tablas si ya existen datos
+        detalleOrdenRepository.deleteAll();
+        itemCarritoRepository.deleteAll();
         ordenRepository.deleteAll();
         carritoRepository.deleteAll();
-        usuarioRepository.deleteAll();
         productoRepository.deleteAll();
+        usuarioRepository.deleteAll();
 
-        // 1) Crear Productos
-        for (int i = 0; i < 10; i++) {
-            long raw = faker.number().numberBetween(1000, 20000);
-            BigDecimal precio = BigDecimal.valueOf(raw, 2);
-            
-            LocalDateTime randDate = LocalDateTime.now()
-                .minusDays(faker.number().numberBetween(1, 90));
-            Date fechaCreacion = Date.from(randDate.atZone(ZoneId.systemDefault()).toInstant());
-
-            Producto p = Producto.builder()
-                .nombre(faker.commerce().productName())
-                .descripcion(faker.lorem().sentence())
-                .categoria(faker.commerce().department())
-                .marca(faker.company().name())
-                .modelo(faker.commerce().material())
-                .precio(precio)
-                .stock(faker.number().numberBetween(5, 50))
-                .fechaCreacion(fechaCreacion)
-                .build();
-            productoRepository.save(p);
-        }
-
-        // 2) Crear Usuarios
-        for (int i = 0; i < 5; i++) {
+        // 1. Crear Usuarios :contentReference[oaicite:0]{index=0}
+        List<Usuario> usuarios = new ArrayList<>();
+        IntStream.range(1, 11).forEach(i -> {
             Usuario u = Usuario.builder()
-                .nombre(faker.name().fullName())
-                .email(faker.internet().emailAddress() + i)
-                .direccion(faker.address().fullAddress())
-                .telefono(faker.phoneNumber().phoneNumber())
-                .rol(roles[random.nextInt(roles.length)])
-                .contraseña(faker.internet().password(8, 12))
-                .build();
-            usuarioRepository.save(u);
-        }
+                    .nombre(faker.name().fullName())
+                    .email(faker.internet().emailAddress())
+                    .contraseña(faker.internet().password(8, 16))
+                    .direccion(faker.address().fullAddress())
+                    .telefono(faker.phoneNumber().phoneNumber())
+                    .rol(RolUsuario.values()[faker.number().numberBetween(
+                            0, RolUsuario.values().length)])
+                    .build();
+            usuarios.add(usuarioRepository.save(u));
+        });
 
-        List<Usuario> usuarios   = usuarioRepository.findAll();
-        List<Producto> productos = productoRepository.findAll();
-        List<Carrito> carritos   = new ArrayList<>();
+        // 2. Crear Productos :contentReference[oaicite:1]{index=1}
+        List<Producto> productos = new ArrayList<>();
+        IntStream.range(1, 21).forEach(i -> {
+            Date fecha = faker.date().past(365, TimeUnit.DAYS);
+            BigDecimal precio = BigDecimal.valueOf(
+                    faker.number().randomDouble(2, 5, 500));
+            Producto p = Producto.builder()
+                    .nombre(faker.commerce().productName())
+                    .descripcion(faker.lorem().sentence(3))
+                    .categoria(faker.commerce().department())
+                    .marca(faker.company().name())
+                    .modelo(faker.bothify("??-###"))
+                    .precio(precio)
+                    .stock(faker.number().numberBetween(0, 100))
+                    .fechaCreacion(fecha)
+                    .build();
+            productos.add(productoRepository.save(p));
+        });
 
-        // 3) Para cada Usuario: crear un Carrito con Items
-        for (Usuario usuario : usuarios) {
-            Carrito carrito = Carrito.builder()
-                .usuario(usuario)
-                .estado(random.nextBoolean())
-                .build();
+        // 3. Crear Carritos con Items :contentReference[oaicite:2]{index=2}
+        // :contentReference[oaicite:3]{index=3}
+        for (Usuario u : usuarios) {
+            Carrito c = Carrito.builder()
+                    .usuario(u)
+                    .estado(random.nextBoolean())
+                    .build();
+            final Carrito savedCarrito = carritoRepository.save(c);
 
-            // Genero entre 1 y 4 items dentro del carrito
-            int numItems = faker.number().numberBetween(1, 4);
-            for (int j = 0; j < numItems; j++) {
-                Producto prod = productos.get(random.nextInt(productos.size()));
-                int qty = faker.number().numberBetween(1, 3);
-
+            int itemsCount = faker.number().numberBetween(1, 5);
+            IntStream.range(0, itemsCount).forEach(j -> {
+                Producto prod = productos.get(
+                        faker.number().numberBetween(0, productos.size()));
                 ItemCarrito item = ItemCarrito.builder()
-                    .producto(prod)
-                    .cantidad(qty)
-                    .build();
-
-                carrito.getItem().add(item);
-            }
-
-            Carrito savedCarrito = carritoRepository.save(carrito);
-            carritos.add(savedCarrito);
+                        .producto(prod)
+                        .cantidad(faker.number().numberBetween(1, 10))
+                        .carrito(savedCarrito)
+                        .build();
+                itemCarritoRepository.save(item);
+            });
         }
 
-        // 4) Para cada Carrito: crear una Orden con DetalleOrden
-        for (Carrito carrito : carritos) {
-            // Armo la lista de detalles
-            List<DetalleOrden> detalles = new ArrayList<>();
-            int numDetalles = faker.number().numberBetween(1, 3);
-            for (int j = 0; j < numDetalles; j++) {
-                Producto prod = productos.get(random.nextInt(productos.size()));
-                int qty = faker.number().numberBetween(1, 2);
+        // 4. Crear Órdenes con Detalles :contentReference[oaicite:4]{index=4}
+        // :contentReference[oaicite:5]{index=5}
+        
+        for (Usuario u : usuarios) {
+            if (faker.bool().bool()) {
+                LocalDateTime created = LocalDateTime.now()
+                        .minusDays(faker.number().numberBetween(1, 30));
+                LocalDateTime updated = created.plusDays(
+                        faker.number().numberBetween(0, 5));
+                // elige un estado aleatorio:
+                EstadoOrden randomEstado = EstadoOrden.values()[random.nextInt(EstadoOrden.values().length)];
 
-                DetalleOrden d = DetalleOrden.builder()
-                    .producto(prod)
-                    .cantidad(qty)
-                    .precioUnitario(prod.getPrecio())
-                    .total(prod.getPrecio().multiply(BigDecimal.valueOf(qty)))
-                    .build();
+                Orden ordenToSave = Orden.builder()
+                        .usuario(u)
+                        .direccionEnvio(faker.address().fullAddress())
+                        .estado(randomEstado)
+                        .fechaCreacion(created)
+                        .fechaActualizacion(updated)
+                        .build();
+                Orden savedOrden = ordenRepository.save(ordenToSave);
 
-                detalles.add(d);
+                int detallesCount = faker.number().numberBetween(1, 5);
+                IntStream.range(0, detallesCount).forEach(k -> {
+                    Producto prod = productos.get(
+                            faker.number().numberBetween(0, productos.size()));
+                    int qty = faker.number().numberBetween(1, 5);
+                    BigDecimal unitPrice = prod.getPrecio();
+                    BigDecimal total = unitPrice.multiply(
+                            BigDecimal.valueOf(qty));
+                    DetalleOrden det = DetalleOrden.builder()
+                            .orden(savedOrden)
+                            .producto(prod)
+                            .cantidad(qty)
+                            .precioUnitario(unitPrice)
+                            .total(total)
+                            .build();
+                    detalleOrdenRepository.save(det);
+                });
             }
-
-            // Fechas aleatorias de creación/actualización
-            LocalDateTime created = LocalDateTime.now()
-                .minusDays(faker.number().numberBetween(1, 30));
-            long maxSecs = ChronoUnit.SECONDS.between(created, LocalDateTime.now());
-            LocalDateTime updated = created.plusSeconds(faker.number().numberBetween(0, (int)maxSecs));
-
-            Orden orden = Orden.builder()
-                .detalles(detalles)
-                .estado(estados[random.nextInt(estados.length)])
-                .fechaCreacion(created)
-                .fechaActualizacion(updated)
-                .direccionEnvio(faker.address().fullAddress())
-                .build();
-
-            ordenRepository.save(orden);
         }
     }
 }

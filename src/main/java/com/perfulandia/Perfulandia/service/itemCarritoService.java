@@ -59,15 +59,17 @@ public class ItemCarritoService {
     }
     //v2
 
-    /** Lista todos los items de un carrito */
+    //Filtrar por carrito id
     public List<ItemCarrito> findByCarritoId(Long carritoId) {
         return itemCarritoRepository.findByCarrito_Id(carritoId);
     }
-
-    
-
-    /** Lista todos los items de un producto */
+    //Filtrar por producto id
     public List<ItemCarrito> findByProductoId(Long productoId) {
-        return itemCarritoRepository.findByProducto_Id(productoId);
+        return itemCarritoRepository.findByProductoId(productoId);
     }
+    //Filtrar por greater than cantidad
+    public List<ItemCarrito> findByCantidadGreaterThan(int cantidad) {
+        return itemCarritoRepository.findByCantidadGreaterThan(cantidad);
+    }
+
 }

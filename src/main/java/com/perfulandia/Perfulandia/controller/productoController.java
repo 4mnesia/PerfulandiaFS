@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -69,21 +70,18 @@ public class ProductoController {
     }
 
     // crear varios productos
-    @Operation(summary = "Guardar productos en lote", description = "Crea varios productos en una única petición")
-    @ApiResponse(responseCode = "200", description = "Productos guardados correctamente", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Producto.class))))
-    @PostMapping("/productos/batch")
+    @Operation(summary = "Crear varios productos en lote", description = "Recibe una lista de productos y los guarda todos de una vez", responses = {
+            @ApiResponse(responseCode = "200", description = "Productos creados correctamente", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Producto.class)))),
+            @ApiResponse(responseCode = "400", description = "Lista de productos inválida")
+    })
+    @PostMapping("/batch")
     public ResponseEntity<List<Producto>> createProductosBatch(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Lista de productos a crear", required = true, content = @Content(array = @ArraySchema(schema = @Schema(implementation = Producto.class)))) @RequestBody List<Producto> productos) {
         if (productos == null || productos.isEmpty()) {
-            // lista inválida → 400
-            return ResponseEntity
-                    .badRequest()
-                    .build();
+            return ResponseEntity.badRequest().build();
         }
-        // lista válida → 200 con body
         List<Producto> saved = productoService.saveAllProductos(productos);
-        return ResponseEntity
-                .ok(saved);
+        return ResponseEntity.ok(saved);
     }
 
     // eliminar un producto por su ID

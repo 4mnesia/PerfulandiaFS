@@ -3,8 +3,9 @@ package com.perfulandia.Perfulandia.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import java.util.ArrayList;
+
+import com.fasterxml.jackson.annotation.*;
 import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,34 +18,40 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Schema(description = "Orden de compra, con sus detalles, estado y fechas")
 public class Orden {
+
+    // Identificador único de la orden
     @Schema(description = "Identificador de la orden", example = "500")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Unidireccional a DetalleOrden: crea FK orden_id en detalle_orden
-    @Schema(description = "Líneas de detalle de la orden")    
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "orden_id")
-    private List<DetalleOrden> detalles;
-
-    @Schema(description = "Estado actual de la orden", example = "PENDIENTE")
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EstadoOrden estado;
-
     @Schema(description = "Fecha de creación automática")
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     @Schema(description = "Fecha de última modificación automática")
-    @LastModifiedDate
     private LocalDateTime fechaActualizacion;
 
     @Schema(description = "Dirección de envío de la orden", example = "Av. Siempre Viva 742")
-    @Column(nullable = false)
+    @Column(name = "direccion_envio")
     private String direccionEnvio;
+
+    // Relación unidireccional a Usuario
+    @Schema(description = "Líneas de detalle de la orden")
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
+    private List<DetalleOrden> detalles;
+
+    // estado de la orden
+    @Schema(description = "Estado actual de la orden", example = "PENDIENTE")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_orden")
+    private EstadoOrden estado;
+
+    // Relación unidireccional a Usuario
+    @Schema(description = "Usuario que realizó la orden")
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = true)
+    private Usuario usuario;
 }

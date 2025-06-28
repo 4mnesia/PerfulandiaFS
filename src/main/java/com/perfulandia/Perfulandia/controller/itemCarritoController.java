@@ -86,50 +86,26 @@ public class ItemCarritoController {
     @Operation(summary = "Crear varios items en lote")
     @ApiResponse(responseCode = "200", description = "Items guardados", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ItemCarrito.class))))
     @PostMapping("/batch")
-    public ResponseEntity<?> createItems(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Lista de items a crear", required = true, content = @Content(array = @ArraySchema(schema = @Schema(implementation = ItemCarrito.class)))) @RequestBody List<ItemCarrito> items) {
-        try {
-            if (items == null || items.isEmpty()) {
-                return ResponseEntity.badRequest()
-                        .body("La lista de items no puede estar vacía");
-            }
-            List<ItemCarrito> saved = service.saveAllItemCarritos(items);
-            return ResponseEntity.ok(saved);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body("Error al crear items en lote: " + e.getMessage());
-        }
+    public ResponseEntity<List<ItemCarrito>> createItemsBatch(
+            @RequestBody List<ItemCarrito> items // <--- RequestBody para que Jackson lo mapee
+    ) {
+        List<ItemCarrito> saved = service.saveAllItemCarritos(items);
+        return ResponseEntity.ok(saved);
     }
 
     // PUT /api/perfulandia/itemcarrito/{id}
     @Operation(summary = "Actualizar un item existente")
     @ApiResponse(responseCode = "200", description = "Item actualizado", content = @Content(schema = @Schema(implementation = ItemCarrito.class)))
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateItem(
-            @Parameter(description = "ID del item", required = true, in = ParameterIn.PATH) @PathVariable Long id,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos del item a actualizar", required = true, content = @Content(schema = @Schema(implementation = ItemCarrito.class))) @RequestBody ItemCarrito item) {
-        try {
-            ItemCarrito existing = service.getItemCarritoById(id);
-            if (existing == null) {
-                return ResponseEntity.notFound().build();
-            }
-            // Validaciones básicas
-            if (item.getCantidad() == null || item.getCantidad() < 1) {
-                return ResponseEntity.badRequest().body("La cantidad debe ser mayor a 0");
-            }
-            if (item.getProducto() == null) {
-                return ResponseEntity.badRequest().body("El producto no puede ser nulo");
-            }
-            // Actualiza solo los campos necesarios
-            existing.setCantidad(item.getCantidad());
-            existing.setProducto(item.getProducto());
-            // Agrega aquí otros campos que quieras actualizar
-
-            service.saveItemCarrito(existing);
-            return ResponseEntity.ok("Item actualizado correctamente");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al actualizar item: " + e.getMessage());
-        }
+    public ResponseEntity<String> updateItem(
+            @PathVariable Long id,
+            @RequestBody ItemCarrito item // << y aquí
+    ) {
+        ItemCarrito existing = service.getItemCarritoById(id);
+        existing.setCantidad(item.getCantidad());
+        // si quisieras actualizar más campos, los pones aquí...
+        service.saveItemCarrito(existing);
+        return ResponseEntity.ok("Item actualizado correctamente");
     }
 
     // DELETE /api/perfulandia/itemcarrito/{id}

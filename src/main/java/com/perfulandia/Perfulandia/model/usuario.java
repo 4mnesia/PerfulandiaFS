@@ -1,5 +1,9 @@
 package com.perfulandia.Perfulandia.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.perfulandia.Perfulandia.model.Enums.RolUsuario;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -47,4 +51,16 @@ public class Usuario {
     @Column(name = "rol", nullable = false)
     private RolUsuario rol;
 
+    // Un Usuario tiene 1 Carrito
+    @Schema(description = "Carrito asociado al usuario")
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Carrito carrito;
+
+    // Un Usuario puede tener muchas Órdenes
+    @Schema(description = "Órdenes asociadas al usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    @JsonIgnore
+    private List<Orden> ordenes = new ArrayList<>();
 }

@@ -1,96 +1,64 @@
 package com.perfulandia.Perfulandia.controller;
 
-import com.perfulandia.Perfulandia.assemblers.UsuarioModelAssembler;
-import com.perfulandia.Perfulandia.model.Usuario;
+import com.perfulandia.Perfulandia.model.*;
 import com.perfulandia.Perfulandia.model.Enums.RolUsuario;
-import com.perfulandia.Perfulandia.service.UsuarioService;
+import com.perfulandia.Perfulandia.service.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
-import java.util.stream.Collectors;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
-import static org.springframework.hateoas.IanaLinkRelations.SELF;
 
 @RestController
-@RequestMapping("/api/v2/perfulandia/users")
+@RequestMapping("/api/v2/usuarios")
 public class UsuarioControllerV2 {
 
-    @Autowired private UsuarioService service;
-    @Autowired private UsuarioModelAssembler assembler;
+    @Autowired private UsuarioService usuarioService;
 
-    @GetMapping(params = "email")
-    public EntityModel<Usuario> getByEmail(@RequestParam String email) {
-        Usuario u = service.findByEmail(email)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return assembler.toModel(u);
-    }
-
-    @GetMapping(params = "rol")
-    public CollectionModel<EntityModel<Usuario>> getByRol(
-            @RequestParam RolUsuario rol) {
-        List<EntityModel<Usuario>> list = service
-            .findByRol(rol).stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
-        return CollectionModel.of(list,
-            linkTo(methodOn(getClass()).getByRol(rol)).withSelfRel());
-    }
-
-    @GetMapping(params = "nombre")
-    public CollectionModel<EntityModel<Usuario>> getByNombreContaining(
-            @RequestParam String nombre) {
-        List<EntityModel<Usuario>> list = service
-            .findByNombreContainingIgnoreCase(nombre).stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
-        return CollectionModel.of(list,
-            linkTo(methodOn(getClass()).getByNombreContaining(nombre)).withSelfRel());
-    }
-
-    // resto de CRUD...
-    @GetMapping
-    public CollectionModel<EntityModel<Usuario>> getAllUsuarios() {
-        List<EntityModel<Usuario>> usuarios = service.getAllUsuarios().stream()
-            .map(assembler::toModel)
-            .collect(Collectors.toList());
-
-        return CollectionModel.of(usuarios,
-            linkTo(methodOn(UsuarioControllerV2.class).getAllUsuarios()).withSelfRel());
-    }
-
-    @GetMapping("/{id}")
-    public EntityModel<Usuario> getUsuarioById(@PathVariable Long id) {
-        Usuario u = service.getUsuarioById(id);
-        if (u == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    // Filtrar usuarios por rol
+    @Operation(summary = "Filtrar usuarios por rol", description = "Obtiene los usuarios filtrados por el rol proporcionado")
+    @ApiResponse(responseCode = "200", description = "Lista de usuarios filtrados por rol")
+    @ApiResponse(responseCode = "404", description = "No se encontraron usuarios para el rol proporcionado")
+    @GetMapping("/rol/{rol}")
+    public ResponseEntity<List<Usuario>> getByRol(@PathVariable String rol) {
+        RolUsuario rolUsuario;
+        try {
+            rolUsuario = RolUsuario.valueOf(rol.toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return ResponseEntity.badRequest().build();
         }
-        return assembler.toModel(u);
+        List<Usuario> usuarios = usuarioService.findByRol(rolUsuario);
+        if (usuarios.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(usuarios);
     }
-
-    @PostMapping
-    public ResponseEntity<EntityModel<Usuario>> createUsuario(@RequestBody Usuario nuevo) {
-        Usuario saved = service.saveUsuario(nuevo);
-        EntityModel<Usuario> resource = assembler.toModel(saved);
-        return ResponseEntity
-            .created(resource.getRequiredLink(SELF).toUri())
-            .body(resource);
+    //filtrar por email
+    @Operation(summary = "Filtrar usuario por email", description = "Obtiene un usuario por su email único")
+    @ApiResponse(responseCode = "200", description = "Usuario encontrado")
+    @ApiResponse(responseCode = "404", description = "No se encontró un usuario con el email proporcionado")
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Usuario> getByEmail(@PathVariable String email) {
+        Usuario usuario = usuarioService.findByEmail(email);
+        if (usuario == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(usuario);
     }
-
-    @PutMapping("/{id}")
-    public EntityModel<Usuario> updateUsuario(@PathVariable Long id,
-                                              @RequestBody Usuario actualizado) {
-        actualizado.setId(id);
-        Usuario saved = service.updateUsuario(actualizado);
-        return assembler.toModel(saved);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
-        service.deleteUsuario(id);
-        return ResponseEntity.noContent().build();
+    // filtrar por nombre ignorando mayúsculas y minúsculas 
+    @Operation(summary = "Filtrar usuarios por nombre", description = "Obtiene los usuarios cuyo nombre contiene la cadena proporcionada, ignorando mayúsculas y minúsculas")
+    @ApiResponse(responseCode = "200", description = "Lista de usuarios filtrados por nombre")
+    @ApiResponse(responseCode = "404", description = "No se encontraron usuarios para el nombre proporcionado")
+    @GetMapping("/nombre/{nombre}")
+    public ResponseEntity<List<Usuario>> getByNombre(@PathVariable String nombre) {
+        List<Usuario> usuarios = usuarioService.findByNombreContainingIgnoreCase(nombre);
+        if (usuarios.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(usuarios);
     }
 }

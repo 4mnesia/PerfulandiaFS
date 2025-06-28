@@ -52,18 +52,21 @@ public class OrdenService {
 
     //v2
 
-     /** Filtra órdenes por estado */
+    //filtrar por estado
     public List<Orden> findByEstado(EstadoOrden estado) {
         return ordenRepository.findByEstado(estado);
     }
-
-    /** Filtra órdenes por rango de fechas */
-    public List<Orden> findByFechaCreacionBetween(LocalDateTime desde, LocalDateTime hasta) {
-        return ordenRepository.findByFechaCreacionBetween(desde, hasta);
+    //filtrar por dirección de envío ignore case
+    public List<Orden> findByDireccionEnvio(String direccion) {
+        return ordenRepository.findByDireccionEnvio(direccion);
     }
-
-    /** Obtiene las últimas 10 órdenes */
-    public List<Orden> findTop10ByOrderByFechaCreacionDesc() {
-        return ordenRepository.findTop10ByOrderByFechaCreacionDesc();
+    //filtrar por rango de fecha de creación
+    public List<Orden> findByFechaCreacionBetween(LocalDateTime start, LocalDateTime end) {
+        return ordenRepository.findByFechaCreacionBetween(start, end);
     }
+    // consulta personalizada: órdenes actualizadas después de una fecha
+    public List<Orden> findUpdatedAfter(LocalDateTime fecha) {
+        return ordenRepository.findUpdatedAfter(fecha);
+    }
+    
 }

@@ -87,7 +87,7 @@ public class OrdenController {
 
     // crear varias ordenes
     @Operation(summary = "Crear órdenes en lote")
-    @ApiResponse(responseCode = "200", description = "Órdenes guardadas", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Orden.class))))
+    @ApiResponse(responseCode = "201", description = "Órdenes guardadas", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Orden.class))))
     @PostMapping("/orden/batch")
     public ResponseEntity<List<Orden>> saveOrdenes(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Lista de órdenes a crear", required = true, content = @Content(array = @ArraySchema(schema = @Schema(implementation = Orden.class)))) @RequestBody List<Orden> ordenes) {
@@ -97,7 +97,9 @@ public class OrdenController {
                     .status(HttpStatus.CREATED)
                     .body(ordenesGuardadas);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
         }
     }
 
