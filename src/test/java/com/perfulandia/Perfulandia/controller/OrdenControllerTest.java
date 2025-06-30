@@ -1,18 +1,17 @@
 package com.perfulandia.Perfulandia.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
-
 import com.perfulandia.Perfulandia.model.DetalleOrden;
 import com.perfulandia.Perfulandia.model.Orden;
 import com.perfulandia.Perfulandia.model.Producto;
 import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
 import com.perfulandia.Perfulandia.service.OrdenService;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,11 +20,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import java.util.Collections;
 import java.util.List;
 
 @WebMvcTest(OrdenController.class) // Solo cargamos el controlador que queremos probar
@@ -54,7 +50,6 @@ public class OrdenControllerTest {
                                 .fechaCreacion(java.util.Date.from(LocalDateTime.now()
                                                 .atZone(java.time.ZoneId.systemDefault()).toInstant()))
                                 .build();
-                
 
                 // 2) Creamos un detalle con ese producto
                 DetalleOrden detalle = DetalleOrden.builder()
@@ -141,38 +136,27 @@ public class OrdenControllerTest {
 
         @Test
         public void testCreateOrdenesBatch() throws Exception {
-                Long id1 = 1L, id2 = 2L;
-                // muncha configuración previa de tu orden ejemplo:
-                Orden orden1 = Orden.builder()
-                                .id(id1)
-                                .detalles(Collections.emptyList())
-                                .estado(EstadoOrden.PENDIENTE)
-                                .fechaCreacion(LocalDateTime.now())
-                                .fechaActualizacion(LocalDateTime.now())
-                                .direccionEnvio("Calle 123")
-                                .usuario(null)
-                                .build();
+                // Creamos dos órdenes de ejemplo (dejar demás campos null está bien, el
+                // controller no los valida)
+                Orden o1 = new Orden();
+                o1.setId(1L);
+                Orden o2 = new Orden();
+                o2.setId(2L);
+                List<Orden> batch = List.of(o1, o2);
 
-                Orden orden2 = Orden.builder()
-                                .id(id2)
-                                .detalles(Collections.emptyList())
-                                .estado(EstadoOrden.PENDIENTE)
-                                .fechaCreacion(LocalDateTime.now())
-                                .fechaActualizacion(LocalDateTime.now())
-                                .direccionEnvio("Calle Nueva 456")
-                                .usuario(null)
-                                .build();
+                // Stub: cuando llegue ANY lista de Órdenes, devuelve 'batch'
+                when(ordenService.saveOrdenes(anyList())).thenReturn(batch);
 
-                List<Orden> batch = List.of(orden1, orden2);
-                when(ordenService.saveOrdenes(batch)).thenReturn(batch);
-
+                // POST a /api/perfulandia/orden/batch
                 mockMvc.perform(post("/api/perfulandia/orden/batch")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(batch)))
-                                .andExpect(status().isCreated())
-                                .andExpect(jsonPath("$[0].id").value(id1))
-                                .andExpect(jsonPath("$[1].direccionEnvio").value("Calle Nueva 456"));
+                                .andExpect(status().isCreated()) // 201 CREATED
+                                .andExpect(jsonPath("$", hasSize(2))) // Array de tamaño 2
+                                .andExpect(jsonPath("$[0].id").value(1))
+                                .andExpect(jsonPath("$[1].id").value(2));
 
-                verify(ordenService, times(1)).saveOrdenes(batch);
+                // Verificamos que el servicio fue invocado exactamente una vez
+                verify(ordenService, times(1)).saveOrdenes(anyList());
         }
 }

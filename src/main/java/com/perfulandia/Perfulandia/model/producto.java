@@ -62,10 +62,12 @@ public class Producto {
     @Schema(description = "Detalles del producto" + " (opcional)", example = "Perfume de alta calidad con notas florales")
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @Builder.Default
     private List<DetalleOrden> detalles = new ArrayList<>();
 
     @Schema(description = "Items en el carrito", example = "[{\"cantidad\": 2, \"precio\": 99.99}]")
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     @JsonIgnore
     private List<ItemCarrito> itemsCarrito = new ArrayList<>();
 

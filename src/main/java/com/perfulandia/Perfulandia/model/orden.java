@@ -3,7 +3,7 @@ package com.perfulandia.Perfulandia.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
-import java.util.ArrayList;
+
 
 import com.fasterxml.jackson.annotation.*;
 import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
@@ -29,27 +29,29 @@ public class Orden {
     private Long id;
 
     @Schema(description = "Fecha de creación automática")
+    @Builder.Default
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     @Schema(description = "Fecha de última modificación automática")
-    private LocalDateTime fechaActualizacion;
+    @Builder.Default
+    private LocalDateTime fechaActualizacion = null;
 
     @Schema(description = "Dirección de envío de la orden", example = "Av. Siempre Viva 742")
     @Column(name = "direccion_envio")
     private String direccionEnvio;
 
-    // Relación unidireccional a Usuario
+    // DetalleOrden
     @Schema(description = "Líneas de detalle de la orden")
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
     private List<DetalleOrden> detalles;
 
-    // estado de la orden
+    // estadoOrden
     @Schema(description = "Estado actual de la orden", example = "PENDIENTE")
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_orden")
     private EstadoOrden estado;
 
-    // Relación unidireccional a Usuario
+    //Usuario
     @Schema(description = "Usuario que realizó la orden")
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = true)

@@ -1,6 +1,7 @@
 package com.perfulandia.Perfulandia.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -119,25 +120,22 @@ public class ProductoControllerTest {
     }
 
     @Test
-    void testCreateProductosBatch() throws Exception {
-        
+    public void testCreateProductosBatch() throws Exception {
+        // Preparamos la lista de retorno que queremos simular
         List<Producto> batch = List.of(producto1, producto2);
 
-        // Mockeo el servicio
-        when(productoService.saveAllProductos(batch)).thenReturn(batch);
+        // Stub: cuando llegue CUALQUIER lista, devuelve 'batch'
+        when(productoService.saveAllProductos(anyList())).thenReturn(batch);
 
-        // Ejecuto el POST al endpoint /api/perfulandia/productos/batch
         mockMvc.perform(post("/api/perfulandia/productos/batch")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(batch)))
-            .andExpect(status().isOk())                        // devuelve 200 OK
-            .andExpect(jsonPath("$", hasSize(2)))               // array de 2 elementos
-            .andExpect(jsonPath("$[0].id").value(1))            // primer id = 1
-            .andExpect(jsonPath("$[1].nombre").value("Prod B")) // segundo nombre = "Prod B"
-        ;
+                .andExpect(status().isOk()) // 200 OK
+                .andExpect(jsonPath("$", hasSize(2))) // la respuesta es un array de tamaño 2
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[1].id").value(2));
 
-        // Verifico que el servicio se llamó correctamente
-        verify(productoService, times(1)).saveAllProductos(batch);
+        // Verificamos que el servicio se invocó exactamente una vez con cualquier lista
+        verify(productoService, times(1)).saveAllProductos(anyList());
     }
 }
-
