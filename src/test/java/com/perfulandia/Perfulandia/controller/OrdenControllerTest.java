@@ -1,12 +1,6 @@
 package com.perfulandia.Perfulandia.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.hasSize;
+import com.perfulandia.Perfulandia.assemblers.OrdenModelAssembler;
 import com.perfulandia.Perfulandia.model.DetalleOrden;
 import com.perfulandia.Perfulandia.model.Orden;
 import com.perfulandia.Perfulandia.model.Producto;
@@ -18,145 +12,179 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
-@WebMvcTest(OrdenController.class) // Solo cargamos el controlador que queremos probar
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(OrdenController.class)
+@Import(OrdenModelAssembler.class)
 public class OrdenControllerTest {
 
-        @Autowired
-        private MockMvc mockMvc; // Para simular peticiones HTTP
+    @Autowired
+    private MockMvc mockMvc;
 
-        @MockBean
-        private OrdenService ordenService; // Mock del servicio
+    @MockBean
+    private OrdenService ordenService;
 
-        @Autowired
-        private ObjectMapper objectMapper; // Para serializar/deserializar JSON
+    @Autowired
+    private ObjectMapper objectMapper;
 
-        private Orden orden;
+    private Orden orden;
 
-        @BeforeEach
-        void setUp() {
-                // Creamos una orden de ejemplo con todos los campos requeridos
-                Producto producto = Producto.builder()
-                                .id(1L)
-                                .nombre("Perfume Test")
-                                .descripcion("Aroma de prueba")
-                                .precio(BigDecimal.valueOf(50.00))
-                                .stock(10)
-                                .fechaCreacion(java.util.Date.from(LocalDateTime.now()
-                                                .atZone(java.time.ZoneId.systemDefault()).toInstant()))
-                                .build();
+    @BeforeEach
+    void setUp() {
+        // Producto de ejemplo
+        Producto producto = Producto.builder()
+                .id(1L)
+                .nombre("Perfume Test")
+                .descripcion("Aroma de prueba")
+                .precio(new BigDecimal("50.00"))
+                .stock(10)
+                .fechaCreacion(new Date())
+                .build();
+        // DetalleOrden con producto
+        DetalleOrden detalle = DetalleOrden.builder()
+                .producto(producto)
+                .cantidad(2)
+                .precioUnitario(producto.getPrecio())
+                .total(producto.getPrecio().multiply(BigDecimal.valueOf(2)))
+                .build();
+        // Orden completa
+        orden = Orden.builder()
+                .id(1L)
+                .detalles(List.of(detalle))
+                .estado(EstadoOrden.PENDIENTE)
+                .fechaCreacion(LocalDateTime.now())
+                .fechaActualizacion(LocalDateTime.now())
+                .direccionEnvio("Calle Falsa 123")
+                .build();
+    }
 
-                // 2) Creamos un detalle con ese producto
-                DetalleOrden detalle = DetalleOrden.builder()
-                                .producto(producto)
-                                .cantidad(2)
-                                .precioUnitario(producto.getPrecio())
-                                .total(producto.getPrecio().multiply(BigDecimal.valueOf(2)))
-                                .build();
+    @Test
+    void testGetAllOrdenes() throws Exception {
+        when(ordenService.getAllOrdenes()).thenReturn(List.of(orden));
 
-                // 3) Ahora el orden con lista NO vacía
-                orden = Orden.builder()
-                                .id(1L)
-                                .detalles(List.of(detalle)) // ¡aquí ya no está vacío!
-                                .estado(EstadoOrden.PENDIENTE)
-                                .fechaCreacion(LocalDateTime.now())
-                                .fechaActualizacion(LocalDateTime.now())
-                                .direccionEnvio("Calle Falsa 123")
-                                .build();
-        }
+        mockMvc.perform(get("/api/perfulandia/orden"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.ordenList", hasSize(1)))
+                .andExpect(jsonPath("$._embedded.ordenList[0].direccionEnvio").value("Calle Falsa 123"));
 
-        @Test
-        public void testGetAllOrdenes() throws Exception {
-                // Cuando el servicio devuelva nuestra lista con la orden
-                when(ordenService.getAllOrdenes()).thenReturn(List.of(orden));
+        verify(ordenService, times(1)).getAllOrdenes();
+    }
 
-                mockMvc.perform(get("/api/perfulandia/orden"))
-                                .andExpect(status().isOk()) // 200 OK
-                                .andExpect(jsonPath("$[0].id").value(1)) // id = 1
-                                .andExpect(jsonPath("$[0].direccionEnvio").value("Calle Falsa 123")); // dirección
-        }
+    @Test
+    void testGetOrdenByIdExists() throws Exception {
+        when(ordenService.getOrdenById(1L)).thenReturn(orden);
 
-        @Test
-        public void testGetOrdenById() throws Exception {
-                when(ordenService.getOrdenById(1L)).thenReturn(orden);
+        mockMvc.perform(get("/api/perfulandia/orden/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
 
-                mockMvc.perform(get("/api/perfulandia/orden/1"))
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").value(1))
-                                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
-        }
+        verify(ordenService, times(1)).getOrdenById(1L);
+    }
 
-        @Test
-        public void testCreateOrden() throws Exception {
-                when(ordenService.saveOrden(any(Orden.class))).thenReturn(orden);
+    @Test
+    void testGetOrdenByIdNotFound() throws Exception {
+        when(ordenService.getOrdenById(99L)).thenReturn(null);
 
-                mockMvc.perform(post("/api/perfulandia/orden")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(orden)))
-                                .andExpect(status().isCreated())
-                                .andExpect(content().string("Orden creada correctamente"));
-        }
+        mockMvc.perform(get("/api/perfulandia/orden/99"))
+                .andExpect(status().isNotFound());
+    }
 
-        @Test
-        public void testUpdateOrden() throws Exception {
-                when(ordenService.updateOrden(eq(1L), any(Orden.class))).thenReturn(orden);
+    @Test
+    void testSaveOrdenValid() throws Exception {
+        // saveOrden returns void, so just doNothing
+        doNothing().when(ordenService).saveOrden(any(Orden.class));
 
-                mockMvc.perform(put("/api/perfulandia/orden/1")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(orden)))
-                                .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.id").value(1))
-                                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
-        }
+        mockMvc.perform(post("/api/perfulandia/orden")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orden)))
+                .andExpect(status().isCreated())
+                .andExpect(content().string("Orden creada correctamente"));
 
-        @Test
-        public void testDeleteOrden() throws Exception {
-                doNothing().when(ordenService).deleteOrden(1L);
+        verify(ordenService, times(1)).saveOrden(any(Orden.class));
+    }
 
-                mockMvc.perform(delete("/api/perfulandia/orden/1"))
-                                .andExpect(status().isNoContent());
+    @Test
+    void testSaveOrdenInvalidNoDetalles() throws Exception {
+        Orden bad = Orden.builder().detalles(List.of()).build();
+        mockMvc.perform(post("/api/perfulandia/orden")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(bad)))
+                .andExpect(status().isBadRequest());
+    }
 
-                verify(ordenService, times(1)).deleteOrden(1L);
-        }
+    @Test
+    void testSaveOrdenesBatch() throws Exception {
+        Orden o1 = new Orden(); o1.setId(2L);
+        Orden o2 = new Orden(); o2.setId(3L);
+        List<Orden> batch = List.of(o1, o2);
+        when(ordenService.saveOrdenes(anyList())).thenReturn(batch);
 
-        @Test
-        public void testDeleteAllOrdenes() throws Exception {
-                doNothing().when(ordenService).deleteAllOrdenes();
+        mockMvc.perform(post("/api/perfulandia/orden/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(batch)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id").value(2))
+                .andExpect(jsonPath("$[1].id").value(3));
 
-                mockMvc.perform(delete("/api/perfulandia/orden"))
-                                .andExpect(status().isOk());
+        verify(ordenService, times(1)).saveOrdenes(anyList());
+    }
 
-                verify(ordenService, times(1)).deleteAllOrdenes();
-        }
+    @Test
+    void testUpdateOrdenExists() throws Exception {
+        when(ordenService.updateOrden(eq(1L), any(Orden.class))).thenReturn(orden);
 
-        @Test
-        public void testCreateOrdenesBatch() throws Exception {
-                // Creamos dos órdenes de ejemplo (dejar demás campos null está bien, el
-                // controller no los valida)
-                Orden o1 = new Orden();
-                o1.setId(1L);
-                Orden o2 = new Orden();
-                o2.setId(2L);
-                List<Orden> batch = List.of(o1, o2);
+        mockMvc.perform(put("/api/perfulandia/orden/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orden)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
 
-                // Stub: cuando llegue ANY lista de Órdenes, devuelve 'batch'
-                when(ordenService.saveOrdenes(anyList())).thenReturn(batch);
+        verify(ordenService, times(1)).updateOrden(eq(1L), any(Orden.class));
+    }
 
-                // POST a /api/perfulandia/orden/batch
-                mockMvc.perform(post("/api/perfulandia/orden/batch")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(batch)))
-                                .andExpect(status().isCreated()) // 201 CREATED
-                                .andExpect(jsonPath("$", hasSize(2))) // Array de tamaño 2
-                                .andExpect(jsonPath("$[0].id").value(1))
-                                .andExpect(jsonPath("$[1].id").value(2));
+    @Test
+    void testUpdateOrdenNotFound() throws Exception {
+        when(ordenService.updateOrden(eq(1L), any(Orden.class))).thenReturn(null);
 
-                // Verificamos que el servicio fue invocado exactamente una vez
-                verify(ordenService, times(1)).saveOrdenes(anyList());
-        }
+        mockMvc.perform(put("/api/perfulandia/orden/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(orden)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteOrden() throws Exception {
+        doNothing().when(ordenService).deleteOrden(1L);
+
+        mockMvc.perform(delete("/api/perfulandia/orden/1"))
+                .andExpect(status().isNoContent());
+
+        verify(ordenService, times(1)).deleteOrden(1L);
+    }
+
+    @Test
+    void testDeleteAllOrdenes() throws Exception {
+        doNothing().when(ordenService).deleteAllOrdenes();
+
+        mockMvc.perform(delete("/api/perfulandia/orden"))
+                .andExpect(status().isOk());
+
+        verify(ordenService, times(1)).deleteAllOrdenes();
+    }
 }

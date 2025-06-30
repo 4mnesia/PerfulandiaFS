@@ -2,6 +2,7 @@ package com.perfulandia.Perfulandia.controller;
 
 import com.perfulandia.Perfulandia.model.DetalleOrden;
 import com.perfulandia.Perfulandia.service.DetalleOrdenService;
+import com.perfulandia.Perfulandia.assemblers.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,6 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+
+
 import java.util.List;
 
 @Tag(name = "DetalleOrden", description = "Operaciones sobre detalles de orden")
@@ -26,19 +31,21 @@ public class DetalleOrdenController {
 
     @Autowired
     private DetalleOrdenService service;
+    @Autowired
+    private DetalleOrdenModelAssembler assembler;
 
-    // Endpoints para DetalleOrden
     // Listar todos los detalles
     @Operation(summary = "Listar todos los detalles de orden")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = DetalleOrden.class))))
     @GetMapping("/detalleorden")
-    public ResponseEntity<?> getAllDetalles() {
+    public ResponseEntity<CollectionModel<EntityModel<DetalleOrden>>> getAllDetalles() {
         try {
             List<DetalleOrden> list = service.getAllDetalles();
-            return ResponseEntity.ok(list);
+            CollectionModel<EntityModel<DetalleOrden>> model = assembler.toCollectionModel(list);
+            return ResponseEntity.ok(model);
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body("Error al obtener detalles: " + e.getMessage());
+                    .body(null);
         }
     }
 
@@ -49,17 +56,19 @@ public class DetalleOrdenController {
             @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
     })
     @GetMapping("/detalleorden/{id}")
-    public ResponseEntity<?> getDetalleById(
+    public ResponseEntity<EntityModel<DetalleOrden>> getDetalleById(
             @Parameter(description = "ID del detalle", required = true, in = ParameterIn.PATH) @PathVariable Long id) {
         try {
             DetalleOrden d = service.getDetalleOrdenById(id);
-            if (d != null)
-                return ResponseEntity.ok(d);
-            else
+            if (d != null) {
+                EntityModel<DetalleOrden> model = assembler.toModel(d);
+                return ResponseEntity.ok(model);
+            } else {
                 return ResponseEntity.notFound().build();
+            }
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body("Error al obtener detalle: " + e.getMessage());
+                    .body(null);
         }
     }
 
@@ -138,6 +147,5 @@ public class DetalleOrdenController {
     public ResponseEntity<Void> deleteAllDetalles() {
         service.deleteAllDetalles();
         return ResponseEntity.noContent().build();
-
     }
 }

@@ -24,8 +24,8 @@ public class OrdenService {
         return ordenRepository.findAll();
     }
     //guardar orden
-    public Orden saveOrden(Orden orden) {
-        return ordenRepository.save(orden);
+    public void saveOrden(Orden orden) {
+        ordenRepository.save(orden);
     }
     //guardar varias ordenes
     public List<Orden> saveOrdenes(List<Orden> ordenes) {

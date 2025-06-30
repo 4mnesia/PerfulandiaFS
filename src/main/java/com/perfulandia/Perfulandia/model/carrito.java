@@ -24,14 +24,14 @@ public class Carrito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación unidireccional a Usuario
+    //Usuario
     @Schema(description = "Usuario propietario del carrito")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     @JsonIgnore
     private Usuario usuario;
 
-    // Unidireccional a ItemCarrito: crea FK carrito_id en item_carrito
+    //item_carrito
     @Schema(description = "Items añadidos en el carrito")
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL)
     @Builder.Default

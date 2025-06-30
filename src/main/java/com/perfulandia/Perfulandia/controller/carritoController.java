@@ -1,9 +1,12 @@
 package com.perfulandia.Perfulandia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 
 import com.perfulandia.Perfulandia.service.CarritoService;
+import com.perfulandia.Perfulandia.assemblers.CarritoModelAssembler;
 import com.perfulandia.Perfulandia.model.Carrito;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -25,14 +28,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class CarritoController {
     @Autowired
     private CarritoService carritoService;
+    @Autowired
+    private CarritoModelAssembler assembler;
 
     // Obtener todos los carritos
     @Operation(summary = "Listar todos los carritos", description = "Obtiene la lista completa de carritos registrados")
     @ApiResponse(responseCode = "200", description = "Lista de carritos", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Carrito.class))))
     @GetMapping("/carrito")
-    public List<Carrito> getAllCarritos() {
+    public ResponseEntity<CollectionModel<EntityModel<Carrito>>> getAllCarritos() {
         try {
-            return carritoService.getAllCarritos();
+            List<Carrito> carritos = carritoService.getAllCarritos();
+            CollectionModel<EntityModel<Carrito>> model = assembler.toCollectionModel(carritos);
+            return ResponseEntity.ok(model);
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener los carritos: " + e.getMessage());
         }
@@ -42,27 +49,28 @@ public class CarritoController {
     @Operation(summary = "Obtener un carrito por ID", description = "Devuelve un carrito si existe el ID proporcionado")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Carrito encontrado", content = @Content(schema = @Schema(implementation = Carrito.class))),
-            @ApiResponse(responseCode = "404", description = "Carrito no encontrado") })
+            @ApiResponse(responseCode = "404", description = "Carrito no encontrado")
+    })
     @GetMapping("/carrito/{id}")
-    public Carrito getCarritoById(
-            @Parameter(description = "ID del carrito", required = true, in = ParameterIn.PATH, example = "1") @PathVariable Long id) {
-
+    public ResponseEntity<EntityModel<Carrito>> getCarritoById(
+            @Parameter(description = "ID del carrito", required = true, in = ParameterIn.PATH) @PathVariable Long id) {
         try {
-            return carritoService.getCarritoById(id);
+            Carrito carrito = carritoService.getCarritoById(id);
+            EntityModel<Carrito> model = assembler.toModel(carrito);
+            return ResponseEntity.ok(model);
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener el carrito por ID: " + e.getMessage());
         }
-
     }
 
     // crear carrito
     @Operation(summary = "Crear un nuevo carrito", description = "Registra un nuevo carrito con sus items")
     @ApiResponse(responseCode = "201", description = "Carrito creado correctamente", content = @Content(schema = @Schema(implementation = Carrito.class), examples = @ExampleObject(value = """
             {
-                  "usuario": {"id":1},
-                  "item": [{"producto":{"id":1},"cantidad":2}],
-                  "estado": true
-                }""")))
+              \"usuario\": {\"id\":1},
+              \"item\": [{\"producto\":{\"id\":1},\"cantidad\":2}],
+              \"estado\": true
+            }""")))
     @PostMapping("/carrito")
     public Carrito createCarrito(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos del carrito a crear", required = true, content = @Content(schema = @Schema(implementation = Carrito.class))) @RequestBody Carrito nuevoCarrito) {
@@ -98,7 +106,7 @@ public class CarritoController {
     })
     @PutMapping("/carrito/{id}")
     public Carrito updateCarrito(
-            @Parameter(description = "ID del carrito", required = true, in = ParameterIn.PATH, example = "1") @PathVariable Long id,
+            @Parameter(description = "ID del carrito", required = true, in = ParameterIn.PATH) @PathVariable Long id,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Nueva información del carrito", required = true, content = @Content(schema = @Schema(implementation = Carrito.class))) @RequestBody Carrito carritoActualizado) {
         try {
             Carrito existente = carritoService.getCarritoById(id);
@@ -107,7 +115,6 @@ public class CarritoController {
             }
             existente.setUsuario(carritoActualizado.getUsuario());
             existente.setEstado(carritoActualizado.isEstado());
-            // Solución: no reemplazar la lista, sino modificarla
             existente.getItem().clear();
             if (carritoActualizado.getItem() != null) {
                 existente.getItem().addAll(carritoActualizado.getItem());
@@ -123,7 +130,7 @@ public class CarritoController {
     @Operation(summary = "Eliminar un carrito por ID", description = "Borra el carrito especificado, devolviendo 204 si todo va bien")
     @ApiResponse(responseCode = "204", description = "Carrito eliminado correctamente")
     public ResponseEntity<String> deleteCarrito(
-            @Parameter(description = "ID del carrito", required = true, in = ParameterIn.PATH, example = "1") @PathVariable Long id) {
+            @Parameter(description = "ID del carrito", required = true, in = ParameterIn.PATH) @PathVariable Long id) {
         carritoService.deleteCarrito(id);
         return ResponseEntity.ok("Carrito eliminado con todo su contenido");
     }

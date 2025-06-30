@@ -12,6 +12,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+
+import com.perfulandia.Perfulandia.assemblers.UsuarioModelAssembler;
 import com.perfulandia.Perfulandia.model.Usuario;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private UsuarioModelAssembler assembler;
+
     // LISTAR POR ID
     @Operation(summary = "Obtener usuario por ID")
     @ApiResponses({
@@ -34,20 +41,21 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
     @GetMapping("/users/{id}")
-    public ResponseEntity<Usuario> getUsuarioById(
+    public ResponseEntity<EntityModel<Usuario>> getUsuarioById(
             @Parameter(description = "ID del usuario", required = true, in = ParameterIn.PATH) @PathVariable Long id) {
         Usuario u = usuarioService.getUsuarioById(id);
-        return u != null ? ResponseEntity.ok(u) : ResponseEntity.notFound().build();
-
+        return u != null
+                ? ResponseEntity.ok(assembler.toModel(u))
+                : ResponseEntity.notFound().build();
     }
 
     // LISTAR *
     @Operation(summary = "Listar todos los usuarios")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Usuario.class))))
     @GetMapping("/users")
-    public ResponseEntity<List<Usuario>> getAllUsuarios() {
+    public ResponseEntity<CollectionModel<EntityModel<Usuario>>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.getAllUsuarios();
-        return ResponseEntity.ok(usuarios);
+        return ResponseEntity.ok(assembler.toCollectionModel(usuarios));
     }
 
     // CREAR USUARIO
@@ -100,6 +108,5 @@ public class UsuarioController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos del usuario a actualizar", required = true, content = @Content(schema = @Schema(implementation = Usuario.class))) @RequestBody Usuario usuario) {
         usuario.setId(id);
         return ResponseEntity.ok(usuarioService.updateUsuario(usuario));
-
     }
 }

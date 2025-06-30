@@ -8,7 +8,6 @@ import com.perfulandia.Perfulandia.model.Orden;
 import com.perfulandia.Perfulandia.model.Enums.EstadoOrden;
 import com.perfulandia.Perfulandia.repository.OrdenRepository;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,8 +70,8 @@ public class OrdenServiceTest {
     public void testSaveOrden() {
         when(ordenRepository.save(orden)).thenReturn(orden);
 
-        Orden guardada = ordenService.saveOrden(orden);
-        assertEquals(orden, guardada);
+        ordenService.saveOrden(orden);
+        verify(ordenRepository).save(orden);
     }
 
     @Test
