@@ -32,9 +32,13 @@ public class CarritoController {
     private CarritoModelAssembler assembler;
 
     // Obtener todos los carritos
-    @Operation(summary = "Listar todos los carritos", description = "Obtiene la lista completa de carritos registrados")
-    @ApiResponse(responseCode = "200", description = "Lista de carritos", content = 
-    @Content(array = @ArraySchema(schema = @Schema(implementation = Carrito.class))))
+    @Operation( summary = "Listar todos los carritos", 
+                description = "Obtiene la lista completa de carritos registrados")
+    @ApiResponse(   responseCode = "200", 
+                    description = "Lista de carritos", 
+                    content =   @Content(array = 
+                                @ArraySchema(schema = 
+                                @Schema(implementation = Carrito.class))))
     @GetMapping("/carrito")
     public ResponseEntity<CollectionModel<EntityModel<Carrito>>> getAllCarritos() {
         try {
