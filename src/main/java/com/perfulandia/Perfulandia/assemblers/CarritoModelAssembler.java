@@ -2,22 +2,11 @@ package com.perfulandia.Perfulandia.assemblers;
 
 import com.perfulandia.Perfulandia.controller.CarritoController;
 import com.perfulandia.Perfulandia.model.Carrito;
-
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
-
 import org.springframework.stereotype.Component;
-
 import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-/**
- * Ensamblador HATEOAS para el recurso Carrito.
- * Añade enlaces self y colección a las respuestas.
- */
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @Component
 public class CarritoModelAssembler implements RepresentationModelAssembler<Carrito, EntityModel<Carrito>> {
 
@@ -34,10 +23,7 @@ public class CarritoModelAssembler implements RepresentationModelAssembler<Carri
                         .withRel("carritos"));
     }
 
-    /**
-     * Ensambla la colección de carritos en un CollectionModel,
-     * agregando un enlace self a la lista completa.
-     */
+    //colección de carritos en un CollectionModel
     public CollectionModel<EntityModel<Carrito>> toCollectionModel(List<Carrito> carritos) {
         List<EntityModel<Carrito>> items = carritos.stream()
                 .map(this::toModel)

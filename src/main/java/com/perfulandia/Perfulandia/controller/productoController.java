@@ -36,7 +36,7 @@ public class ProductoController {
     @Autowired
     private ProductoModelAssembler assembler;
 
-    // Obtener todos los productos con HATEOAS
+    // Obtener todos los productos 
     @Operation(summary = "Listar todos los productos")
     @ApiResponse(responseCode = "200", description = "OK",
       content = @Content(array = @ArraySchema(schema = @Schema(implementation = Producto.class))))

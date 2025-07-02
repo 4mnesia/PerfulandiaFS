@@ -33,7 +33,8 @@ public class CarritoController {
 
     // Obtener todos los carritos
     @Operation(summary = "Listar todos los carritos", description = "Obtiene la lista completa de carritos registrados")
-    @ApiResponse(responseCode = "200", description = "Lista de carritos", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Carrito.class))))
+    @ApiResponse(responseCode = "200", description = "Lista de carritos", content = 
+    @Content(array = @ArraySchema(schema = @Schema(implementation = Carrito.class))))
     @GetMapping("/carrito")
     public ResponseEntity<CollectionModel<EntityModel<Carrito>>> getAllCarritos() {
         try {
@@ -48,7 +49,8 @@ public class CarritoController {
     // carritos por id
     @Operation(summary = "Obtener un carrito por ID", description = "Devuelve un carrito si existe el ID proporcionado")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Carrito encontrado", content = @Content(schema = @Schema(implementation = Carrito.class))),
+            @ApiResponse(responseCode = "200", description = "Carrito encontrado", content = 
+            @Content(schema = @Schema(implementation = Carrito.class))),
             @ApiResponse(responseCode = "404", description = "Carrito no encontrado")
     })
     @GetMapping("/carrito/{id}")

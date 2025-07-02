@@ -51,7 +51,8 @@ public class UsuarioController {
 
     // LISTAR *
     @Operation(summary = "Listar todos los usuarios")
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Usuario.class))))
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = 
+            @ArraySchema(schema = @Schema(implementation = Usuario.class))))
     @GetMapping("/users")
     public ResponseEntity<CollectionModel<EntityModel<Usuario>>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.getAllUsuarios();

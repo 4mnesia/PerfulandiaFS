@@ -16,20 +16,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class UsuarioModelAssembler
                 implements RepresentationModelAssembler<Usuario, EntityModel<Usuario>> {
 
-    @Override
-    public EntityModel<Usuario> toModel(Usuario usuario) {
-                // enlace self → GET /api/perfulandia/users/{id}
-                Link self = linkTo(methodOn(UsuarioController.class)
-                        .getUsuarioById(usuario.getId()))
-                        .withSelfRel();
-                // enlace colección → GET /api/perfulandia/users
-                Link all = linkTo(methodOn(UsuarioController.class)
-                        .getAllUsuarios())
-                        .withRel("usuarios");
-        return EntityModel.of(usuario,self,all);
-    }
+        @Override
+        public EntityModel<Usuario> toModel(Usuario usuario) {
 
-        //Ensambla un CollectionModel de Usuario
+                Link self = linkTo(methodOn(UsuarioController.class)
+                                .getUsuarioById(usuario.getId()))
+                                .withSelfRel();
+
+                Link all = linkTo(methodOn(UsuarioController.class)
+                                .getAllUsuarios())
+                                .withRel("usuarios");
+                return EntityModel.of(usuario, self, all);
+        }
+
         @Override
         public CollectionModel<EntityModel<Usuario>> toCollectionModel(
                         Iterable<? extends Usuario> usuarios) {
@@ -40,7 +39,6 @@ public class UsuarioModelAssembler
 
                 return CollectionModel.of(
                                 items,
-                                // self link de la colección
                                 linkTo(methodOn(UsuarioController.class)
                                                 .getAllUsuarios())
                                                 .withSelfRel());
