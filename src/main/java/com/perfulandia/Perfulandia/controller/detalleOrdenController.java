@@ -55,6 +55,7 @@ public class DetalleOrdenController {
             @ApiResponse(responseCode = "200", description = "Detalle encontrado", content = @Content(schema = @Schema(implementation = DetalleOrden.class))),
             @ApiResponse(responseCode = "404", description = "Detalle no encontrado")
     })
+    
     @GetMapping("/detalleorden/{id}")
     public ResponseEntity<EntityModel<DetalleOrden>> getDetalleById(
             @Parameter(description = "ID del detalle", required = true, in = ParameterIn.PATH) @PathVariable Long id) {

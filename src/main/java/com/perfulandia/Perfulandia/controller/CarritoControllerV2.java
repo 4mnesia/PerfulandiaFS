@@ -45,6 +45,7 @@ public class CarritoControllerV2 {
         @ApiResponse(responseCode = "200", description = "Lista de carritos filtrados por estado", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Carrito.class)))),
         @ApiResponse(responseCode = "404", description = "No se encontraron carritos para el estado proporcionado")
     })
+    
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<Carrito>> getCarritosByEstado(
             @Parameter(description = "Estado del carrito (true para activo, false para inactivo)", required = true, in = ParameterIn.PATH, example = "true") @PathVariable boolean estado) {
