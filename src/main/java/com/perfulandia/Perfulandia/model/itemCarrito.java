@@ -20,7 +20,6 @@ public class ItemCarrito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relación unidireccional a Producto
     @Schema(description = "Producto referenciado por este item")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producto_id")

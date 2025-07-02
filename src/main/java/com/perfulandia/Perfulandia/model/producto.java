@@ -59,7 +59,8 @@ public class Producto {
     @Column(nullable = false)
     private Date fechaCreacion;
 
-    @Schema(description = "Detalles del producto" + " (opcional)", example = "Perfume de alta calidad con notas florales")
+    @Schema(description = "Detalles del producto" + " (opcional)", 
+    example = "Perfume de alta calidad con notas florales")
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @Builder.Default

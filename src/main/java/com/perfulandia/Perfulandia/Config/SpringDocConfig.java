@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-  info = @Info(
-    title = "Perfulandia API",
-    version = "v1",
-    description = "Documentación de los servicios REST de Perfulandia hecho por Flavio Henriquez, Estefano Yogui, Francisco albornoz",
-    contact = @Contact(name = "Equipo Dev", email = "Fullstack002D@perfulandia.com")
-  ),
-  servers = @Server(url = "/")
+        info = @Info(
+        title = "Perfulandia API",
+        version = "v1",
+        description = "Documentación de la API para el sistema de Perfulandia hecho por Flavio Henriquez, Estefano Yogui, Francisco albornoz",
+        contact = @Contact(name = "Equipo Dev", email = "Fullstack002D@perfulandia.com")
+      ),
+      servers = @Server(url = "/")
 )
 public class SpringDocConfig {
 }

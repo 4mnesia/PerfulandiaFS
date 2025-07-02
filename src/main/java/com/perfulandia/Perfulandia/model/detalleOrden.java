@@ -34,13 +34,13 @@ public class DetalleOrden {
     @Column(precision = 10, scale = 2)
     private BigDecimal total;
 
-    // Relación bidireccional a Orden
+    // orden
     @Schema(description = "Orden a la que pertenece este detalle")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orden_id")
     @JsonIgnore
     private Orden orden;
-    // Relación unidireccional a Producto
+    // producto
     @Schema(description = "Producto al que corresponde este detalle")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producto_id")
